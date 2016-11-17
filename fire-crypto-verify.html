@@ -1,0 +1,32 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="fire-crypto-verify-behaviour.html">
+
+<!--
+`fire-crypto-verify`
+Polymer Element fire-crypto-verify
+
+@demo demo/index.html 
+-->
+
+<dom-module id="fire-crypto-verify">
+
+    <script>
+        Polymer({
+
+            is: 'fire-crypto-verify',
+
+            behaviors: [
+                FiveElements.FireCryptoVerifyBehavior
+            ],
+
+            properties: {
+                prop1: {
+                    type: String,
+                    value: 'fire-crypto-verify',
+                },
+            },
+
+        });
+    </script>
+</dom-module>

@@ -2,6 +2,7 @@
 
 <link rel="import" href="../fire-crypto-generatekey.html">
 <link rel="import" href="../fire-crypto-sign.html">
+<link rel="import" href="../fire-crypto-verify.html">
 
 
 <!--
@@ -20,12 +21,16 @@ Polymer Element demo-fire-crypto
         </style>
         <fire-crypto-generatekey id="generator" key="{{jwk}}"></fire-crypto-generatekey>
         <fire-crypto-sign id="signor" key="{{jwk}}" data="{{data}}" signature="{{signature}}"></fire-crypto-sign>
+        <fire-crypto-verify id="verifyor" key="{{jwk}}" data="{{data}}" signature="{{signature}}" is-verify="{{isVerify}}"></fire-crypto-verify>
 
         <div on-tap="genJwk">
             <h2>Generate JWK</h2><div>{{jwk.k}}</div>
         </div>
         <div on-tap="signData">
             <h2>Sign Data</h2><div>{{signature}}</div>
+        </div>
+        <div on-tap="verifyData">
+            <h2>Verify Data</h2><div>{{isVerify}}</div>
         </div>
     </template>
 
@@ -55,6 +60,9 @@ Polymer Element demo-fire-crypto
             },
             signData: function () {
                 this.$.signor._signHMAC();
+            },
+            verifyData: function () {
+                this.$.verifyor._verifySign();
             }
 
         });

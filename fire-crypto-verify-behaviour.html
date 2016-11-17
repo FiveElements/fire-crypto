@@ -1,6 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 
-<link rel="import" href="fire-unibabel.html">
+<link rel="import" href="fire-crypto-base-behaviour.html">
 
 <!--
 `fire-hmac-sign-behaviour`
@@ -41,6 +41,10 @@ Polymer Element fire-hmac-sign-behaviour
             },
             signature: {
                 type: Object
+            },
+            isVerify: {
+                type: Boolean,
+                notify: true
             }
 
         },
@@ -69,10 +73,11 @@ Polymer Element fire-hmac-sign-behaviour
             var algo = this.algo;
             var verifyPromise = this._verifySignPromise(key, algo, signature , data);
             verifyPromise = verifyPromise.then(function ( isValid) {
+                self.isVerify= isValid;
                 self._fireCryptoKeyVerify(isValid, signature);
                 return isValid;
             }).catch(function (err) {
-                // self.hmac = undefined;
+                self.isVerify= undefined;
                 self._fireCryptoKeyVerifyError(err, keyFormat);
             });
             return verifyPromise;
