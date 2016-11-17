@@ -26,17 +26,18 @@ Polymer Element demo-fire-crypto
         <fire-crypto-sign id="signor" key="{{jwk}}" data="{{data}}" signature="{{signature}}"></fire-crypto-sign>
         <fire-crypto-verify id="verifyor" key="{{jwk}}" data="{{data}}" signature="{{signature}}" is-verify="{{isVerify}}"></fire-crypto-verify>
 
-        <paper-input value="{{data.name}}"></paper-input>
+        <paper-input value="{{data.name}}" label="Data to sign"></paper-input>
 
         <div on-tap="genJwk">
             <h2>Generate JWK</h2><div>{{jwk.k}}</div>
         </div>
         <div on-tap="signData">
-            <h2>Sign Data</h2><div>{{signature}}</div>
+            <h2>Sign Data</h2><div><paper-input value="{{signature}}"></paper-input></div>
         </div>
         <div on-tap="verifyData">
             <h2>Verify Data</h2><div>{{isVerify}}</div>
         </div>
+
     </template>
 
     <script>
