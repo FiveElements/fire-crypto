@@ -1,0 +1,24 @@
+{
+  "name": "fire-crypto",
+  "version": "0.0.1",
+  "description": "Polymer Crypto api",
+  "main": "index.html",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FiveElements/fire-crypto.git"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "lint": "polymer lint --input *.html",
+    "dev": "polymer serve -p 8080 & npm run watch",
+    "test": "polymer test",
+    "watch": "browser-sync start --proxy localhost:8080 --startPath '/components/fire-crypto/demo/' --files '*.html, *.js, demo/*' "
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.16.0"
+  }
+}

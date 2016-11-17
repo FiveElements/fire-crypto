@@ -1,0 +1,72 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`fire-hmac-sign-behaviour`
+Polymer Element fire-hmac-sign-behaviour
+
+@demo demo/index.html 
+-->
+
+
+<script>
+    /**
+     * FiveElements Namespace definition
+     */
+    var FiveElements = FiveElements || {};
+
+    /**
+     * @polymerBehavior
+     */
+    FiveElements.FireCryptoBaseBehavior = {
+
+        // --- Get crypto.subtle
+        // --- ---------------------------
+        _getCryptoSubtle: function () {
+            var crypto = window.crypto || window.msCrypto; //for IE11
+            if (crypto.webkitSubtle) {
+                return window.crypto.webkitSubtle; //for Safari
+            }
+            return crypto.subtle;
+        },
+
+
+        // --- Utilities
+        // --- ---------------------------
+        _convertDataToBuffer: function (data) {
+            var buffer = new TextEncoder('utf-8').encode(JSON.stringify(data));
+            return buffer;
+        },
+
+        // https://blog.engelke.com/tag/webcrypto/
+        arrayBufferToHexString: function (arrayBuffer) {
+            var byteArray = new Uint8Array(arrayBuffer);
+            var hexString = "";
+            var nextHexByte;
+            for (var i = 0; i < byteArray.byteLength; i++) {
+                nextHexByte = byteArray[i].toString(16);  // Integer to base 16
+                if (nextHexByte.length < 2) {
+                    nextHexByte = "0" + nextHexByte;     // Otherwise 10 becomes just a instead of 0a
+                }
+                hexString += nextHexByte;
+            }
+            return hexString;
+        },
+
+        //https://blog.engelke.com/tag/webcrypto/
+        hexStringToByteArray: function (hexString) {
+            if (hexString.length % 2 !== 0) {
+                throw Error("Must have an even number of hex digits to convert to bytes");
+            }
+            var numBytes = hexString.length / 2;
+            var byteArray = new Uint8Array(numBytes);
+            for (var i = 0; i < numBytes; i++) {
+                byteArray[i] = parseInt(hexString.substr(i * 2, 2), 16);
+            }
+            return byteArray;
+        },
+
+        // --- End
+        // --- ---------------------------
+    };
+
+</script>

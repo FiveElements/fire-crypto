@@ -1,0 +1,42 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<link rel="import" href="../fire-crypto-generatekey.html">
+
+
+<!--
+`demo-fire-crypto`
+Polymer Element demo-fire-crypto
+
+@demo demo/index.html 
+-->
+
+<dom-module id="demo-fire-crypto">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+        <fire-crypto-generatekey id="generator" key="{{jwk}}"></fire-crypto-generatekey>
+
+        <h2 on-tap="genJwk">Generate JWK [[jwk.k]]</h2>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'demo-fire-crypto',
+
+            properties: {
+                jwk: {
+                    type: String
+                },
+            },
+
+            genJwk: function () {
+                this.$.generator.generateCryptoKey();
+            },
+
+        });
+    </script>
+</dom-module>

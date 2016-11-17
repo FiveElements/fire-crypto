@@ -1,0 +1,98 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="fire-unibabel.html">
+
+<!--
+`fire-hmac-sign-behaviour`
+Polymer Element fire-hmac-sign-behaviour
+
+@demo demo/index.html
+-->
+
+
+<script>
+    /**
+     * FiveElements Namespace definition
+     */
+    var FiveElements = FiveElements || {};
+
+
+
+    /**
+     * @polymerBehavior
+     */
+    FiveElements.FireCryptoVerifyBehaviorImpl = {
+        properties: {
+            algo: {
+                type: Object,
+                value: function () {
+                    //can be 'SHA-1', 'SHA-256', 'SHA-384', or 'SHA-512'
+                    return {name: "HMAC", hash: {name: "SHA-256"}};
+                    //return { name: "ECDSA",  namedCurve: "P-256", hash: { name: "SHA-256" } }
+                }
+            },
+            // can be 'raw', 'pkcs8', 'spki', 'jwk'
+            keyFormat: {
+                type: String,
+                value: 'jwk'
+            },
+            key: {
+                type: Object
+            },
+            signature: {
+                type: Object
+            }
+
+        },
+
+
+        // --- Verify
+        // --- ---------------------------
+
+        _verifySignPromise: function (jwk, algo, macHex, data) {
+            var self = this;
+            var mac = this.hexStringToByteArray(macHex);
+            var cryptoSubtle = this._getCryptoSubtle();
+            var promise = cryptoSubtle.importKey('jwk', jwk, algo, true, ['verify']);
+            promise = promise.then(function (key) {
+                var text2verify = self._convertDataToBuffer(data);
+                return cryptoSubtle.verify(algo, key, mac, text2verify);
+            });
+            return promise;
+        },
+
+        _verifySign: function (data) {
+            var self = this;
+            var key = this.key;
+            var keyFormat = this.keyFormat;
+            var signature = this.signature;
+            var algo = this.algo;
+            var verifyPromise = this._verifySignPromise(key, algo, signature , data);
+            verifyPromise = verifyPromise.then(function ( isValid) {
+                self._fireCryptoKeyVerify(isValid, signature);
+                return isValid;
+            }).catch(function (err) {
+                // self.hmac = undefined;
+                self._fireCryptoKeyVerifyError(err, keyFormat);
+            });
+            return verifyPromise;
+        },
+        _fireCryptoKeyVerify: function (isValid, signature) {
+            console.log('isValid', isValid);
+            this.fire('key-verify', {isValid: isValid, signature: signature });
+        },
+        _fireCryptoKeyVerifyError: function (error, keyFormat) {
+            console.error(error);
+            this.fire('error-key-verify', {error: error, format: keyFormat});
+        },
+
+
+    };
+
+    /**
+     * @polymerBehavior
+     */
+    FiveElements.FireCryptoVerifyBehavior = [FiveElements.FireCryptoBaseBehavior, FiveElements.FireCryptoVerifyBehaviorImpl ];
+
+
+</script>

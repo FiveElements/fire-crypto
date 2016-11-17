@@ -1,0 +1,99 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="fire-unibabel.html">
+
+<!--
+`fire-hmac-sign-behaviour`
+Polymer Element fire-hmac-sign-behaviour
+
+@demo demo/index.html
+-->
+
+
+<script>
+    /**
+     * FiveElements Namespace definition
+     */
+    var FiveElements = FiveElements || {};
+
+
+
+    /**
+     * @polymerBehavior
+     */
+    FiveElements.FireCryptoSignBehaviorImpl = {
+        properties: {
+            algo: {
+                type: Object,
+                value: function () {
+                    //can be 'SHA-1', 'SHA-256', 'SHA-384', or 'SHA-512'
+                    return {name: "HMAC", hash: {name: "SHA-256"}};
+                    //return { name: "ECDSA",  namedCurve: "P-256", hash: { name: "SHA-256" } }
+                }
+            },
+            // can be 'raw', 'pkcs8', 'spki', 'jwk'
+            keyFormat: {
+                type: String,
+                value: 'jwk'
+            },
+            key: {
+                type: Object
+            },
+            signature: {
+                type: Object
+            }
+
+        },
+
+        // --- Sign
+        // --- ---------------------------
+        _signHMACPromise: function (algo, jwk, keyFormat, data) {
+            var self = this;
+            var cryptoSubtle = this._getCryptoSubtle();
+
+//            var promise = cryptoSubtle.importKey(keyFormat, jwk, algo, true, ['sign']);
+            var promise = cryptoSubtle.importKey(keyFormat, jwk, algo, true, ['sign']);
+            promise = promise.then(function (keyBuffer) {
+                var dataBuffer = self._convertDataToBuffer(data);
+                return cryptoSubtle.sign(algo, keyBuffer, dataBuffer);
+            }).then(function (macBuffer) {
+                var macHex = self.arrayBufferToHexString(macBuffer);
+                return macHex;
+            });
+            return promise;
+        },
+        _signHMAC: function (data) {
+            var self = this;
+            var key = this.key;
+            var keyFormat = this.keyFormat;
+            var algo = this.algo;
+            var signPromise = this._signHMACPromise(algo, key, keyFormat, data);
+            signPromise = signPromise.then(function (macHex) {
+                self.signature = macHex;
+                self._fireCryptoKeySign(macHex);
+                return macHex;
+            }).catch(function (err) {
+                // self.hmac = undefined;
+                self._fireCryptoKeySignError(err, keyFormat);
+            });
+            return signPromise;
+        },
+        _fireCryptoKeySign: function (macHex) {
+            console.log('sign hmac', macHex);
+            this.fire('key-sign', {hmac: macHex});
+        },
+        _fireCryptoKeySignError: function (error, keyFormat) {
+            console.error(error);
+            this.fire('error-key-sign', {error: error, format: keyFormat});
+        },
+
+
+    };
+
+    /**
+     * @polymerBehavior
+     */
+    FiveElements.FireCryptoSignBehavior = [FiveElements.FireCryptoBaseBehavior, FiveElements.FireCryptoSignBehaviorImpl ];
+
+
+</script>
