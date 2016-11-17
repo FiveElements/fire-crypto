@@ -42,6 +42,9 @@ Polymer Element fire-hmac-sign-behaviour
             signature: {
                 type: Object
             },
+            data: {
+                type: Object
+            },
             isVerify: {
                 type: Boolean,
                 notify: true
@@ -65,12 +68,13 @@ Polymer Element fire-hmac-sign-behaviour
             return promise;
         },
 
-        _verifySign: function (data) {
+        _verifySign: function () {
             var self = this;
             var key = this.key;
             var keyFormat = this.keyFormat;
             var signature = this.signature;
             var algo = this.algo;
+            var data = this.data;
             var verifyPromise = this._verifySignPromise(key, algo, signature , data);
             verifyPromise = verifyPromise.then(function ( isValid) {
                 self.isVerify= isValid;

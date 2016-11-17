@@ -39,6 +39,9 @@ Polymer Element fire-hmac-sign-behaviour
             key: {
                 type: Object
             },
+            data: {
+                type: Object
+            },
             signature: {
                 type: Object,
                 notify: true
@@ -63,11 +66,12 @@ Polymer Element fire-hmac-sign-behaviour
             });
             return promise;
         },
-        _signHMAC: function (data) {
+        _signHMAC: function () {
             var self = this;
             var key = this.key;
             var keyFormat = this.keyFormat;
             var algo = this.algo;
+            var data = this.data;
             var signPromise = this._signHMACPromise(algo, key, keyFormat, data);
             signPromise = signPromise.then(function (macHex) {
                 self.signature = macHex;

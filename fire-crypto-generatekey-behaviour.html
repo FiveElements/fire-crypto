@@ -36,7 +36,7 @@ Polymer Element fire-hmac-sign-behaviour
                 type: String,
                 value: 'jwk'
             },
-            key: {
+            jwk: {
                 type: Object,
                 notify:true
             }
@@ -62,7 +62,7 @@ Polymer Element fire-hmac-sign-behaviour
             var keyPromise = this._generateCryptoKeyPromise(algo, keyFormat);
             keyPromise.then(function (key) {
                 console.log('_generateCryptoKey', key);
-                self.key = key;
+                self.jwk = key;
                 self._fireCryptoKeyGen(key, keyFormat);
                 return key;
             }).catch(function (err) {

@@ -5,6 +5,9 @@
 <link rel="import" href="../fire-crypto-verify.html">
 
 
+<link rel="import" href="../../paper-input/paper-input.html">
+
+
 <!--
 `demo-fire-crypto`
 Polymer Element demo-fire-crypto
@@ -19,9 +22,11 @@ Polymer Element demo-fire-crypto
                 display: block;
             }
         </style>
-        <fire-crypto-generatekey id="generator" key="{{jwk}}"></fire-crypto-generatekey>
+        <fire-crypto-generatekey id="generator" jwk="{{jwk}}"></fire-crypto-generatekey>
         <fire-crypto-sign id="signor" key="{{jwk}}" data="{{data}}" signature="{{signature}}"></fire-crypto-sign>
         <fire-crypto-verify id="verifyor" key="{{jwk}}" data="{{data}}" signature="{{signature}}" is-verify="{{isVerify}}"></fire-crypto-verify>
+
+        <paper-input value="{{data.name}}"></paper-input>
 
         <div on-tap="genJwk">
             <h2>Generate JWK</h2><div>{{jwk.k}}</div>
