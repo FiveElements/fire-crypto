@@ -1,0 +1,32 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="fire-crypto-sign-behaviour.html">
+
+<!--
+`fire-crypto-sign`
+Polymer Element fire-crypto-sign
+
+@demo demo/index.html 
+-->
+
+<dom-module id="fire-crypto-sign">
+
+    <script>
+        Polymer({
+
+            is: 'fire-crypto-sign',
+
+            behaviors: [
+                FiveElements.FireCryptoSignBehavior
+            ],
+
+            properties: {
+                prop1: {
+                    type: String,
+                    value: 'fire-crypto-sign',
+                },
+            },
+
+        });
+    </script>
+</dom-module>

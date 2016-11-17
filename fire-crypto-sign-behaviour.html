@@ -1,6 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 
-<link rel="import" href="fire-unibabel.html">
+<!--<link rel="import" href="fire-unibabel.html">-->
 
 <!--
 `fire-hmac-sign-behaviour`
@@ -40,7 +40,8 @@ Polymer Element fire-hmac-sign-behaviour
                 type: Object
             },
             signature: {
-                type: Object
+                type: Object,
+                notify: true
             }
 
         },

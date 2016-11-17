@@ -10,17 +10,6 @@ Polymer Element fire-crypto-generatekey
 -->
 
 <dom-module id="fire-crypto-generatekey">
-    <template>
-        <style>
-            :host {
-                display: block;
-            }
-        </style>
-        <div>
-            <h2>Hello</h2><span> [[key.k]]</span>
-        </div>
-    </template>
-
     <script>
         Polymer({
 
@@ -31,10 +20,6 @@ Polymer Element fire-crypto-generatekey
             ],
 
             properties: {
-                prop1: {
-                    type: String,
-                    value: 'fire-crypto-generatekey',
-                },
             },
 
             generateCryptoKey: function () {

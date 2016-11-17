@@ -1,6 +1,7 @@
 <link rel="import" href="../../polymer/polymer.html">
 
 <link rel="import" href="../fire-crypto-generatekey.html">
+<link rel="import" href="../fire-crypto-sign.html">
 
 
 <!--
@@ -18,8 +19,14 @@ Polymer Element demo-fire-crypto
             }
         </style>
         <fire-crypto-generatekey id="generator" key="{{jwk}}"></fire-crypto-generatekey>
+        <fire-crypto-sign id="signor" key="{{jwk}}" data="{{data}}" signature="{{signature}}"></fire-crypto-sign>
 
-        <h2 on-tap="genJwk">Generate JWK [[jwk.k]]</h2>
+        <div on-tap="genJwk">
+            <h2>Generate JWK</h2><div>{{jwk.k}}</div>
+        </div>
+        <div on-tap="signData">
+            <h2>Sign Data</h2><div>{{signature}}</div>
+        </div>
     </template>
 
     <script>
@@ -29,13 +36,26 @@ Polymer Element demo-fire-crypto
 
             properties: {
                 jwk: {
+                    type: Object,
+                    notify: true
+                },
+                signature: {
                     type: String
+                },
+                data: {
+                    type: Object,
+                    value: function () {
+                        return {name : "Hello World" }
+                    }
                 },
             },
 
             genJwk: function () {
                 this.$.generator.generateCryptoKey();
             },
+            signData: function () {
+                this.$.signor._signHMAC();
+            }
 
         });
     </script>
