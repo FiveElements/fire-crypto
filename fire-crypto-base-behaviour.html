@@ -217,7 +217,7 @@ Polymer Element fire-hmac-sign-behaviour
          * @param usages usages is an Array of Possible values ['encrypt', 'decrypt', 'sign', 'verify', 'deriveKey', 'deriveBits', 'wrapKey', 'unwrapKey']
          * @returns result is a Promise that returns the generated CryptoKey.
          */
-        importKeyJwkFromJWK: function (jwk, extractable, usages) {
+        importKeyJwk: function (jwk, extractable, usages) {
             var self = this;
             var algoPromise = this.algorithmIdentifierFromJwtPromise(jwk);
             var keyPromise = algoPromise.then(function (algo) {
