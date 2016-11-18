@@ -19,6 +19,151 @@ Polymer Element fire-hmac-sign-behaviour
      */
     FiveElements.FireCryptoBaseBehavior = {
 
+        properties: {
+            /**
+             * {jwk, algo}
+             * https://w3c.github.io/webcrypto/Overview.html#jwk-mapping
+             */
+            algorithmIdentifier: {
+                type: Array,
+                value: function () {
+                    return [
+                        {
+                            jwk: {kty: "RSA", alg: "RS1"},
+                            algo: {name: "RSASSA-PKCS1-v1_5", hash: {name: "SHA-1"}}
+                        },
+                        {
+                            jwk: {kty: "RSA", alg: "RS256"},
+                            algo: {name: "RSASSA-PKCS1-v1_5", hash: {name: "SHA-256"}}
+                        },
+                        {
+                            jwk: {kty: "RSA", alg: "RS384"},
+                            algo: {name: "RSASSA-PKCS1-v1_5", hash: {name: "SHA-384"}}
+                        },
+                        {
+                            jwk: {kty: "RSA", alg: "RS512"},
+                            algo: {name: "RSASSA-PKCS1-v1_5", hash: {name: "SHA-512"}}
+                        },
+                        {
+                            jwk: {kty: "RSA", alg: "PS256"},
+                            algo: {name: "RSA-PSS", hash: {name: "SHA-256"}}
+                        },
+                        {
+                            jwk: {kty: "RSA", alg: "PS384"},
+                            algo: {name: "RSA-PSS", hash: {name: "SHA-384"}}
+                        },
+                        {
+                            jwk: {kty: "RSA", alg: "PS512"},
+                            algo: {name: "RSA-PSS", hash: {name: "SHA-512"}}
+                        },
+                        {
+                            jwk: {kty: "RSA", alg: "RSA-OAEP"},
+                            algo: {name: "RSA-OAEP", hash: {name: "SHA-1"}}
+                        },
+                        {
+                            jwk: {kty: "RSA", alg: "RSA-OAEP-256"},
+                            algo: {name: "RSA-OAEP", hash: {name: "SHA-256"}}
+                        },
+                        {
+                            jwk: {kty: "RSA", alg: "RSA-OAEP-384"},
+                            algo: {name: "RSA-OAEP", hash: {name: "SHA-384"}}
+                        },
+                        {
+                            jwk: {kty: "RSA", alg: "RSA-OAEP-512"},
+                            algo: {name: "RSA-OAEP", hash: {name: "SHA-512"}}
+                        },
+                        {
+                            jwk: {kty: "EC", alg: "ES256"},
+                            algo: {name: "ECDSA", namedCurve: "P-256", hash: {name: "SHA-256"}}
+                        },
+                        {
+                            jwk: {kty: "EC", alg: "ES384"},
+                            algo: {name: "ECDSA", namedCurve: "P-384", hash: {name: "SHA-384"}}
+                        },
+                        {
+                            jwk: {kty: "EC", alg: "ES512"},
+                            algo: {name: "ECDSA", namedCurve: "P-521", hash: {name: "SHA-512"}}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "A128CTR"},
+                            algo: {name: "AES-CTR", length: 128}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "A192CTR"},
+                            algo: {name: "AES-CTR", length: 192}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "A256CTR"},
+                            algo: {name: "AES-CTR", length: 256}
+                        }, {
+                            jwk: {kty: "oct", alg: "A128CBC"},
+                            algo: {name: "AES-CBC", length: 128}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "A192CBC"},
+                            algo: {name: "AES-CBC", length: 192}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "A256CBC"},
+                            algo: {name: "AES-CBC", length: 256}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "A128KW"},
+                            algo: {name: "AES-KW", length: 128}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "A192KW"},
+                            algo: {name: "AES-KW", length: 192}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "A256KW"},
+                            algo: {name: "AES-KW", length: 256}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "A128GCM"},
+                            algo: {name: "AES-GCM", length: 128}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "A192GCM"},
+                            algo: {name: "AES-GCM", length: 192}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "A256GCM"},
+                            algo: {name: "AES-GCM", length: 256}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "A128GCMKW"},
+                            algo: {name: "AES-GCM", length: 128}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "A192GCMKW"},
+                            algo: {name: "AES-GCM", length: 192}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "A256GCMKW"},
+                            algo: {name: "AES-GCM", length: 256}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "HS1"},
+                            algo: {name: "HMAC", hash: {name: "SHA-1"}}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "HS256"},
+                            algo: {name: "HMAC", hash: {name: "SHA-256"}}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "HS384"},
+                            algo: {name: "HMAC", hash: {name: "SHA-384"}}
+                        },
+                        {
+                            jwk: {kty: "oct", alg: "HS512"},
+                            algo: {name: "HMAC", hash: "SHA-512"}
+                        }
+                    ];
+                }
+            },
+        },
+
         // --- Get crypto.subtle
         // --- ---------------------------
         _getCryptoSubtle: function () {
@@ -28,150 +173,58 @@ Polymer Element fire-hmac-sign-behaviour
             }
             return crypto.subtle;
         },
-        // --- Algorythms
+        // --- Algorythms Identifier
         // --- ---------------------------
+        _filterAlgorithmIdentifierFromJwt: function (jwk) {
+            var list = this.algorithmIdentifier;
+            var matchAlgos = list.filter(function (elt) {
+                return ((elt.jwk.alg === jwk.alg) && (elt.jwk.kty === jwk.kty));
+            });
+            return matchAlgos;
+        },
 
-        _findAlgorithmIdentifier: function (jwk) {
-            var list = this.algoIdentifiers();
-            var algos =  list.filter(function (elt) {
-                return (elt.jwk.alg === jwk.alg) & (elt.jwk.kty === jwk.kty);
+        getAlgoIdentifierFromJWT: function (jwk) {
+            var matchAlgos = this._filterAlgorithmIdentifierFromJwt(jwk);
+            var algo = undefined;
+            if (matchAlgos.length > 0) {
+                algo = matchAlgos[0].algo;
+            }
+            return algo;
+        },
+
+        algorithmIdentifierFromJwtPromise: function (jwk) {
+            var self = this;
+            return new Promise(function (resolve, reject) {
+                var matchAlgos = self._filterAlgorithmIdentifierFromJwt(jwk);
+                if (!matchAlgos) {
+                    reject(Error('No algorithm found for JWK ' + JSON.stringify(jwk)));
+                } else if (matchAlgos.length > 1) {
+                    reject(Error('Too much ('+ matchAlgos.length+') algorithm found for JWK ' + JSON.stringify(jwk)));
+                } else if (matchAlgos.length === 1) {
+                    var matchAlgo = matchAlgos[0];
+                    resolve(matchAlgo);
+                }
+
             });
         },
 
-        algoIdentifiers: function () {
-            var list = [
-                {
-                    jwk: {kty: "RSA", alg: "RS1"},
-                    algo: {name: "RSASSA-PKCS1-v1_5", hash: {name: "SHA-1"}}
-                },
-                {
-                    jwk: {kty: "RSA", alg: "RS256"},
-                    algo: {name: "RSASSA-PKCS1-v1_5", hash: {name: "SHA-256"}}
-                },
-                {
-                    jwk: {kty: "RSA", alg: "RS384"},
-                    algo: {name: "RSASSA-PKCS1-v1_5", hash: {name: "SHA-384"}}
-                },
-                {
-                    jwk: {kty: "RSA", alg: "RS512"},
-                    algo: {name: "RSASSA-PKCS1-v1_5", hash: {name: "SHA-512"}}
-                },
-                {
-                    jwk: {kty: "RSA", alg: "PS256"},
-                    algo: {name: "RSA-PSS", hash: {name: "SHA-256"}}
-                },
-                {
-                    jwk: {kty: "RSA", alg: "PS384"},
-                    algo: {name: "RSA-PSS", hash: {name: "SHA-384"}}
-                },
-                {
-                    jwk: {kty: "RSA", alg: "PS512"},
-                    algo: {name: "RSA-PSS", hash: {name: "SHA-512"}}
-                },
-                {
-                    jwk: {kty: "RSA", alg: "RSA-OAEP"},
-                    algo: {name: "RSA-OAEP", hash: {name: "SHA-1"}}
-                },
-                {
-                    jwk: {kty: "RSA", alg: "RSA-OAEP-256"},
-                    algo: {name: "RSA-OAEP", hash: {name: "SHA-256"}}
-                },
-                {
-                    jwk: {kty: "RSA", alg: "RSA-OAEP-384"},
-                    algo: {name: "RSA-OAEP", hash: {name: "SHA-384"}}
-                },
-                {
-                    jwk: {kty: "RSA", alg: "RSA-OAEP-512"},
-                    algo: {name: "RSA-OAEP", hash: {name: "SHA-512"}}
-                },
-                {
-                    jwk: {kty: "EC", alg: "ES256"},
-                    algo: {name: "ECDSA", namedCurve: "P-256", hash: {name: "SHA-256"}}
-                },
-                {
-                    jwk: {kty: "EC", alg: "ES384"},
-                    algo: {name: "ECDSA", namedCurve: "P-384", hash: {name: "SHA-384"}}
-                },
-                {
-                    jwk: {kty: "EC", alg: "ES512"},
-                    algo: {name: "ECDSA", namedCurve: "P-521", hash: {name: "SHA-512"}}
-                },
-                {
-                    jwk: {kty: "oct", alg: "A128CTR"},
-                    algo: {name: "AES-CTR", length: 128}
-                },
-                {
-                    jwk: {kty: "oct", alg: "A192CTR"},
-                    algo: {name: "AES-CTR", length: 192}
-                },
-                {
-                    jwk: {kty: "oct", alg: "A256CTR"},
-                    algo: {name: "AES-CTR", length: 256}
-                }, {
-                    jwk: {kty: "oct", alg: "A128CBC"},
-                    algo: {name: "AES-CBC", length: 128}
-                },
-                {
-                    jwk: {kty: "oct", alg: "A192CBC"},
-                    algo: {name: "AES-CBC", length: 192}
-                },
-                {
-                    jwk: {kty: "oct", alg: "A256CBC"},
-                    algo: {name: "AES-CBC", length: 256}
-                },
-                {
-                    jwk: {kty: "oct", alg: "A128KW"},
-                    algo: {name: "AES-KW", length: 128}
-                },
-                {
-                    jwk: {kty: "oct", alg: "A192KW"},
-                    algo: {name: "AES-KW", length: 192}
-                },
-                {
-                    jwk: {kty: "oct", alg: "A256KW"},
-                    algo: {name: "AES-KW", length: 256}
-                },
-                {
-                    jwk: {kty: "oct", alg: "A128GCM"},
-                    algo: {name: "AES-GCM", length: 128}
-                },
-                {
-                    jwk: {kty: "oct", alg: "A192GCM"},
-                    algo: {name: "AES-GCM", length: 192}
-                },
-                {
-                    jwk: {kty: "oct", alg: "A256GCM"},
-                    algo: {name: "AES-GCM", length: 256}
-                },
-                {
-                    jwk: {kty: "oct", alg: "A128GCMKW"},
-                    algo: {name: "AES-GCM", length: 128}
-                },
-                {
-                    jwk: {kty: "oct", alg: "A192GCMKW"},
-                    algo: {name: "AES-GCM", length: 192}
-                },
-                {
-                    jwk: {kty: "oct", alg: "A256GCMKW"},
-                    algo: {name: "AES-GCM", length: 256}
-                },
-                {
-                    jwk: {kty: "oct", alg: "HS1"},
-                    algo: {name: "HMAC", hash: {name: "SHA-1"}}
-                },
-                {
-                    jwk: {kty: "oct", alg: "HS256"},
-                    algo: {name: "HMAC", hash: {name: "SHA-256"}}
-                },
-                {
-                    jwk: {kty: "oct", alg: "HS384"},
-                    algo: {name: "HMAC", hash: {name: "SHA-384"}}
-                },
-                {
-                    jwk: {kty: "oct", alg: "HS512"},
-                    algo: {name: "HMAC", hash: "SHA-512"}
-                }
-            ];
+
+
+        /**
+         * Wrap of https://developer.mozilla.org/fr/docs/Web/API/SubtleCrypto/importKey
+         * @param jwk The JSON Web Key
+         * @param extractable is a Boolean indicating if the key can be extracted from the CryptoKey object at a later stage.
+         * @param usages usages is an Array of Possible values ['encrypt', 'decrypt', 'sign', 'verify', 'deriveKey', 'deriveBits', 'wrapKey', 'unwrapKey']
+         * @returns result is a Promise that returns the generated CryptoKey.
+         */
+        importKeyJwkFromJWK: function (jwk, extractable, usages) {
+            var self = this;
+            var algoPromise = this.algorithmIdentifierFromJwtPromise(jwk);
+            var keyPromise = algoPromise.then(function (algo) {
+                var cryptoSubtle = self._getCryptoSubtle();
+                return cryptoSubtle.importKey('jwk', jwk, algo, extractable, usages);
+            });
+            return keyPromise;
         },
 
         // --- Utilities

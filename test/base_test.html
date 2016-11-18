@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>fire-crypto test</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="base-element.html">
+  </head>
+  <body>
+    <test-fixture id="basic">
+      <template>
+        <base-element></base-element>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('fire-crypto-basic', function() {
+
+        test('instantiating the element works', function() {
+          var element = fixture('basic');
+          assert.equal(element.is, 'base-element');
+        });
+
+        test('get algo from JWT', function() {
+          var element = fixture('basic');
+            var jwt = {kty: 'oct', alg: 'HS256'};
+            var algo = element.getAlgoIdentifierFromJWT(jwt);
+            assert.equal(algo.name, 'HMAC');
+            assert.equal(algo.hash.name, 'SHA-256');
+        });
+
+
+      });
+    </script>
+  </body>
+</html>
