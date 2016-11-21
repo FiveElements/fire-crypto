@@ -192,7 +192,13 @@ Polymer Element fire-hmac-sign-behaviour
             return algo;
         },
 
-        algorithmIdentifierFromJwtPromise: function (jwk) {
+        listAlgorithmNames: function () {
+            this.algorithmIdentifier.map(function (elt) {
+                return elt.jwk.alg;
+            })
+        },
+
+        getAlgorithmIdentifierFromJwtPromise: function (jwk) {
             var self = this;
             return new Promise(function (resolve, reject) {
                 var matchAlgos = self._filterAlgorithmIdentifierFromJwt(jwk);
@@ -201,7 +207,7 @@ Polymer Element fire-hmac-sign-behaviour
                 } else if (matchAlgos.length > 1) {
                     reject(Error('Too much ('+ matchAlgos.length+') algorithm found for JWK ' + JSON.stringify(jwk)));
                 } else if (matchAlgos.length === 1) {
-                    var matchAlgo = matchAlgos[0];
+                    var matchAlgo = matchAlgos[0].algo;
                     resolve(matchAlgo);
                 }
 
@@ -209,7 +215,8 @@ Polymer Element fire-hmac-sign-behaviour
         },
 
 
-
+        // --- Import JWK
+        // --- ---------------------------
         /**
          * Wrap of https://developer.mozilla.org/fr/docs/Web/API/SubtleCrypto/importKey
          * @param jwk The JSON Web Key
@@ -217,9 +224,9 @@ Polymer Element fire-hmac-sign-behaviour
          * @param usages usages is an Array of Possible values ['encrypt', 'decrypt', 'sign', 'verify', 'deriveKey', 'deriveBits', 'wrapKey', 'unwrapKey']
          * @returns result is a Promise that returns the generated CryptoKey.
          */
-        importKeyJwk: function (jwk, extractable, usages) {
+        importKeyJwkPromise: function (jwk, extractable, usages) {
             var self = this;
-            var algoPromise = this.algorithmIdentifierFromJwtPromise(jwk);
+            var algoPromise = this.getAlgorithmIdentifierFromJwtPromise(jwk);
             var keyPromise = algoPromise.then(function (algo) {
                 var cryptoSubtle = self._getCryptoSubtle();
                 return cryptoSubtle.importKey('jwk', jwk, algo, extractable, usages);
