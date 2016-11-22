@@ -1,6 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 
-<link rel="import" href="fire-crypto-sign-behaviour.html">
+<link rel="import" href="fire-crypto-base-behaviour.html">
 
 <!--
 `fire-crypto-sign`
@@ -17,10 +17,86 @@ Polymer Element fire-crypto-sign
             is: 'fire-crypto-sign',
 
             behaviors: [
-                FiveElements.FireCryptoSignBehavior
+                FiveElements.FireCryptoBaseBehavior
             ],
 
+            properties: {
+                jwk: {
+                    type: Object
+                },
+                data: {
+                    type: Object
+                },
+                signature: {
+                    type: Object,
+                    notify: true
+                }
 
+            },
+
+            observers: [
+                '_signObserver(jwk,data.*)'
+            ],
+
+            // --- Verify Observer
+            // --- ---------------------------
+            _signObserver: function (jwk, dataChanged ) {
+                return this._sign(jwk, this.data );
+            },
+
+
+            // --- API Sign
+            // --- ---------------------------
+            sign: function () {
+                this._sign(this.jwk, this.data);
+            },
+
+            // --- Sign
+            // --- ---------------------------
+            _signPromise: function (jwk, data) {
+                var self = this;
+                var cryptoSubtle = this._getCryptoSubtle();
+                var algoJwk =undefined;
+                var promise = this.getAlgorithmIdentifierFromJwtPromise(jwk)
+                        .then(function (algo) {
+                            algoJwk = algo;
+                            return cryptoSubtle.importKey('jwk', jwk, algo, false, ['sign']);
+                        }).then(function (keyBuffer) {
+                            var dataBuffer = self._convertDataToBuffer(data);
+                            return cryptoSubtle.sign(algoJwk, keyBuffer, dataBuffer);
+                        }).then(function (macBuffer) {
+                            var macHex = self.arrayBufferToHexString(macBuffer);
+                            return macHex;
+                        });
+                return promise;
+            },
+
+
+            _sign: function (jwk, data) {
+                var self = this;
+                var signPromise = this._signPromise(jwk, data);
+                signPromise = signPromise.then(function (macHex) {
+                    self.signature = macHex;
+                    self._fireCryptoKeySign(macHex);
+                    return macHex;
+                }).catch(function (err) {
+                    self.signature = undefined;
+                    self._fireCryptoKeySignError(err);
+                });
+                return signPromise;
+            },
+
+            // --- Event Sign
+            // --- ---------------------------
+
+            _fireCryptoKeySign: function (signature) {
+                //console.log('sign', macHex);
+                this.fire('fire-sign', {signature: signature});
+            },
+            _fireCryptoKeySignError: function (error) {
+                console.error(error);
+                this.fire('fire-error-sign', {error: error});
+            },
         });
     </script>
 </dom-module>

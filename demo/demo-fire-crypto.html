@@ -23,8 +23,8 @@ Polymer Element demo-fire-crypto
             }
         </style>
         <fire-crypto-generatekey id="generator" jwk="{{jwk}}"></fire-crypto-generatekey>
-        <fire-crypto-sign id="signor" key="{{jwk}}" data="{{data}}" signature="{{signature}}"></fire-crypto-sign>
-        <fire-crypto-verify id="verifyor" key="{{jwk}}" data="{{data}}" signature="{{signature}}" is-verify="{{isVerify}}"></fire-crypto-verify>
+        <fire-crypto-sign id="signor" jwk="{{jwk}}" data="{{data}}" signature="{{signature}}"></fire-crypto-sign>
+        <fire-crypto-verify id="verifyor" jwk="{{jwk}}" data="{{data}}" signature="{{signature}}" is-verify="{{isVerify}}"></fire-crypto-verify>
 
         <paper-input value="{{data.name}}" label="Data to sign"></paper-input>
 
@@ -65,10 +65,10 @@ Polymer Element demo-fire-crypto
                 this.$.generator.generateCryptoKey();
             },
             signData: function () {
-                this.$.signor._signHMAC();
+                this.$.signor.sign();
             },
             verifyData: function () {
-                this.$.verifyor._verifySign();
+                this.$.verifyor.verifySign();
             }
 
         });

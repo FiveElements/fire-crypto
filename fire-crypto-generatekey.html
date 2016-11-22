@@ -1,6 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 
-<link rel="import" href="fire-crypto-generatekey-behaviour.html">
+<link rel="import" href="fire-crypto-base-behaviour.html">
 
 <!--
 `fire-crypto-generatekey`
@@ -16,13 +16,78 @@ Polymer Element fire-crypto-generatekey
             is: 'fire-crypto-generatekey',
 
             behaviors: [
-                FiveElements.FireCryptoGenerateKeyBehavior
+                FiveElements.FireCryptoBaseBehavior
             ],
 
+            properties: {
+                algo: {
+                    type: Object,
+                    value: function () {
+                        // https://w3c.github.io/webcrypto/Overview.html#jwk-mapping
+                        //can be 'SHA-1', 'SHA-256', 'SHA-384', or 'SHA-512'
+                        return {name: "HMAC", hash: {name: "SHA-256"}};
+                        //return { name: "ECDSA",  namedCurve: "P-256", hash: { name: "SHA-256" } }
+                    }
+                },
+                // can be 'raw', 'pkcs8', 'spki', 'jwk'
+                keyFormat: {
+                    type: String,
+                    value: 'jwk'
+                },
+                usages: {
+                    type: Array,
+                    value: function () {
+                        return ['sign', 'verify'];
+                    }
+                },
+                extractable: {
+                    type: Boolean,
+                    value: true
+                },
+                jwk: {
+                    type: Object,
+                    notify: true
+                }
+
+            },
 
             generateCryptoKey: function () {
                 this._generateCryptoKey();
-            }
+            },
+
+
+            // --- Key generation
+            // --- ---------------------------
+            _generateCryptoKeyPromise: function (algo, extractable, usages) {
+                var cryptoSubtle = this._getCryptoSubtle();
+                var promise = cryptoSubtle.generateKey(algo, extractable, usages);
+                promise = promise.then(function (key) {
+                    return cryptoSubtle.exportKey('jwk', key);
+                });
+                return promise;
+            },
+
+            _generateCryptoKey: function () {
+                var self = this;
+                var algo = this.algo;
+                var keyPromise = this._generateCryptoKeyPromise(algo, this.extractable, this.usages);
+                keyPromise.then(function (key) {
+                    console.log('_generateCryptoKey', JSON.stringify(key));
+                    self.jwk = key;
+                    self._fireCryptoKeyGen(key);
+                    return key;
+                }).catch(function (err) {
+                    self.key = undefined;
+                    self._fireCryptoKeyGenError(err);
+                });
+            },
+            _fireCryptoKeyGen: function (key) {
+                this.fire('key-gen', {jwk: key});
+            },
+            _fireCryptoKeyGenError: function (error) {
+                console.error(error);
+                this.fire('error-key-gen', {error: error});
+            },
 
         });
     </script>

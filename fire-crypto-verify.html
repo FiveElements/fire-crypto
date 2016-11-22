@@ -1,6 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 
-<link rel="import" href="fire-crypto-verify-behaviour.html">
+<link rel="import" href="fire-crypto-base-behaviour.html">
 
 <!--
 `fire-crypto-verify`
@@ -17,9 +17,91 @@ Polymer Element fire-crypto-verify
             is: 'fire-crypto-verify',
 
             behaviors: [
-                FiveElements.FireCryptoVerifyBehavior
+                FiveElements.FireCryptoBaseBehavior
             ],
 
+            properties: {
+                jwk: {
+                    type: Object
+                },
+                signature: {
+                    type: Object,
+
+                },
+                data: {
+                    type: Object
+                },
+                isVerify: {
+                    type: Boolean,
+                    notify: true
+                }
+
+            },
+
+            observers: [
+                '_verifySignObserver(jwk, data.*, signature)'
+            ],
+
+            // --- Verify Observer
+            // --- ---------------------------
+            _verifySignObserver: function (jwk, dataChanged, signature) {
+                var data = dataChanged.value;
+                return this._verifySign(jwk, data, signature);
+            },
+
+            // --- API Verify
+            // --- ---------------------------
+
+            verifySign: function () {
+                return this._verifySign(this.jwk, this.data, this.signature);
+            },
+
+
+            // --- Verify
+            // --- ---------------------------
+            _verifySignPromise: function (jwk, data, signature) {
+                var self = this;
+                var cryptoSubtle = this._getCryptoSubtle();
+                var algoJwk = undefined;
+                var promise = this.getAlgorithmIdentifierFromJwtPromise(jwk)
+                        .then(function (algo) {
+                            algoJwk = algo;
+                            return cryptoSubtle.importKey('jwk', jwk, algo, true, ['verify']);
+                        }).then(function (keyBuffer) {
+                            var signatureBuffer = self.hexStringToByteArray(signature);
+                            var dataBuffer = self._convertDataToBuffer(data);
+                            return cryptoSubtle.verify(algoJwk, keyBuffer, signatureBuffer, dataBuffer);
+                        });
+                return promise;
+            },
+
+            _verifySign: function (jwk, data, signature) {
+                var self = this;
+                // console.log('data to verify', data, signature);
+                var verifyPromise = this._verifySignPromise(jwk, data, signature)
+                        .then(function (isValid) {
+                            self.isVerify = isValid;
+                            self._fireCryptoKeyVerify(isValid, signature);
+                            return isValid;
+                        })
+                        .catch(function (err) {
+                            self.isVerify = undefined;
+                            self._fireCryptoKeyVerifyError(err, signature);
+                        });
+                return verifyPromise;
+            },
+
+            // --- Event Verify
+            // --- ---------------------------
+
+            _fireCryptoKeyVerify: function (isValid, signature) {
+                console.log('isValid', isValid, ' for signature', signature);
+                this.fire('key-verify', {isValid: isValid, signature: signature});
+            },
+            _fireCryptoKeyVerifyError: function (error, signature) {
+                console.error(error, ' for signature', signature);
+                this.fire('error-key-verify', {error: error, signature: signature});
+            },
 
         });
     </script>

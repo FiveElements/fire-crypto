@@ -230,7 +230,7 @@ Polymer Element fire-hmac-sign-behaviour
             var keyPromise = algoPromise.then(function (algo) {
                 var cryptoSubtle = self._getCryptoSubtle();
                 return cryptoSubtle.importKey('jwk', jwk, algo, extractable, usages);
-            });
+            }) ;
             return keyPromise;
         },
 

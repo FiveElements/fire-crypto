@@ -1,32 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
 
-<link rel="import" href="fire-crypto-generatekey-behaviour.html">
+<link rel="import" href="fire-crypto-generatekey.html">
 <link rel="import" href="fire-crypto-sign.html">
 <link rel="import" href="fire-crypto-verify.html">
-
-<!--
-`fire-crypto`
-Polymer crypto
-
-@demo demo/index.html 
--->
-
-<dom-module id="fire-crypto">
-
-
-  <script>
-    Polymer({
-
-      is: 'fire-crypto',
-
-        behaviors: [
-            FiveElements.FireCryptoGenerateKeyBehavior,
-            FiveElements.FireCryptoSignBehavior,
-            FiveElements.FireCryptoVerifyBehavior
-        ],
-
-
-
-    });
-  </script>
-</dom-module>
