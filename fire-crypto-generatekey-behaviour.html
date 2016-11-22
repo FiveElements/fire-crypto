@@ -61,7 +61,7 @@ Polymer Element fire-hmac-sign-behaviour
             var keyFormat = this.keyFormat;
             var keyPromise = this._generateCryptoKeyPromise(algo, keyFormat);
             keyPromise.then(function (key) {
-                console.log('_generateCryptoKey', key);
+                console.log('_generateCryptoKey', JSON.stringify( key));
                 self.jwk = key;
                 self._fireCryptoKeyGen(key, keyFormat);
                 return key;

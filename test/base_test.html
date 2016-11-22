@@ -38,6 +38,7 @@
             var jwt = {kty: 'oct', alg: 'HS256'};
             var algoPomise = element.getAlgorithmIdentifierFromJwtPromise(jwt);
             algoPomise.then(function (algo) {
+                console.log('algo Promise ', algo);
                 assert.equal(algo.name, 'HMAC');
                 assert.equal(algo.hash.name, 'SHA-256');
             }).then(done);
@@ -45,11 +46,13 @@
 
         test('importKeyJwkPromise', function (done) {
             var element = fixture('basic');
-            var jwk = {kty: 'oct', alg: 'HS256'};
+            var jwk =  {"alg":"HS256","ext":true,"k":"qQ0h4kVVn-AoZzOU3c2gVZPQ73KJb0DsP9r5KlAIYisOfm88ah_e7eGYUYnffEJL77PdlibyKTFQeVBOERQC5w","key_ops":["sign","verify"],"kty":"oct"};
             var keyPromise = element.importKeyJwkPromise(jwk, true, ['sign']);
             keyPromise.then(function (keyBuffer) {
                 assert.isNotNull(keyBuffer);
-            }).then(done);
+            }).then(done).catch(function (error) {
+                
+            });
         });
 
     });
