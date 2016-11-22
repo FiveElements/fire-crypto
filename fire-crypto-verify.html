@@ -45,8 +45,7 @@ Polymer Element fire-crypto-verify
             // --- Verify Observer
             // --- ---------------------------
             _verifySignObserver: function (jwk, dataChanged, signature) {
-                var data = dataChanged.value;
-                return this._verifySign(jwk, data, signature);
+                return this._verifySign(jwk, this.data, signature);
             },
 
             // --- API Verify

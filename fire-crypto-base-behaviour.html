@@ -205,7 +205,7 @@ Polymer Element fire-hmac-sign-behaviour
                 if (!matchAlgos) {
                     reject(Error('No algorithm found for JWK ' + JSON.stringify(jwk)));
                 } else if (matchAlgos.length > 1) {
-                    reject(Error('Too much ('+ matchAlgos.length+') algorithm found for JWK ' + JSON.stringify(jwk)));
+                    reject(Error('Too much (' + matchAlgos.length + ') algorithm found for JWK ' + JSON.stringify(jwk)));
                 } else if (matchAlgos.length === 1) {
                     var matchAlgo = matchAlgos[0].algo;
                     resolve(matchAlgo);
@@ -226,11 +226,14 @@ Polymer Element fire-hmac-sign-behaviour
          */
         importKeyJwkPromise: function (jwk, extractable, usages) {
             var self = this;
-            var algoPromise = this.getAlgorithmIdentifierFromJwtPromise(jwk);
-            var keyPromise = algoPromise.then(function (algo) {
-                var cryptoSubtle = self._getCryptoSubtle();
-                return cryptoSubtle.importKey('jwk', jwk, algo, extractable, usages);
-            }) ;
+            var algoPromise = this.getAlgorithmIdentifierFromJwtPromise(jwk)
+                    .then(function (algo) {
+                        var cryptoSubtle = self._getCryptoSubtle();
+                        return cryptoSubtle.importKey('jwk', jwk, algo, extractable, usages)
+                                .then(function (key) {
+                                    return {algo: algo, key: key}
+                                });
+                    });
             return keyPromise;
         },
 

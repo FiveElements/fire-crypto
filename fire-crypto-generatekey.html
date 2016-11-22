@@ -51,8 +51,21 @@ Polymer Element fire-crypto-generatekey
 
             },
 
+            observers: [
+                '_generateCryptoKeyObserver(algo, extractable, usages.splices)'
+            ],
+
+            // --- Observer Generate Key
+            // --- ---------------------------
+            _generateCryptoKeyObserver: function (algo, extractable, usages) {
+                return this._generateCryptoKey(this.algo, this.extractable, this.usages);
+            },
+
+            // --- Api Generate Key
+            // --- ---------------------------
+
             generateCryptoKey: function () {
-                this._generateCryptoKey();
+               return this._generateCryptoKey(this.algo, this.extractable, this.usages);
             },
 
 
@@ -67,10 +80,9 @@ Polymer Element fire-crypto-generatekey
                 return promise;
             },
 
-            _generateCryptoKey: function () {
+            _generateCryptoKey: function (algo, extractable, usages) {
                 var self = this;
-                var algo = this.algo;
-                var keyPromise = this._generateCryptoKeyPromise(algo, this.extractable, this.usages);
+                var keyPromise = this._generateCryptoKeyPromise(algo, extractable, usages);
                 keyPromise.then(function (key) {
                     console.log('_generateCryptoKey', JSON.stringify(key));
                     self.jwk = key;
@@ -80,7 +92,12 @@ Polymer Element fire-crypto-generatekey
                     self.key = undefined;
                     self._fireCryptoKeyGenError(err);
                 });
+                return keyPromise;
             },
+
+            // --- Event Generate Key
+            // --- ---------------------------
+
             _fireCryptoKeyGen: function (key) {
                 this.fire('key-gen', {jwk: key});
             },
