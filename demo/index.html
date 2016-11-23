@@ -10,12 +10,18 @@
 
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-    <link rel="import" href="../fire-crypto.html">
+
+    <link rel="import" href="../fire-crypto-generatekey.html">
+    <link rel="import" href="../fire-crypto-sign.html">
+    <link rel="import" href="../fire-crypto-verify.html">
 
     <link rel="import" href="demo-fire-crypto.html">
 
 
     <style is="custom-style" include="demo-pages-shared-styles">
+      .centered {
+        max-width: 600px;
+      }
     </style>
   </head>
   <body>
@@ -23,7 +29,8 @@
       <h3>Basic fire-crypto demo</h3>
       <demo-snippet>
         <template  is="dom-bind" id="demo">
-          <demo-fire-crypto></demo-fire-crypto>
+          <demo-fire-crypto  jwk="{{jwk}}" data="{{data}}" signature="{{signature}}">
+          </demo-fire-crypto>
         </template>
         <script>
           var demo = document.querySelector('#demo');
