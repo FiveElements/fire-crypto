@@ -31,9 +31,19 @@
         <template  is="dom-bind" id="demo">
           <demo-fire-crypto  jwk="{{jwk}}" data="{{data}}" signature="{{signature}}">
           </demo-fire-crypto>
+          <button onclick="generateCryptoKey()">Generate Key</button>
+
+          <fire-crypto-generatekey id="generator" jwk="{{jwk}}"></fire-crypto-generatekey>
+          <fire-crypto-sign id="signor" jwk="{{jwk}}" data="{{data}}" signature="{{signature}}"></fire-crypto-sign>
+          <fire-crypto-verify id="verifyor" jwk="{{jwk}}" data="{{data}}" signature="{{signature}}" is-verify="{{isVerify}}"></fire-crypto-verify>
+
         </template>
         <script>
           var demo = document.querySelector('#demo');
+          function generateCryptoKey() {
+              document.getElementById('generator').generateCryptoKey();
+          }
+
         </script>
       </demo-snippet>
     </div>
