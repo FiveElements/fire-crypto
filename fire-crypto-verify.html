@@ -20,17 +20,30 @@ Polymer Element fire-crypto-verify
                 FiveElements.FireCryptoBaseBehavior
             ],
 
+
             properties: {
+                /**
+                 * The JSON Web Keyfor the signature
+                 */
                 jwk: {
                     type: Object
                 },
+                /**
+                 * The signature
+                 */
                 signature: {
                     type: Object,
 
                 },
+                /**
+                 * The data used for the signature
+                 */
                 data: {
                     type: Object
                 },
+                /**
+                 * Is a Valid signature
+                 */
                 isVerify: {
                     type: Boolean,
                     notify: true
@@ -58,6 +71,14 @@ Polymer Element fire-crypto-verify
 
             // --- Verify
             // --- ---------------------------
+            /**
+             * returns a Promise of a Boolean value indicating if the signature given as parameter matches the text, algorithm and key also given as parameters.
+             * @param jwk The JSON Web Key
+             * @param data The Data used for Sign
+             * @param signature  The Signature
+             * @returns {IPromise<R>} result is a Promise that returns a Boolean indicating if the signature has been a success on success.
+             * @private
+             */
             _verifySignPromise: function (jwk, data, signature) {
                 var self = this;
                 var cryptoSubtle = this._getCryptoSubtle();
@@ -67,7 +88,7 @@ Polymer Element fire-crypto-verify
                             algoJwk = algo;
                             return cryptoSubtle.importKey('jwk', jwk, algo, true, ['verify']);
                         }).then(function (keyBuffer) {
-                            var signatureBuffer = self.hexStringToByteArray(signature);
+                            var signatureBuffer = self.hexToBuffer(signature);
                             var dataBuffer = self._convertDataToBuffer(data);
                             return cryptoSubtle.verify(algoJwk, keyBuffer, signatureBuffer, dataBuffer);
                         });
@@ -84,7 +105,8 @@ Polymer Element fire-crypto-verify
                             return isValid;
                         })
                         .catch(function (err) {
-                            self.isVerify = undefined;
+                            self.isVerify = false;
+                            self._fireCryptoKeyVerify(false, signature);
                             self._fireCryptoKeyVerifyError(err, signature);
                         });
                 return verifyPromise;
@@ -93,12 +115,23 @@ Polymer Element fire-crypto-verify
             // --- Event Verify
             // --- ---------------------------
 
+            /**
+             * Fired when a Data is verify for the JWK.
+             *
+             * @event key-verify
+             */
             _fireCryptoKeyVerify: function (isValid, signature) {
                 console.log('isValid', isValid, ' for signature', signature);
                 this.fire('key-verify', {isValid: isValid, signature: signature});
             },
+
+            /**
+             * Fired when an error occur in verify signature.
+             *
+             * @event error-key-verify
+             */
             _fireCryptoKeyVerifyError: function (error, signature) {
-                console.error(error, ' for signature', signature);
+                console.error('verify error' , error, ' for signature', signature);
                 this.fire('error-key-verify', {error: error, signature: signature});
             },
 

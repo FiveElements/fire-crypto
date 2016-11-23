@@ -20,13 +20,24 @@ Polymer Element fire-crypto-sign
                 FiveElements.FireCryptoBaseBehavior
             ],
 
+
+
             properties: {
+                /**
+                 * The Json Web Key used for Sign the data.
+                 */
                 jwk: {
                     type: Object
                 },
+                /**
+                 * The data to sign
+                 */
                 data: {
                     type: Object
                 },
+                /**
+                 * The generated Signature.
+                 */
                 signature: {
                     type: Object,
                     notify: true
@@ -65,7 +76,7 @@ Polymer Element fire-crypto-sign
                             var dataBuffer = self._convertDataToBuffer(data);
                             return cryptoSubtle.sign(algoJwk, keyBuffer, dataBuffer);
                         }).then(function (macBuffer) {
-                            var macHex = self.arrayBufferToHexString(macBuffer);
+                            var macHex = self.bufferToHex(macBuffer);
                             return macHex;
                         });
                 return promise;
@@ -88,13 +99,22 @@ Polymer Element fire-crypto-sign
 
             // --- Event Sign
             // --- ---------------------------
-
+            /**
+             * Fired when a Data is sign.
+             *
+             * @event fire-sign
+             */
             _fireCryptoKeySign: function (signature) {
-                //console.log('sign', macHex);
+                console.log('sign with', signature);
                 this.fire('fire-sign', {signature: signature});
             },
+            /**
+             * Fired when a Sign Error in sign.
+             *
+             * @event fire-error-sign
+             */
             _fireCryptoKeySignError: function (error) {
-                console.error(error);
+                console.error('sign error', error);
                 this.fire('fire-error-sign', {error: error});
             },
         });

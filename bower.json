@@ -3,7 +3,8 @@
   "description": "Polymer crypto",
   "main": "fire-crypto.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.4.0"
+    "polymer": "Polymer/polymer#^1.4.0",
+    "unibabel": "^2.1.3"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

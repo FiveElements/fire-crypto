@@ -23,16 +23,29 @@ Polymer Element demo-fire-crypto
             }
         </style>
 
+        <fire-crypto-generatekey id="generator"
+                                 jwk="{{jwk}}"></fire-crypto-generatekey>
+        <fire-crypto-sign id="signor"
+                          jwk="{{jwk}}" data="{{data}}" signature="{{signature}}"></fire-crypto-sign>
+        <fire-crypto-verify id="verifyor"
+                            jwk="{{jwk}}" data="{{data}}" signature="{{signature}}"
+                            is-verify="{{isVerify}}"></fire-crypto-verify>
+
         <paper-input value="{{data.name}}" label="Data to sign"></paper-input>
 
-        <div on-tap="genJwk">
-            <h2>Generate JWK</h2><div>{{jwk.k}}</div>
+        <div>
+            <h2 on-tap="genJwk">Generate JWK</h2>
+            <div>{{jwk.k}}</div>
         </div>
-        <div on-tap="signData">
-            <h2>Sign Data</h2><div><paper-input value="{{signature}}"></paper-input></div>
+        <div>
+            <h2 on-tap="signData">Sign Data</h2>
+            <div>
+                <paper-input value="{{signature}}"></paper-input>
+            </div>
         </div>
-        <div on-tap="verifyData">
-            <h2>Verify Data</h2><div>{{isVerify}}</div>
+        <div>
+            <h2 on-tap="verifyData">Verify Data</h2>
+            <div>{{isVerify}}</div>
         </div>
 
     </template>
@@ -55,7 +68,7 @@ Polymer Element demo-fire-crypto
                     type: Object,
                     notify: true,
                     value: function () {
-                        return {name : "Hello World" }
+                        return {name: "Hello World"}
                     }
                 },
                 isVerify: {

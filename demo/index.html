@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
@@ -19,33 +19,39 @@
 
 
     <style is="custom-style" include="demo-pages-shared-styles">
-      .centered {
-        max-width: 600px;
-      }
+        .centered {
+            max-width: 600px;
+        }
     </style>
-  </head>
-  <body>
-    <div class="vertical-section-container centered">
-      <h3>Basic fire-crypto demo</h3>
-      <demo-snippet>
-        <template  is="dom-bind" id="demo">
-          <demo-fire-crypto  jwk="{{jwk}}" data="{{data}}" signature="{{signature}}">
-          </demo-fire-crypto>
-          <button onclick="generateCryptoKey()">Generate Key</button>
+</head>
+<body>
+<div class="vertical-section-container centered">
+    <h3>Basic fire-crypto demo</h3>
+    <demo-snippet>
+        <template is="dom-bind" id="demo">
 
-          <fire-crypto-generatekey id="generator" jwk="{{jwk}}"></fire-crypto-generatekey>
-          <fire-crypto-sign id="signor" jwk="{{jwk}}" data="{{data}}" signature="{{signature}}"></fire-crypto-sign>
-          <fire-crypto-verify id="verifyor" jwk="{{jwk}}" data="{{data}}" signature="{{signature}}" is-verify="{{isVerify}}"></fire-crypto-verify>
+
+            <demo-fire-crypto jwk="{{jwk}}" data="{{data}}"
+                              signature="{{signature}}" is-verify="{{isVerify}}">
+            </demo-fire-crypto>
+
 
         </template>
+
         <script>
-          var demo = document.querySelector('#demo');
-          function generateCryptoKey() {
-              document.getElementById('generator').generateCryptoKey();
-          }
+            var demo = document.querySelector('#demo');
+            function generateCryptoKey() {
+                document.getElementById('generator').generateCryptoKey();
+            }
+            function sign() {
+                document.getElementById('signor').sign();
+            }
+            function verifySign() {
+                document.getElementById('verifyor').verifySign();
+            }
 
         </script>
-      </demo-snippet>
-    </div>
-  </body>
+    </demo-snippet>
+</div>
+</body>
 </html>
