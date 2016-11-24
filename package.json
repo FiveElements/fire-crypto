@@ -14,6 +14,8 @@
     "lint": "polymer lint --input *.html",
     "dev": "polymer serve -p 8080 | npm run watch",
     "test": "polymer test",
+    "install": "npm install -g bower polymer-cli browser-sync istanbul",
+    "cover": "istanbul cover test/index.html",
     "watch": "browser-sync start --proxy localhost:8080 --startPath /components/fire-crypto/demo/ --files *.html,*.js,demo/*"
   },
   "author": "",
