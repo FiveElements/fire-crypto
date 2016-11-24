@@ -1,6 +1,7 @@
-# \<fire-crypto\>
+# \<fire-crypto\> [![Build Status](https://travis-ci.org/FiveElements/fire-crypto.svg?branch=master)](https://travis-ci.org/FiveElements/fire-crypto) 
 
-Polymer crypto [![Build Status](https://travis-ci.org/FiveElements/fire-crypto.svg?branch=master)](https://travis-ci.org/FiveElements/fire-crypto) 
+
+Polymer crypto 
 
 ## Install the Polymer-CLI
 
