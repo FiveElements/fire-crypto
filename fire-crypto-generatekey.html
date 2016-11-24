@@ -20,8 +20,6 @@ Polymer Element fire-crypto-generatekey
             ],
 
 
-
-
             properties: {
 
                 /**
@@ -33,12 +31,14 @@ Polymer Element fire-crypto-generatekey
                     value: function () {
                         // https://w3c.github.io/webcrypto/Overview.html#jwk-mapping
                         //can be 'SHA-1', 'SHA-256', 'SHA-384', or 'SHA-512'
-                        return {name: "HMAC", hash: {name: "SHA-256"}};
-//                        return {name: "RSASSA-PKCS1-v1_5",
-//                            modulusLength: 2048, //can be 1024, 2048, or 4096
-//                            publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-//                            hash: {name: "SHA-256"}};
-//                        return { name: "ECDSA",  namedCurve: "P-256", hash: { name: "SHA-256" } }
+//                        return {name: "HMAC", hash: {name: "SHA-256"}};
+                        return {
+                            name: "RSASSA-PKCS1-v1_5",
+                            modulusLength: 2048, //can be 1024, 2048, or 4096
+                            publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+                            hash: {name: "SHA-256"}
+                        };
+                        return {name: "ECDSA", namedCurve: "P-256", hash: {name: "SHA-256"}}
                     }
                 },
                 /**
@@ -82,19 +82,38 @@ Polymer Element fire-crypto-generatekey
             // --- ---------------------------
 
             generateCryptoKey: function () {
-               return this._generateCryptoKey(this.algo, this.extractable, this.usages);
+                return this._generateCryptoKey(this.algo, this.extractable, this.usages);
             },
 
 
             // --- Key generation
             // --- ---------------------------
+            /**
+             *  method returns a Promise of a newly generated CryptoKey, containing two newly generated keys,
+             *  for asymmetrical algorithm, that matches the algorithm,
+             *  the usages and the extractability given as parameters
+             * @see https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/generateKey
+             *
+             * @param algo is a dictionary object defining the key generation function to use. Supported algo are: AES-CBC, AES-CTR, AES-GCM, RSA-OAEP, AES-KW, HMAC, RSASSA-PKCS1-v1_5, ECDSA, ECDH, and DH.
+             * @param extractable is a Boolean indicating if the key can be extracted from the CryptoKey object at a later stage.
+             * @param keyUsages  is an Array indicating what can be done with the newly generated key. Possible values of the array are: ['encrypt', 'decrypt', 'sign', 'verify', 'deriveKey', 'deriveBits', 'wrapKey', 'unwrapKey']
+             * @returns {IPromise<{privateKey, publicKey}>} result is a Promise that returns the generated key as a  CryptoKeyPair {privateKey, publicKey] with publicKey=undefined for symmetric algorithm.
+             * @private
+             */
             _generateCryptoKeyPromise: function (algo, extractable, usages) {
                 var cryptoSubtle = this._getCryptoSubtle();
                 var promise = cryptoSubtle.generateKey(algo, extractable, usages);
                 promise = promise.then(function (key) {
-                    console.log('_generateCryptoKeyPromise', JSON.stringify(key))
-                    // TODO if publicKey or privateKey ==> key.publicKey
-                    return cryptoSubtle.exportKey('jwk', key);
+                    if (key.privateKey && key.publicKey) {
+                        return Promise.all([
+                            cryptoSubtle.exportKey('jwk', key.privateKey),
+                            cryptoSubtle.exportKey('jwk', key.publicKey)
+                        ]);
+                    } else {
+                        return Promise.all([cryptoSubtle.exportKey('jwk', key)]);
+                    }
+                }).then(function (keys) {
+                    return {privateKey: keys[0], publicKey: keys[1]}
                 });
                 return promise;
             },
@@ -102,11 +121,13 @@ Polymer Element fire-crypto-generatekey
             _generateCryptoKey: function (algo, extractable, usages) {
                 var self = this;
                 var keyPromise = this._generateCryptoKeyPromise(algo, extractable, usages);
-                keyPromise.then(function (key) {
-                    console.log('_generateCryptoKey', JSON.stringify(key));
-                    self.jwk = key;
-                    self._fireCryptoKeyGen(key);
-                    return key;
+                keyPromise.then(function (keys) {
+                    console.log('privateKey', keys.privateKey);
+                    console.log('publicKey', keys.publicKey);
+                    console.log('_generateCryptoKey', JSON.stringify(keys, null, '\t'));
+                    self.jwk = keys.privateKey;
+                    self._fireCryptoKeyGen(keys);
+                    return keys;
                 }).catch(function (err) {
                     self.key = undefined;
                     self._fireCryptoKeyGenError(err);
