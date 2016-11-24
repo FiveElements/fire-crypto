@@ -8,8 +8,8 @@ addons:
       - google-chrome
     packages:
       - google-chrome-stable
-node_js:
-  - '7'
+node_js: '7'
+cache: yarn
 before_script:
   - npm install -g bower polymer-cli
   - bower install
