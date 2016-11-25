@@ -45,7 +45,25 @@
                 assert.isTrue(isVerify);
                 assert.isTrue(element.isVerify);
             });
-
+        });
+        test('SHA-256 Wrong <signature', function () {
+            var element = fixture('basic', {
+                data: {name: 'Hello World'},
+                privateKey: {
+                    "alg": "HS256",
+                    "ext": true,
+                    "k": "aUQ2GlShmC8oRw9mgL90RfTO-4d6O0rkeemz6F-8aNxhAsJIKCnS9tCl88zA5Q8KQHbSgstt9wEQ4O5tr1JVQA",
+                    "key_ops": [ "sign",  "verify" ],
+                    "kty": "oct"
+                },
+                signature: 'ada81226c0e5075db75e7fe3aec910273dd28d2cce763027c7db6cedc22122d2'
+            });
+            assert.isNotTrue(element.isVerify);
+            assert.isNotOk(element.isVerify);
+            return element.verifySign().then(function (isVerify) {
+                assert.isTrue(isVerify);
+                assert.isTrue(element.isVerify);
+            });
         });
     });
 
