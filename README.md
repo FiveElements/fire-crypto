@@ -7,12 +7,12 @@ Polymer crypto
 
 ## Install the Polymer-CLI
 
-First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your application locally.
+First, make sure you have the [NodeJs](https://nodejs.org/en/) installed. Then run `npm run install` to install all global dependencies to run your application locally.
 
 ## Viewing Your Application
 
 ```
-$ polymer serve
+$ npm run dev
 ```
 
 ## Building Your Application
