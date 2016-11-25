@@ -26,17 +26,16 @@
         });
     });
 
-    suite('fire-crypto-basic', function () {
+    suite('Get Algorithm Identifier', function () {
 
-
-        test('get algo from JWT', function () {
+        test('HS256 getAlgoIdentifierFromJWT', function () {
             var element = fixture('basic');
             var jwt = {kty: 'oct', alg: 'HS256'};
             var algo = element.getAlgoIdentifierFromJWT(jwt);
             assert.equal(algo.name, 'HMAC');
             assert.equal(algo.hash.name, 'SHA-256');
         });
-        test('HS256 Promise', function () {
+        test('HS256 getAlgorithmIdentifierFromJwtPromise', function () {
             var element = fixture('basic');
             var jwt = {kty: 'oct', alg: 'HS256'};
             var algoPomise = element.getAlgorithmIdentifierFromJwtPromise(jwt);

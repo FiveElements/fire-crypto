@@ -14,7 +14,7 @@
 <body>
 <test-fixture id="basic">
     <template is="dom-template">
-        <fire-crypto-generatekey algo="{{algo}}"></fire-crypto-generatekey>
+        <fire-crypto-generatekey algo="[[algo]]"></fire-crypto-generatekey>
     </template>
 </test-fixture>
 
@@ -31,9 +31,17 @@
             var element = fixture('basic', {
                 algo: {name: "HMAC", hash: {name: "SHA-256"}}
             });
+            assert.isNotOk(element.privateKey);
+            assert.isNotOk(element.publicKey);
+            assert.isNotOk(element.keys);
             return element.generateCryptoKey().then(function (keys) {
                 assert.isOk(keys.privateKey);
+                assert.equal(keys.privateKey, element.privateKey);
                 assert.isNotOk(keys.publicKey);
+                assert.isNotOk(element.publicKey);
+                assert.isOk(element.keys);
+                assert.equal(element.keys.privateKey, element.privateKey);
+                assert.equal(element.keys.publicKey, element.publicKey);
             });
 
         });
@@ -49,20 +57,41 @@
                     hash: {name: "SHA-256"}
                 }
             });
+            assert.isNotOk(element.privateKey);
+            assert.isNotOk(element.publicKey);
+            assert.isNotOk(element.keys);
             return element.generateCryptoKey().then(function (keys) {
                 assert.isOk(keys.privateKey);
                 assert.isOk(keys.publicKey);
+                assert.equal(keys.privateKey, element.privateKey);
+                assert.equal(keys.publicKey, element.publicKey);
+                assert.isOk(element.keys);
+                assert.equal(element.keys.privateKey, element.privateKey);
+                assert.equal(element.keys.publicKey, element.publicKey);
             });
 
         });
 
+    });
+
+
+
+    suite('Generated CryptoPairKey - Eliptic curbe', function () {
         test('ES256', function () {
             var element = fixture('basic', {
                 algo: {name: "ECDSA", namedCurve: "P-256", hash: {name: "SHA-256"}}
             });
+            assert.isNotOk(element.privateKey);
+            assert.isNotOk(element.publicKey);
+            assert.isNotOk(element.keys);
             return element.generateCryptoKey().then(function (keys) {
                 assert.isOk(keys.privateKey);
                 assert.isOk(keys.publicKey);
+                assert.equal(keys.privateKey, element.privateKey);
+                assert.equal(keys.publicKey, element.publicKey);
+                assert.isOk(element.keys);
+                assert.equal(element.keys.privateKey, element.privateKey);
+                assert.equal(element.keys.publicKey, element.publicKey);
             });
 
         });

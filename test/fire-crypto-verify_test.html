@@ -9,24 +9,24 @@
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
 
-    <link rel="import" href="../fire-crypto-sign.html">
+    <link rel="import" href="../fire-crypto-verify.html">
 </head>
 <body>
 <test-fixture id="basic">
     <template is="dom-template">
-        <fire-crypto-sign jwk="[[privateKey]]" data="[[data]]"  signature="{{signature}}"></fire-crypto-sign>
+        <fire-crypto-verify jwk="[[privateKey]]" data="[[data]]" signature="[[signature]]"></fire-crypto-verify>
     </template>
 </test-fixture>
 
 <script>
-    suite('fire-crypto-sign', function () {
+    suite('fire-crypto-verify', function () {
         test('instantiating the element works', function () {
             var element = fixture('basic');
-            assert.equal(element.is, 'fire-crypto-sign');
+            assert.equal(element.is, 'fire-crypto-verify');
         });
     });
 
-    suite('Sign CryptoKey', function () {
+    suite('Verify Sign CryptoKey', function () {
         test('SHA-256', function () {
             var element = fixture('basic', {
                 data: {name: 'Hello World'},
@@ -36,19 +36,20 @@
                     "k": "aUQ2GlShmC8oRw9mgL90RfTO-4d6O0rkeemz6F-8aNxhAsJIKCnS9tCl88zA5Q8KQHbSgstt9wEQ4O5tr1JVQA",
                     "key_ops": [ "sign",  "verify" ],
                     "kty": "oct"
-                }
+                },
+                signature: 'ada81226c0e5075db75e7fe3aec910273dd28d2cce763027c7db6cedc22122d1'
             });
-            assert.isNotOk(element.signature);
-            return element.sign().then(function (signature) {
-                assert.isOk(signature);
-                assert.equal(signature, 'ada81226c0e5075db75e7fe3aec910273dd28d2cce763027c7db6cedc22122d1');
-                assert.equal(element.signature, 'ada81226c0e5075db75e7fe3aec910273dd28d2cce763027c7db6cedc22122d1');
+            assert.isNotTrue(element.isVerify);
+            assert.isNotOk(element.isVerify);
+            return element.verifySign().then(function (isVerify) {
+                assert.isTrue(isVerify);
+                assert.isTrue(element.isVerify);
             });
 
         });
     });
 
-//    suite('Sign with CryptoPairKey', function () {
+//    suite('Verify Sign with CryptoPairKey', function () {
 //
 //        test('ES256', function () {
 //            var element = fixture('basic', {
@@ -64,7 +65,7 @@
 //                }
 //
 //            });
-//            return element.sign().then(function (signature) {
+//            return element.verify().then(function (signature) {
 //                console.log('----------Sign with', signature);
 //                assert.isOk(signature);
 //            });

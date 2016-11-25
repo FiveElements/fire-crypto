@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>fire-crypto test</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../fire-crypto-generatekey.html">
+    <link rel="import" href="../fire-crypto-sign.html">
+    <link rel="import" href="../fire-crypto-verify.html">
+</head>
+<body>
+<test-fixture id="basic">
+    <template is="dom-template">
+        <fire-crypto-generatekey algo="[[algo]]" private-key="{{privateKey}}"></fire-crypto-generatekey>
+        <fire-crypto-sign jwk="[[privateKey]]" data="[[data]]"  signature="{{signature}}"></fire-crypto-sign>
+        <fire-crypto-verify jwk="[[privateKey]]" data="[[data]]" signature="[[signature]]"></fire-crypto-verify>
+    </template>
+</test-fixture>
+
+<script>
+
+//    suite('Generated CryptoKey', function () {
+//        test('SHA-256', function () {
+//            var element = fixture('basic', {
+//                algo: {name: "HMAC", hash: {name: "SHA-256"}}
+//            });
+//            return element.generateCryptoKey().then(function (keys) {
+//                assert.isOk(keys.privateKey);
+//                assert.isNotOk(keys.publicKey);
+//            });
+//
+//        });
+//    });
+//
+//    suite('Generated CryptoPairKey', function () {
+//        test('RS256', function () {
+//            var element = fixture('basic', {
+//                algo: {
+//                    name: "RSASSA-PKCS1-v1_5",
+//                    modulusLength: 2048, //can be 1024, 2048, or 4096
+//                    publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+//                    hash: {name: "SHA-256"}
+//                }
+//            });
+//            return element.generateCryptoKey().then(function (keys) {
+//                assert.isOk(keys.privateKey);
+//                assert.isOk(keys.publicKey);
+//            });
+//
+//        });
+//
+//        test('ES256', function () {
+//            var element = fixture('basic', {
+//                algo: {name: "ECDSA", namedCurve: "P-256", hash: {name: "SHA-256"}}
+//            });
+//            return element.generateCryptoKey().then(function (keys) {
+//                assert.isOk(keys.privateKey);
+//                assert.isOk(keys.publicKey);
+//            });
+//
+//        });
+//    });
+
+
+
+</script>
+</body>
+</html>
