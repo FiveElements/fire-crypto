@@ -13,18 +13,21 @@
 </head>
 <body>
 <test-fixture id="basic">
-    <template>
+    <template is="dom-template">
         <base-element></base-element>
     </template>
 </test-fixture>
 
 <script>
-    suite('fire-crypto-basic', function () {
-
+    suite('fire-crypto-base-behaviour', function () {
         test('instantiating the element works', function () {
             var element = fixture('basic');
             assert.equal(element.is, 'base-element');
         });
+    });
+
+    suite('fire-crypto-basic', function () {
+
 
         test('get algo from JWT', function () {
             var element = fixture('basic');
@@ -33,25 +36,34 @@
             assert.equal(algo.name, 'HMAC');
             assert.equal(algo.hash.name, 'SHA-256');
         });
-        test('get algo from JWT Promise', function (done) {
+        test('HS256 Promise', function () {
             var element = fixture('basic');
             var jwt = {kty: 'oct', alg: 'HS256'};
             var algoPomise = element.getAlgorithmIdentifierFromJwtPromise(jwt);
-            algoPomise.then(function (algo) {
+            return algoPomise.then(function (algo) {
                 console.log('algo Promise ', algo);
                 assert.equal(algo.name, 'HMAC');
                 assert.equal(algo.hash.name, 'SHA-256');
-            }).then(done);
+            });
         });
 
-        test('importKeyJwkPromise', function (done) {
+
+
+    });
+
+    suite('Import JWK ', function () {
+        test('HS256', function () {
             var element = fixture('basic');
-            var jwk =  {"alg":"HS256","ext":true,"k":"qQ0h4kVVn-AoZzOU3c2gVZPQ73KJb0DsP9r5KlAIYisOfm88ah_e7eGYUYnffEJL77PdlibyKTFQeVBOERQC5w","key_ops":["sign","verify"],"kty":"oct"};
+            var jwk = {
+                "alg": "HS256",
+                "ext": true,
+                "k": "qQ0h4kVVn-AoZzOU3c2gVZPQ73KJb0DsP9r5KlAIYisOfm88ah_e7eGYUYnffEJL77PdlibyKTFQeVBOERQC5w",
+                "key_ops": ["sign", "verify"],
+                "kty": "oct"
+            };
             var keyPromise = element.importKeyJwkPromise(jwk, true, ['sign']);
-            keyPromise.then(function (keyBuffer) {
+            return keyPromise.then(function (keyBuffer) {
                 assert.isNotNull(keyBuffer);
-            }).then(done).catch(function (error) {
-                
             });
         });
 
@@ -71,7 +83,6 @@
 //
 //            });
 //        });
-
     });
 </script>
 </body>

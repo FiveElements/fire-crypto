@@ -32,12 +32,6 @@ Polymer Element fire-crypto-generatekey
                         // https://w3c.github.io/webcrypto/Overview.html#jwk-mapping
                         //can be 'SHA-1', 'SHA-256', 'SHA-384', or 'SHA-512'
 //                        return {name: "HMAC", hash: {name: "SHA-256"}};
-                        return {
-                            name: "RSASSA-PKCS1-v1_5",
-                            modulusLength: 2048, //can be 1024, 2048, or 4096
-                            publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-                            hash: {name: "SHA-256"}
-                        };
                         return {name: "ECDSA", namedCurve: "P-256", hash: {name: "SHA-256"}}
                     }
                 },
@@ -128,8 +122,8 @@ Polymer Element fire-crypto-generatekey
 
             _generateCryptoKey: function (algo, extractable, usages) {
                 var self = this;
-                var keyPromise = this._generateCryptoKeyPromise(algo, extractable, usages);
-                keyPromise.then(function (keys) {
+                var keyPromise = this._generateCryptoKeyPromise(algo, extractable, usages)
+                 .then(function (keys) {
 //                    console.log('privateKey', keys.privateKey);
 //                    console.log('publicKey', keys.publicKey);
 //                    console.log('_generateCryptoKey', JSON.stringify(keys, null, '\t'));

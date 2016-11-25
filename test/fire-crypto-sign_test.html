@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>fire-crypto test</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../fire-crypto-sign.html">
+</head>
+<body>
+<test-fixture id="basic">
+    <template is="dom-template">
+        <fire-crypto-sign jwk="{{privateKey}}" data="{{data}}"></fire-crypto-sign>
+    </template>
+</test-fixture>
+
+<script>
+    suite('fire-crypto-sign', function () {
+        test('instantiating the element works', function () {
+            var element = fixture('basic');
+            assert.equal(element.is, 'fire-crypto-sign');
+        });
+    });
+
+//    suite('Sign CryptoKey', function () {
+//        test('SHA-256', function () {
+//            var element = fixture('basic', {
+//                data: {name: 'Hello World'},
+//                algo: {name: "HMAC", hash: {name: "SHA-256"}}
+//            });
+//            return element.sign().then(function (keys) {
+//                assert.isOk(keys.privateKey);
+//                assert.isNotOk(keys.publicKey);
+//            });
+//
+//        });
+//    });
+
+//    suite('Sign with CryptoPairKey', function () {
+//
+//        test('ES256', function () {
+//            var element = fixture('basic', {
+//                data: {name: 'Hello World'},
+//                privateKey: {
+//                    "crv": "P-256",
+//                    "d": "HEoo_2oVB_0sI0VzgLlQnIdhz1V_WS_T4ayyGW4PMfU",
+//                    "ext": true,
+//                    "key_ops": [ "sign" ],
+//                    "kty": "EC",
+//                    "x": "QvZcgIN7k_NzBkubN5S8ptOvMBWYq6yD2bHxwh6gHhY",
+//                    "y": "GQsq7gwE3H7HIzvM7SbDF9fxPGy9IZsFo5F6wieuXhg"
+//                }
+//
+//            });
+//            return element.sign().then(function (signature) {
+//                console.log('----------Sign with', signature);
+//                assert.isOk(signature);
+//            });
+//
+//        });
+//    });
+
+
+
+</script>
+</body>
+</html>

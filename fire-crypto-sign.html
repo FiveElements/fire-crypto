@@ -21,7 +21,6 @@ Polymer Element fire-crypto-sign
             ],
 
 
-
             properties: {
                 /**
                  * The Json Web Key used for Sign the data.
@@ -51,50 +50,50 @@ Polymer Element fire-crypto-sign
 
             // --- Verify Observer
             // --- ---------------------------
-            _signObserver: function (jwk, dataChanged ) {
-                return this._sign(jwk, this.data );
+            _signObserver: function (jwk, dataChanged) {
+                return this._sign(jwk, this.data);
             },
 
 
             // --- API Sign
             // --- ---------------------------
             sign: function () {
-                this._sign(this.jwk, this.data);
+                return this._sign(this.jwk, this.data);
             },
 
             // --- Sign
             // --- ---------------------------
             _signPromise: function (jwk, data) {
+
                 var self = this;
                 var cryptoSubtle = this._getCryptoSubtle();
-                var algoJwk =undefined;
-                var promise = this.getAlgorithmIdentifierFromJwtPromise(jwk)
-                        .then(function (algo) {
-                            algoJwk = algo;
-                            return cryptoSubtle.importKey('jwk', jwk, algo, false, ['sign']);
-                        }).then(function (keyBuffer) {
-                            var dataBuffer = self._convertDataToBuffer(data);
-                            return cryptoSubtle.sign(algoJwk, keyBuffer, dataBuffer);
-                        }).then(function (macBuffer) {
-                            var macHex = self.bufferToHex(macBuffer);
-                            return macHex;
-                        });
-                return promise;
+                var algoJwk = undefined;
+                return this.getAlgorithmIdentifierFromJwtPromise(jwk).then(function (algo) {
+                    console.log('call _signPromise algo', algo);
+                    algoJwk = algo;
+                    return cryptoSubtle.importKey('jwk', jwk, algo, false, ['sign']);
+                }).then(function (keyBuffer) {
+                    var dataBuffer = self._convertDataToBuffer(data);
+                    return cryptoSubtle.sign(algoJwk, keyBuffer, dataBuffer);
+                }).then(function (macBuffer) {
+                    var macHex = self.bufferToHex(macBuffer);
+                    return macHex;
+                });
             },
 
 
             _sign: function (jwk, data) {
+                console.log('call _sign', data);
                 var self = this;
-                var signPromise = this._signPromise(jwk, data);
-                signPromise = signPromise.then(function (macHex) {
+                return this._signPromise(jwk, data).then(function (macHex) {
                     self.signature = macHex;
+                    console.log('----------signPromise with', macHex);
                     self._fireCryptoKeySign(macHex);
                     return macHex;
                 }).catch(function (err) {
                     self.signature = undefined;
                     self._fireCryptoKeySignError(err);
                 });
-                return signPromise;
             },
 
             // --- Event Sign
