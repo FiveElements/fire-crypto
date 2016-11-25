@@ -6,6 +6,7 @@
 
 
 <link rel="import" href="../../paper-input/paper-input.html">
+<link rel="import" href="demo-jwk-display.html">
 
 
 <!--
@@ -24,18 +25,20 @@ Polymer Element demo-fire-crypto
         </style>
 
         <fire-crypto-generatekey id="generator"
-                                 jwk="{{jwk}}"></fire-crypto-generatekey>
-        <fire-crypto-sign id="signor"
-                          jwk="{{jwk}}" data="{{data}}" signature="{{signature}}"></fire-crypto-sign>
+                                 private-key="{{privateKey}}" public-key="{{publicKey}}"></fire-crypto-generatekey>
+        <fire-crypto-sign id="signor"  signature="{{signature}}"
+                          jwk="{{privateKey}}" data="{{data}}"></fire-crypto-sign>
+
         <fire-crypto-verify id="verifyor"
-                            jwk="{{jwk}}" data="{{data}}" signature="{{signature}}"
-                            is-verify="{{isVerify}}"></fire-crypto-verify>
+        jwk="{{publicKey}}" data="{{data}}" signature="{{signature}}"
+        is-verify="{{isVerify}}"></fire-crypto-verify>
 
         <paper-input value="{{data.name}}" label="Data to sign"></paper-input>
 
         <div>
             <h2 on-tap="genJwk">Generate JWK</h2>
-            <div>{{jwk.k}}</div>
+            <demo-jwk-display private-key="{{privateKey}}" public-key="{{publicKey}}"></demo-jwk-display>
+            <div>{{jwk.privateKey.k}}</div>
         </div>
         <div>
             <h2 on-tap="signData">Sign Data</h2>
@@ -57,6 +60,14 @@ Polymer Element demo-fire-crypto
 
             properties: {
                 jwk: {
+                    type: Object,
+                    notify: true
+                },
+                privateKey: {
+                    type: Object,
+                    notify: true
+                },
+                publicKey: {
                     type: Object,
                     notify: true
                 },

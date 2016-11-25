@@ -61,10 +61,18 @@ Polymer Element fire-crypto-generatekey
                 /**
                  * The generated Json Web Key.
                  */
-                jwk: {
+                keys: {
                     type: Object,
                     notify: true
-                }
+                },
+                privateKey: {
+                    type: Object,
+                    notify: true
+                },
+                publicKey: {
+                    type: Object,
+                    notify: true
+                },
 
             },
 
@@ -122,10 +130,12 @@ Polymer Element fire-crypto-generatekey
                 var self = this;
                 var keyPromise = this._generateCryptoKeyPromise(algo, extractable, usages);
                 keyPromise.then(function (keys) {
-                    console.log('privateKey', keys.privateKey);
-                    console.log('publicKey', keys.publicKey);
-                    console.log('_generateCryptoKey', JSON.stringify(keys, null, '\t'));
-                    self.jwk = keys.privateKey;
+//                    console.log('privateKey', keys.privateKey);
+//                    console.log('publicKey', keys.publicKey);
+//                    console.log('_generateCryptoKey', JSON.stringify(keys, null, '\t'));
+                    self.keys = keys;
+                    self.privateKey = keys.privateKey;
+                    self.publicKey = keys.publicKey;
                     self._fireCryptoKeyGen(keys);
                     return keys;
                 }).catch(function (err) {
@@ -142,8 +152,9 @@ Polymer Element fire-crypto-generatekey
              *
              * @event jwk-generated
              */
-            _fireCryptoKeyGen: function (key) {
-                this.fire('jwk-generated', {jwk: key});
+            _fireCryptoKeyGen: function (keys) {
+                console.log('fire jwk-generated', keys);
+                this.fire('jwk-generated', {jwk: keys});
             },
             /**
              * Fired when an error occur in JWK generation .

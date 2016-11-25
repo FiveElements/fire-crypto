@@ -1,0 +1,62 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../paper-tabs/paper-tabs.html">
+<link rel="import" href="../../iron-pages/iron-pages.html">
+
+<!--
+`demo-jwk-display`
+Polymer Element demo-jwk-display
+
+@demo demo/index.html 
+-->
+
+<dom-module id="demo-jwk-display">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+        <paper-tabs selected="{{selected}}">
+            <paper-tab>Private Key</paper-tab>
+            <paper-tab>Public Key</paper-tab>
+        </paper-tabs>
+        <iron-pages selected="{{selected}}">
+            <pre>[[_privateKeyStr]]</pre>
+            <pre>[[_publicKeyStr]]</pre>
+        </iron-pages>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'demo-jwk-display',
+
+            properties: {
+                privateKey: {
+                    type: Object,
+                    observer: '_privateKeyChanged'
+                },
+                publicKey: {
+                    type: Object,
+                    observer: '_publicKeyChanged'
+                },
+                _privateKeyStr: {
+                    type: String
+                },
+                _publicKeyStr: {
+                    type: String
+                },
+            },
+
+            _privateKeyChanged: function(newValue, oldValue) {
+                this._privateKeyStr =JSON.stringify(newValue, null, '\t');
+//                console.log('_privateKeyChanged :',  this._privateKeyStr);
+            },
+            _publicKeyChanged: function(newValue, oldValue) {
+                this._publicKeyStr =JSON.stringify(newValue, null, '\t');
+                console.log('_privateKeyChanged :',  this._publicKeyStr);
+            },
+
+        });
+    </script>
+</dom-module>
