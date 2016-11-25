@@ -16,13 +16,30 @@
 <body>
 <test-fixture id="basic">
     <template is="dom-template">
-        <fire-crypto-generatekey algo="[[algo]]" private-key="{{privateKey}}"></fire-crypto-generatekey>
-        <fire-crypto-sign jwk="[[privateKey]]" data="[[data]]"  signature="{{signature}}"></fire-crypto-sign>
-        <fire-crypto-verify jwk="[[privateKey]]" data="[[data]]" signature="[[signature]]"></fire-crypto-verify>
+        <fire-crypto-generatekey id="generator" algo="[[algo]]" private-key="{{privateKey}}"></fire-crypto-generatekey>
+        <fire-crypto-sign id="signor"  jwk="[[privateKey]]" data="[[data]]"  signature="{{signature}}"></fire-crypto-sign>
+        <fire-crypto-verify id="verifyor" jwk="[[privateKey]]" data="[[data]]" signature="[[signature]]"></fire-crypto-verify>
     </template>
 </test-fixture>
 
 <script>
+
+//        suite('Sign all algo Promise', function () {
+//                test('instantiating the element works', function () {
+//                    var element = fixture('basic');
+//                    var data = {title: 'Hello World !'};
+//                    var algoIds = element.algorithmIdentifier.filter(function (elt) {
+//                       return true;
+//                    }).forEach(function (elt) {
+//                        var algo = elt.algo;
+//                        return element.$.generator._generateCryptoKeyPromise(algo, true, ['sign', 'verify']).then(function (jwk) {
+//                            return element.$.signor._signPromise(jwk.privateKey, data);
+//                        });
+//                    });
+//                    return algoIds;
+//                });
+//            });
+
 
 //    suite('Generated CryptoKey', function () {
 //        test('SHA-256', function () {
