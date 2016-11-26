@@ -26,8 +26,62 @@
         });
     });
 
-    suite('Get Algorithm Identifier', function () {
+    suite('Check Algorithm Identifier', function () {
+        test('Unique algo name', function () {
+            var element = fixture('basic');
+            var names = element.algorithmIdentifier.reduce(function (acc, val) {
+                var algoName = val.jwk.alg;
+                assert.isOk(algoName);
+                assert.isNotOk(acc[algoName], 'duplicate entry for '+ algoName);
+                acc[algoName] = val;
+                return acc;
+            }, {}) ;
+        });
+    });
 
+    suite('getAlgorithmNames', function () {
+        test('All', function () {
+            var element = fixture('basic');
+            var algoNames = element.getAlgorithms();
+            assert.equal(algoNames.length, element.algorithmIdentifier.length);
+            assert.equal(algoNames.length, 33);
+        });
+        test('Filter kty=oct', function () {
+            var element = fixture('basic');
+            var filter = function (elt) {
+              return elt.jwk.kty === 'oct';
+            };
+            var algoNames = element.getAlgorithms(filter);
+            assert.equal(algoNames.length, 19);
+        });
+        test('Filter For Usage Sign', function () {
+            var element = fixture('basic');
+            var filter = element._filterFunctionForSign();
+            var algoNames = element.getAlgorithms(filter);
+            assert.equal(algoNames.length, 11);
+            assert.equal(algoNames.length, 4+4+3);
+        });
+        test('getAlgorithmsForSign', function () {
+            var element = fixture('basic');
+            var algoNames = element.getAlgorithmsForSign();
+            assert.equal(algoNames.length, 11);
+        });
+        test('Filter For Usage Encrypt', function () {
+            var element = fixture('basic');
+            var filter = element._filterFunctionForEncrypt();
+            var algoNames = element.getAlgorithms(filter);
+            assert.equal(algoNames.length, 16);
+            assert.equal(algoNames.length, 3+3+6+4);
+        });
+        test('getAlgorithmsForEncrypt', function () {
+            var element = fixture('basic');
+            var algoNames = element.getAlgorithmsForEncrypt();
+            assert.equal(algoNames.length, 16);
+        });
+    });
+
+
+    suite('Get Algorithm Identifier', function () {
         test('HS256 getAlgoIdentifierFromJWT', function () {
             var element = fixture('basic');
             var jwt = {kty: 'oct', alg: 'HS256'};
@@ -45,9 +99,7 @@
                 assert.equal(algo.hash.name, 'SHA-256');
             });
         });
-
-
-
+  
     });
 
     suite('Import JWK ', function () {
