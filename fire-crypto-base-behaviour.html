@@ -191,8 +191,11 @@ Polymer Element fire-hmac-sign-behaviour
         _filterFunctionForEncrypt: function () {
             return this.__filterFunctionForUsage(['AES-CBC', 'AES-CTR', 'AES-GCM', 'RSA-OAEP']);
         },
+        _filterFunctionForWrapKey: function () {
+            return this.__filterFunctionForUsage(['AES-CBC', 'AES-CTR', 'AES-GCM', 'RSA-OAEP', 'AES-KW']);
+        },
 
-        // --- Algorythms Name for Usage
+        // --- Algorithms Name for Usage
         // --- ---------------------------
         /**
          * Get the list of all possible Algorithm.
@@ -203,7 +206,7 @@ Polymer Element fire-hmac-sign-behaviour
                 list = list.filter(filter);
             }
             return list.map(function (elt) {
-                return elt.jwk.alg;
+                return elt.algo;
             })
         },
         getAlgorithmsForSign: function () {
@@ -212,8 +215,47 @@ Polymer Element fire-hmac-sign-behaviour
         getAlgorithmsForEncrypt: function () {
             return this.getAlgorithms(this._filterFunctionForEncrypt());
         },
+        getAlgorithmsForWrapKey: function () {
+            return this.getAlgorithms(this._filterFunctionForWrapKey());
+        },
         getAlgorithmsForDigest: function () {
             return ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
+        },
+        // --- Algorithms Names
+        // --- ---------------------------
+        /**
+         * Get the list of all possible Algorithm.
+         */
+        getAlgorithmNames: function (filter) {
+            var list = this.algorithmIdentifier;
+            if (filter) {
+                list = list.filter(filter);
+            }
+            return list.map(function (elt) {
+                return elt.jwk.alg;
+            })
+        },
+        getAlgorithmNamesForSign: function () {
+            return this.getAlgorithmNames(this._filterFunctionForSign());
+        },
+        getAlgorithmNamesForEncrypt: function () {
+            return this.getAlgorithmNames(this._filterFunctionForEncrypt());
+        },
+        getAlgorithmNamesForWrapKey: function () {
+            return this.getAlgorithmNames(this._filterFunctionForWrapKey());
+        },
+
+        getAlgorithByName: function (algoName) {
+            var filter = function (elt) {
+                return elt.jwk.alg === algoName;
+            };
+            var mathAlgos =  this.getAlgorithms(filter);
+            if (mathAlgos && mathAlgos.length<=1) {
+                return mathAlgos[0]
+            } else {
+                return null;
+            }
+
         },
 
         // --- Algorithms Identifier

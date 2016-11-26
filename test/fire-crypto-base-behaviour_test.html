@@ -39,7 +39,7 @@
         });
     });
 
-    suite('getAlgorithmNames', function () {
+    suite('Algorithms', function () {
         test('All', function () {
             var element = fixture('basic');
             var algoNames = element.getAlgorithms();
@@ -78,8 +78,62 @@
             var algoNames = element.getAlgorithmsForEncrypt();
             assert.equal(algoNames.length, 16);
         });
+        test('getAlgorithmsForWrapKey', function () {
+            var element = fixture('basic');
+            var algoNames = element.getAlgorithmsForWrapKey();
+            assert.equal(algoNames.length, 19);
+            assert.equal(algoNames.length, 3+3+6+4+3);
+        });
     });
 
+
+    suite('AlgorithmNames', function () {
+        test('getAlgorithByName', function () {
+            var element = fixture('basic');
+            var algo = element.getAlgorithByName('HS256');
+            assert.isOk(algo);
+            assert.equal(algo.name, 'HMAC');
+            assert.equal(algo.hash.name, 'SHA-256');
+        });
+
+        test('getAlgorithmNamesForSign', function () {
+            var element = fixture('basic');
+            var algoNames = element.getAlgorithmNamesForSign();
+            assert.equal(algoNames.length, 11);
+            // Check Only One Mathcing
+            algoNames.map(function (algoName) {
+                var algo = element.getAlgorithByName(algoName);
+                assert.isOk(algo);
+                assert.isOk(algo.name);
+                return algoName;
+            });
+        });
+        test('getAlgorithmNamesForEncrypt', function () {
+            var element = fixture('basic');
+            var algoNames = element.getAlgorithmNamesForEncrypt();
+            assert.equal(algoNames.length, 16);
+            // Check Only One Mathcing
+            algoNames.map(function (algoName) {
+                var algo = element.getAlgorithByName(algoName);
+                assert.isOk(algo);
+                assert.isOk(algo.name);
+                return algoName;
+            });
+        });
+        test('getAlgorithmNamesForEncrypt', function () {
+            var element = fixture('basic');
+            var algoNames = element.getAlgorithmNamesForWrapKey();
+            assert.equal(algoNames.length, 19);
+            // Check Only One Mathcing
+            algoNames.map(function (algoName) {
+                var algo = element.getAlgorithByName(algoName);
+                assert.isOk(algo);
+                assert.isOk(algo.name);
+                return algoName;
+            });
+        });
+
+    });
 
     suite('Get Algorithm Identifier', function () {
         test('HS256 getAlgoIdentifierFromJWT', function () {
