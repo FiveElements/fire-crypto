@@ -98,7 +98,31 @@
     });
 
 
-
+    suite('Generated for all sign algo', function () {
+        test('getAlgorithmsForSign', function () {
+            var element = fixture('basic');
+            var signAlgos = element.getAlgorithmsForSign();
+            var promiseArray = signAlgos.map(function (algo) {
+                console.log('requets algo ' + JSON.stringify(algo));
+                if (algo.name === 'RSASSA-PKCS1-v1_5') {
+                    // The modulus length must be >= 256  and <= 16384 bits
+                        algo.modulusLength= 2048; //can be 1024, 2048, or 4096
+                    // When generating RSA keys the public exponent must be 3 or 65537. This limitation does not apply when importing keys.
+                    algo.publicExponent= new Uint8Array([0x01, 0x00, 0x01]);  // 24 bit representation of 65537
+                }
+                 return  element._generateCryptoKeyPromise(algo, true, ['sign', 'verify']).catch(function (error) {
+                     console.error('error with '+ JSON.stringify(algo) + ' --> ' + JSON.stringify(error));
+                 });
+            });
+            console.log(JSON.stringify(promiseArray));
+            return Promise.all(promiseArray).then(function (all) {
+                all.forEach(function (keys) {
+                    assert.isOk(keys.privateKey);
+                });
+                return all;
+            });
+        });
+    });
 </script>
 </body>
 </html>
