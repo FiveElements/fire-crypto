@@ -115,7 +115,7 @@ Polymer Element fire-crypto-generatekey
                     }
                     return Promise.all(promiseKeys);
                 }).then(function (keys) {
-                    return {privateKey: keys[0], publicKey: keys[1]}
+                    return {privateKey: keys[0], publicKey: keys[1]};
                 });
                 return promise;
             },

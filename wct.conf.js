@@ -1,10 +1,9 @@
 
 module.exports = {
     // plugins: {
-    //     local: {
-    //         browsers: ['chrome']
-    //     }
+    //     local: { browsers: ['chrome'] }
     // },
     expanded: true,
-    persistent:  false
+    persistent:  false,
+    verbose: false
 };
