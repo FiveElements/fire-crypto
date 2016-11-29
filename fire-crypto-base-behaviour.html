@@ -277,7 +277,14 @@ Polymer Element fire-hmac-sign-behaviour
         _filterAlgorithmIdentifierFromJwt: function (jwk) {
             var list = this.algorithmIdentifier;
             var matchAlgos = list.filter(function (elt) {
-                return ((elt.jwk.alg === jwk.alg) && (elt.jwk.kty === jwk.kty));
+                if (elt.jwk.kty === jwk.kty) {
+                    if ( jwk.kty === 'EC') {
+                        return (elt.algo.namedCurve === jwk.crv);
+                    } else {
+                        return (elt.jwk.alg === jwk.alg);
+                    }
+                }
+                return false;
             });
             return matchAlgos;
         },
@@ -300,9 +307,9 @@ Polymer Element fire-hmac-sign-behaviour
             return new Promise(function (resolve, reject) {
                 var matchAlgos = self._filterAlgorithmIdentifierFromJwt(jwk);
                 if (!matchAlgos) {
-                    reject(Error('No algorithm found for JWK ' + JSON.stringify(jwk)));
+                    reject(  Error('No algorithm found for JWK ' + JSON.stringify(jwk)));
                 } else if (matchAlgos.length > 1) {
-                    reject(Error('Too much (' + matchAlgos.length + ') algorithm found for JWK ' + JSON.stringify(jwk)));
+                    reject(  Error('Too much (' + matchAlgos.length + ') algorithm found for JWK ' + JSON.stringify(jwk)));
                 } else if (matchAlgos.length === 1) {
                     var matchAlgo = matchAlgos[0].algo;
                     resolve(matchAlgo);

@@ -43,34 +43,40 @@
                 assert.isOk(signature);
                 assert.equal(signature, 'ada81226c0e5075db75e7fe3aec910273dd28d2cce763027c7db6cedc22122d1');
                 assert.equal(element.signature, 'ada81226c0e5075db75e7fe3aec910273dd28d2cce763027c7db6cedc22122d1');
+                return signature;
             });
 
         });
     });
 
-//    suite('Sign with CryptoPairKey', function () {
-//
-//        test('ES256', function () {
-//            var element = fixture('basic', {
-//                data: {name: 'Hello World'},
-//                privateKey: {
-//                    "crv": "P-256",
-//                    "d": "HEoo_2oVB_0sI0VzgLlQnIdhz1V_WS_T4ayyGW4PMfU",
-//                    "ext": true,
-//                    "key_ops": [ "sign" ],
-//                    "kty": "EC",
-//                    "x": "QvZcgIN7k_NzBkubN5S8ptOvMBWYq6yD2bHxwh6gHhY",
-//                    "y": "GQsq7gwE3H7HIzvM7SbDF9fxPGy9IZsFo5F6wieuXhg"
-//                }
-//
-//            });
-//            return element.sign().then(function (signature) {
-//                console.log('----------Sign with', signature);
-//                assert.isOk(signature);
-//            });
-//
-//        });
-//    });
+    suite('Sign with CryptoPairKey', function () {
+
+        test('ES256', function () {
+            var element = fixture('basic', {
+                data: {name: 'Hello World'},
+                privateKey: {
+                    "crv": "P-256",
+                    "d": "HEoo_2oVB_0sI0VzgLlQnIdhz1V_WS_T4ayyGW4PMfU",
+                    "ext": true,
+                    "key_ops": [ "sign" ],
+                    "kty": "EC",
+                    "x": "QvZcgIN7k_NzBkubN5S8ptOvMBWYq6yD2bHxwh6gHhY",
+                    "y": "GQsq7gwE3H7HIzvM7SbDF9fxPGy9IZsFo5F6wieuXhg"
+                }
+
+            });
+            var shoudMatch =         {
+                            jwk: {kty: "EC", alg: "ES256"},
+                            algo: {name: "ECDSA", namedCurve: "P-256", hash: {name: "SHA-256"}}
+                    };
+            return element.sign().then(function (signature) {
+                console.log('----------Sign ES256 with', signature);
+                assert.isOk(signature);
+                return signature;
+            });
+
+        });
+    });
 
 
 
