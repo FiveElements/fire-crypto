@@ -99,10 +99,30 @@ Polymer Element fire-crypto-generatekey
                         // The modulus length must be >= 256  and <= 16384 bits
                         algo.modulusLength = algo.modulusLength || 2048; //can be 1024, 2048, or 4096
                         // When generating RSA keys the public exponent must be 3 or 65537. This limitation does not apply when importing keys.
-                        algo.publicExponent= algo.publicExponent || new Uint8Array([0x01, 0x00, 0x01]);  // 24 bit representation of 65537
+                        algo.publicExponent = algo.publicExponent || new Uint8Array([0x01, 0x00, 0x01]);  // 24 bit representation of 65537
+                    } else if (algo.name === 'AES-CBC') {
+                        // Encrypt
+                        if (!algo.iv) {
+                            algo = JSON.parse(JSON.stringify(algo));
+                            algo.iv = this._getCryptoSubtle(new Uint32Array(16));
+                        }
+                    } else if (algo.name === 'AES-CTR') {
+                        // Encrypt
+                        if  (!algo.counter)  {
+                            algo = JSON.parse(JSON.stringify(algo));
+                            // TODO algo.counter = algo.counter || ;
+                        }
+
+                    } else if (algo.name === 'AES-GCM') {
+                        // Encrypt
+                        if (!algo.iv) {
+                            algo = JSON.parse(JSON.stringify(algo));
+                            algo.iv = this._getCryptoSubtle(new Uint32Array(16));
+                        }
+
                     }
                 }
-              return algo;
+                return algo;
             },
             /**
              *  method returns a Promise of a newly generated CryptoKey, containing two newly generated keys,
@@ -123,10 +143,10 @@ Polymer Element fire-crypto-generatekey
                 var promiseKeys = [];
                 promise = promise.then(function (key) {
                     if (key.privateKey || key.publicKey) {
-                        promiseKeys[0] =  cryptoSubtle.exportKey('jwk', key.privateKey);
-                        promiseKeys[1] =  cryptoSubtle.exportKey('jwk', key.publicKey);
+                        promiseKeys[0] = cryptoSubtle.exportKey('jwk', key.privateKey);
+                        promiseKeys[1] = cryptoSubtle.exportKey('jwk', key.publicKey);
                     } else {
-                        promiseKeys[0] =  cryptoSubtle.exportKey('jwk', key);
+                        promiseKeys[0] = cryptoSubtle.exportKey('jwk', key);
                     }
                     return Promise.all(promiseKeys);
                 }).then(function (keys) {
@@ -138,19 +158,19 @@ Polymer Element fire-crypto-generatekey
             _generateCryptoKey: function (algo, extractable, usages) {
                 var self = this;
                 var keyPromise = this._generateCryptoKeyPromise(algo, extractable, usages)
-                 .then(function (keys) {
+                        .then(function (keys) {
 //                    console.log('privateKey', keys.privateKey);
 //                    console.log('publicKey', keys.publicKey);
 //                    console.log('_generateCryptoKey', JSON.stringify(keys, null, '\t'));
-                    self.keys = keys;
-                    self.privateKey = keys.privateKey;
-                    self.publicKey = keys.publicKey;
-                    self._fireCryptoKeyGen(keys);
-                    return keys;
-                }).catch(function (err) {
-                    self.key = undefined;
-                    self._fireCryptoKeyGenError(err);
-                });
+                            self.keys = keys;
+                            self.privateKey = keys.privateKey;
+                            self.publicKey = keys.publicKey;
+                            self._fireCryptoKeyGen(keys);
+                            return keys;
+                        }).catch(function (err) {
+                            self.key = undefined;
+                            self._fireCryptoKeyGenError(err);
+                        });
                 return keyPromise;
             },
 
