@@ -178,18 +178,29 @@ Polymer Element fire-hmac-sign-behaviour
 
         // --- Filter Algorythms
         // --- ---------------------------
+        __filterWithBrowserSupport: function(algoId) {
+            // 192 bit AES keys are not supported in  https://www.chromium.org/blink/webcrypto
+            return !((algoId.algo.length === 192) && (algoId.algo.name.slice(0,4) === 'AES-'));
+        },
+
         __filterFunctionForUsage: function (arrayOfsupportedAlgoNames) {
-            return function (elt) {
+            var self = this;
+            return function (algoId) {
+                if (!self.__filterWithBrowserSupport(algoId)) {
+                    return false;
+                }
                 return arrayOfsupportedAlgoNames.some(function (supportedAlgoName) {
-                    return supportedAlgoName === elt.algo.name;
+                    return supportedAlgoName === algoId.algo.name;
                 });
             };
         },
+
+
         _filterFunctionForSign: function () {
             return this.__filterFunctionForUsage(['HMAC', 'RSASSA-PKCS1-v1_5', 'ECDSA']);
         },
         _filterFunctionForEncrypt: function () {
-            return this.__filterFunctionForUsage(['AES-CBC', 'AES-CTR', 'AES-GCM', 'RSA-OAEP']);
+            return  this.__filterFunctionForUsage(['AES-CBC', 'AES-CTR', 'AES-GCM', 'RSA-OAEP']);
         },
         _filterFunctionForWrapKey: function () {
             return this.__filterFunctionForUsage(['AES-CBC', 'AES-CTR', 'AES-GCM', 'RSA-OAEP', 'AES-KW']);

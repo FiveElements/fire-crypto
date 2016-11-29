@@ -54,35 +54,23 @@
             var algoNames = element.getAlgorithms(filter);
             assert.equal(algoNames.length, 19);
         });
-        test('Filter For Usage Sign', function () {
-            var element = fixture('basic');
-            var filter = element._filterFunctionForSign();
-            var algoNames = element.getAlgorithms(filter);
-            assert.equal(algoNames.length, 11);
-            assert.equal(algoNames.length, 4+4+3);
-        });
         test('getAlgorithmsForSign', function () {
             var element = fixture('basic');
             var algoNames = element.getAlgorithmsForSign();
             assert.equal(algoNames.length, 11);
-        });
-        test('Filter For Usage Encrypt', function () {
-            var element = fixture('basic');
-            var filter = element._filterFunctionForEncrypt();
-            var algoNames = element.getAlgorithms(filter);
-            assert.equal(algoNames.length, 16);
-            assert.equal(algoNames.length, 3+3+6+4);
+            assert.equal(algoNames.length, 4+4+3);
         });
         test('getAlgorithmsForEncrypt', function () {
             var element = fixture('basic');
             var algoNames = element.getAlgorithmsForEncrypt();
-            assert.equal(algoNames.length, 16);
+            assert.equal(algoNames.length, 16-4);
+            assert.equal(algoNames.length, 3+3+6+4-4);
         });
         test('getAlgorithmsForWrapKey', function () {
             var element = fixture('basic');
             var algoNames = element.getAlgorithmsForWrapKey();
-            assert.equal(algoNames.length, 19);
-            assert.equal(algoNames.length, 3+3+6+4+3);
+            assert.equal(algoNames.length, 19-5);
+            assert.equal(algoNames.length, 3+3+6+4+3-5);
         });
     });
 
@@ -99,38 +87,38 @@
         test('getAlgorithmNamesForSign', function () {
             var element = fixture('basic');
             var algoNames = element.getAlgorithmNamesForSign();
-            assert.equal(algoNames.length, 11);
             // Check Only One Mathcing
-            algoNames.map(function (algoName) {
+            var algos = algoNames.map(function (algoName) {
                 var algo = element.getAlgorithByName(algoName);
                 assert.isOk(algo);
                 assert.isOk(algo.name);
-                return algoName;
+                return algo;
             });
+            assert.equal(algoNames.length, algos.length);
         });
         test('getAlgorithmNamesForEncrypt', function () {
             var element = fixture('basic');
             var algoNames = element.getAlgorithmNamesForEncrypt();
-            assert.equal(algoNames.length, 16);
             // Check Only One Mathcing
-            algoNames.map(function (algoName) {
+            var algos = algoNames.map(function (algoName) {
                 var algo = element.getAlgorithByName(algoName);
                 assert.isOk(algo);
                 assert.isOk(algo.name);
-                return algoName;
+                return algo;
             });
+            assert.equal(algos.length, algoNames.length);
         });
-        test('getAlgorithmNamesForEncrypt', function () {
+        test('getAlgorithmNamesForWrapKey', function () {
             var element = fixture('basic');
             var algoNames = element.getAlgorithmNamesForWrapKey();
-            assert.equal(algoNames.length, 19);
             // Check Only One Mathcing
-            algoNames.map(function (algoName) {
+            var algos = algoNames.map(function (algoName) {
                 var algo = element.getAlgorithByName(algoName);
                 assert.isOk(algo);
                 assert.isOk(algo.name);
-                return algoName;
+                return algo;
             });
+            assert.equal(algoNames.length, algos.length);
         });
 
     });
