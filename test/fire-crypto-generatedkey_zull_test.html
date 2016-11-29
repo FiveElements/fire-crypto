@@ -24,13 +24,14 @@
 
     suite('Generated for all CryptoKey', function () {
         test('getAlgorithmsForSign', function () {
-            var element = fixture('basic');
+            var element = fixture('basic', {
+                usages:  ['sign', 'verify'],
+                algo:  {name: "HMAC", hash: {name: "SHA-256"}}
+            });
             var signAlgos = element.getAlgorithmsForSign();
             var promiseArray = signAlgos.map(function (algo) {
-                console.log('requets algo ' + JSON.stringify(algo));
                  return  element._generateCryptoKeyPromise(algo, true, ['sign', 'verify']);
             });
-            console.log(JSON.stringify(promiseArray));
             return Promise.all(promiseArray).then(function (all) {
                 all.forEach(function (keys) {
                     assert.isOk(keys.privateKey);
@@ -45,7 +46,6 @@
             });
             var encryptAlgos = element.getAlgorithmsForEncrypt();
             var promiseArray = encryptAlgos.map(function (algo) {
-                console.log('requets algo ' + JSON.stringify(algo));
                 return  element._generateCryptoKeyPromise(algo, true, ['encrypt', 'decrypt']);
             });
             return Promise.all(promiseArray).then(function (all) {
@@ -62,7 +62,6 @@
             });
             var wrapKeyAlgos = element.getAlgorithmsForWrapKey();
             var promiseArray = wrapKeyAlgos.map(function (algo) {
-                console.log('requets algo ' + JSON.stringify(algo));
                 return  element._generateCryptoKeyPromise(algo, true, ['wrapKey', 'unwrapKey']);
             });
             return Promise.all(promiseArray).then(function (all) {
