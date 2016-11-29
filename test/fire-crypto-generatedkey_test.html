@@ -138,77 +138,10 @@
                 assert.equal(element.keys.privateKey, element.privateKey);
                 assert.equal(element.keys.publicKey, element.publicKey);
             });
-
         });
     });
 
 
-    suite('Generated for all CryptoKey', function () {
-        test('getAlgorithmsForSign', function () {
-            var element = fixture('basic');
-            var signAlgos = element.getAlgorithmsForSign();
-            var promiseArray = signAlgos.map(function (algo) {
-                console.log('requets algo ' + JSON.stringify(algo));
-                 return  element._generateCryptoKeyPromise(algo, true, ['sign', 'verify']).catch(function (error) {
-                     console.error('error with '+ JSON.stringify(algo) + ' --> ' + JSON.stringify(error));
-                 });
-            });
-            console.log(JSON.stringify(promiseArray));
-            return Promise.all(promiseArray).then(function (all) {
-                all.forEach(function (keys) {
-                    assert.isOk(keys.privateKey);
-                });
-                return all;
-            });
-        });
-
-        test('getAlgorithmsForEncrypt', function () {
-            var element = fixture('basic', {
-                usages:  ['encrypt', 'decrypt']
-            });
-            var encryptAlgos = element.getAlgorithmsForEncrypt();
-//            encryptAlgos = encryptAlgos.filter(function (elt) {
-//               return elt.name === 'AES-CBC';
-//            });
-            var promiseArray = encryptAlgos.map(function (algo) {
-                console.log('requets algo ' + JSON.stringify(algo));
-                return  element._generateCryptoKeyPromise(algo, true, ['encrypt', 'decrypt']).catch(function (error) {
-                    console.error('error with '+ JSON.stringify(algo) + ' --> ' + JSON.stringify(error));
-                });
-            });
-            return Promise.all(promiseArray).then(function (all) {
-                all.forEach(function (keys) {
-                    assert.isOk(keys.privateKey);
-                });
-                return all;
-            });
-        });
-
-        test('getAlgorithmsForWrapKey', function () {
-            var element = fixture('basic', {
-                usages:  ['wrapKey', 'unwrapKey']
-            });
-            var wrapKeyAlgos = element.getAlgorithmsForWrapKey();
-//            encryptAlgos = encryptAlgos.filter(function (elt) {
-//               return elt.name === 'AES-CBC';
-//            });
-            var promiseArray = wrapKeyAlgos.map(function (algo) {
-                console.log('requets algo ' + JSON.stringify(algo));
-                return  element._generateCryptoKeyPromise(algo, true, ['wrapKey', 'unwrapKey']).catch(function (error) {
-                    console.error('error with '+ JSON.stringify(algo) + ' --> ' + JSON.stringify(error));
-                });
-            });
-            return Promise.all(promiseArray).then(function (all) {
-                all.forEach(function (keys) {
-                    assert.isOk(keys.privateKey);
-                });
-                return all;
-            });
-        });
-
-
-
-    });
 </script>
 </body>
 </html>

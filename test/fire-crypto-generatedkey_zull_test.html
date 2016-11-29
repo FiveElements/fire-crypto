@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>fire-crypto test</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../fire-crypto-generatekey.html">
+</head>
+<body>
+<test-fixture id="basic">
+    <template is="dom-template">
+        <fire-crypto-generatekey algo="[[algo]]" usages="[[usages]]"></fire-crypto-generatekey>
+    </template>
+</test-fixture>
+
+<script>
+
+
+
+    suite('Generated for all CryptoKey', function () {
+        test('getAlgorithmsForSign', function () {
+            var element = fixture('basic');
+            var signAlgos = element.getAlgorithmsForSign();
+            var promiseArray = signAlgos.map(function (algo) {
+                console.log('requets algo ' + JSON.stringify(algo));
+                 return  element._generateCryptoKeyPromise(algo, true, ['sign', 'verify']);
+            });
+            console.log(JSON.stringify(promiseArray));
+            return Promise.all(promiseArray).then(function (all) {
+                all.forEach(function (keys) {
+                    assert.isOk(keys.privateKey);
+                });
+                return all;
+            });
+        });
+
+        test('getAlgorithmsForEncrypt', function () {
+            var element = fixture('basic', {
+                usages:  ['encrypt', 'decrypt']
+            });
+            var encryptAlgos = element.getAlgorithmsForEncrypt();
+            var promiseArray = encryptAlgos.map(function (algo) {
+                console.log('requets algo ' + JSON.stringify(algo));
+                return  element._generateCryptoKeyPromise(algo, true, ['encrypt', 'decrypt']);
+            });
+            return Promise.all(promiseArray).then(function (all) {
+                all.forEach(function (keys) {
+                    assert.isOk(keys.privateKey);
+                });
+                return all;
+            });
+        });
+
+        test('getAlgorithmsForWrapKey', function () {
+            var element = fixture('basic', {
+                usages:  ['wrapKey', 'unwrapKey']
+            });
+            var wrapKeyAlgos = element.getAlgorithmsForWrapKey();
+            var promiseArray = wrapKeyAlgos.map(function (algo) {
+                console.log('requets algo ' + JSON.stringify(algo));
+                return  element._generateCryptoKeyPromise(algo, true, ['wrapKey', 'unwrapKey']);
+            });
+            return Promise.all(promiseArray).then(function (all) {
+                all.forEach(function (keys) {
+                    assert.isOk(keys.privateKey);
+                });
+                return all;
+            });
+        });
+
+
+
+    });
+</script>
+</body>
+</html>
