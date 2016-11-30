@@ -114,11 +114,14 @@ Polymer Element fire-crypto-generatekey
 //                        algo = JSON.parse(JSON.stringify(algo));
 //                        //   algo.counter = algo.counter || ;
 //                    }
-//                } else if (algo.name === 'AES-GCM') {
+//                 else if (algo.name === 'AES-GCM') {
 //                    // Encrypt
 //                    if (!algo.iv) {
 //                        algo = JSON.parse(JSON.stringify(algo));
 //                        algo.iv = this._getCryptoSubtle(new Uint32Array(16));
+//                        //Don't re-use initialization vectors!
+//                        //Always generate a new iv every time your encrypt!
+//                        iv: window.crypto.getRandomValues(new Uint8Array(16)),
 //                    }
 //                }
                 return algo;

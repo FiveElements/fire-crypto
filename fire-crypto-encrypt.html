@@ -1,0 +1,140 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="fire-crypto-base-behaviour.html">
+
+<!--
+`fire-crypto-encrypt`
+Polymer Element fire-crypto-encrypt
+
+@demo demo/index.html 
+-->
+
+<dom-module id="fire-crypto-encrypt">
+    <script>
+        Polymer({
+
+            is: 'fire-crypto-encrypt',
+
+            behaviors: [
+                FiveElements.FireCryptoBaseBehavior
+            ],
+
+            properties: {
+                /**
+                 * The Json Web Key used for Sign the data.
+                 */
+                jwk: {
+                    type: Object
+                },
+                /**
+                 * The data to sign
+                 */
+                data: {
+                    type: Object
+                },
+            },
+
+            observers: [
+                '_signObserver(jwk,data.*)'
+            ],
+
+            // --- Encrypt Observer
+            // --- ---------------------------
+            _encryptObserver: function (jwk, dataChanged) {
+                return this._encrypt(jwk, this.data);
+            },
+
+            // --- API Encrypt
+            // --- ---------------------------
+            encrypt: function () {
+                return this._encrypt(this.jwk, this.data);
+            },
+
+            // --- Encrypt Configure
+            // --- ---------------------------
+            _configureEncryptCryptoKeyAlgo: function (algoToConfigure) {
+                var algo = JSON.parse(JSON.stringify(algo));
+
+                if (algo.name === 'AES-CBC') {
+                    //Don't re-use initialization vectors!
+                    //Always generate a new iv every time your encrypt!
+                    algo.iv = this._getCryptoSubtle().getRandomValues(new Uint8Array(16));
+                } else if (algo.name === 'AES-CTR') {
+                    //Don't re-use counters!
+                    //Always use a new counter every time your encrypt!
+                    algo.counter = new Uint8Array(16);
+                } else if (algo.name === 'AES-GCM') {
+                    //Don't re-use initialization vectors!
+                    //Always generate a new iv every time your encrypt!
+                    //Recommended to use 12 bytes length
+                    algo.iv = this._getCryptoSubtle().getRandomValues(new Uint8Array(12));
+
+                    //Additional authentication data (optional)
+                    //algo.additionalData= ArrayBuffer;
+
+                    //Tag length (optional)
+                    algo.tagLength = 128; //can be 32, 64, 96, 104, 112, 120 or 128 (default)
+                } else if (algo.name === 'RSA-OAEP') {
+                    //algo.label= Uint8Array([...]) ;// label is optional
+                } else if (algo.name === 'AES-CFB') {
+                    //Don't re-use initialization vectors!
+                    //Always generate a new iv every time your encrypt!
+                    algo.iv = this._getCryptoSubtle().getRandomValues(new Uint8Array(16));
+                }
+                return algo;
+            },
+
+            // --- Encrypt
+            // --- ---------------------------
+
+            _encryptPromise: function (jwk, data) {
+                var self = this;
+                return this.importKeyJwkPromise(jwk, false, ['encrypt']).then(function (algoKey) {
+                    var cryptoSubtle = self._getCryptoSubtle();
+                    var dataBuffer = self._convertDataToBuffer(data);
+                    var algo = this._configureEncryptCryptoKeyAlgo(algo);
+                    return cryptoSubtle.encrypt(algo, algoKey.key, dataBuffer);
+                }).then(function (ciphertext) {
+
+                })
+            },
+
+
+            _encrypt: function (jwk, data) {
+                console.log('call _sign', data);
+                var self = this;
+                return this._encryptPromise(jwk, data).then(function (macHex) {
+                    self.signature = macHex;
+                    self._fireCryptoKeyEncrypt(macHex);
+                    return macHex;
+                }).catch(function (err) {
+                    self.signature = undefined;
+                    self._fireCryptoKeyEncryptError(err);
+                });
+            },
+
+            // --- Event Sign
+            // --- ---------------------------
+            /**
+             * Fired when a Data is encrypted.
+             *
+             * @event fire-encrypt
+             */
+            _fireCryptoKeyEncrypt: function (ciphertext) {
+                console.log('encrypt to', ciphertext);
+                this.fire('fire-encrypt', {ciphertext: ciphertext});
+            },
+            /**
+             * Fired when a Sign Error in encrypted.
+             *
+             * @event fire-error-encrypt
+             */
+            _fireCryptoKeyEncryptError: function (error) {
+                console.error('Encrypt error', error);
+                this.fire('fire-error-encrypt', {error: error});
+            },
+
+        })
+        ;
+    </script>
+</dom-module>
