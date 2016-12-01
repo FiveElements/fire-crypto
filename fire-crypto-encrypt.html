@@ -35,7 +35,7 @@ Polymer Element fire-crypto-encrypt
             },
 
             observers: [
-                '_signObserver(jwk,data.*)'
+                '_encryptObserver(jwk,data.*)'
             ],
 
             // --- Encrypt Observer
@@ -92,10 +92,10 @@ Polymer Element fire-crypto-encrypt
                 return this.importKeyJwkPromise(jwk, false, ['encrypt']).then(function (algoKey) {
                     var cryptoSubtle = self._getCryptoSubtle();
                     var dataBuffer = self._convertDataToBuffer(data);
-                    var algo = this._configureEncryptCryptoKeyAlgo(algo);
+                    var algo = this._configureEncryptCryptoKeyAlgo(algoKey.algo);
                     return cryptoSubtle.encrypt(algo, algoKey.key, dataBuffer);
                 }).then(function (ciphertext) {
-
+                    return ciphertext;
                 })
             },
 
@@ -134,7 +134,6 @@ Polymer Element fire-crypto-encrypt
                 this.fire('fire-error-encrypt', {error: error});
             },
 
-        })
-        ;
+        });
     </script>
 </dom-module>

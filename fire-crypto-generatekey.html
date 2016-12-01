@@ -102,28 +102,6 @@ Polymer Element fire-crypto-generatekey
                         algo.publicExponent = algo.publicExponent || new Uint8Array([0x01, 0x00, 0x01]);  // 24 bit representation of 65537
                     }
                 }
-//                 else if (algo.name === 'AES-CBC') {
-//                    // Encrypt
-//                    if (!algo.iv) {
-//                        algo = JSON.parse(JSON.stringify(algo));
-//                        algo.iv = this._getCryptoSubtle(new Uint32Array(16));
-//                    }
-//                } else if (algo.name === 'AES-CTR') {
-//                    // Encrypt
-//                    if (!algo.counter) {
-//                        algo = JSON.parse(JSON.stringify(algo));
-//                        //   algo.counter = algo.counter || ;
-//                    }
-//                 else if (algo.name === 'AES-GCM') {
-//                    // Encrypt
-//                    if (!algo.iv) {
-//                        algo = JSON.parse(JSON.stringify(algo));
-//                        algo.iv = this._getCryptoSubtle(new Uint32Array(16));
-//                        //Don't re-use initialization vectors!
-//                        //Always generate a new iv every time your encrypt!
-//                        iv: window.crypto.getRandomValues(new Uint8Array(16)),
-//                    }
-//                }
                 return algo;
             },
             /**
@@ -141,9 +119,7 @@ Polymer Element fire-crypto-generatekey
             _generateCryptoKeyPromise: function (algorithm, extractable, usages) {
                 var cryptoSubtle = this._getCryptoSubtle();
                 var algo = this._configureGenerateCryptoKeyAlgo(algorithm);
-                var promise = cryptoSubtle.generateKey(algo, extractable, usages).catch(function (err) {
-                    console.error('error : ' + JSON.stringify())
-                });
+                var promise = cryptoSubtle.generateKey(algo, extractable, usages);
                 var promiseKeys = [];
                 promise = promise.then(function (key) {
                     if (key.privateKey || key.publicKey) {
@@ -167,6 +143,7 @@ Polymer Element fire-crypto-generatekey
 //                    console.log('publicKey', keys.publicKey);
 //                    console.log('_generateCryptoKey', JSON.stringify(keys, null, '\t'));
                             self.keys = keys;
+//                            if (keys)  {}
                             self.privateKey = keys.privateKey;
                             self.publicKey = keys.publicKey;
                             self._fireCryptoKeyGen(keys);
@@ -195,7 +172,7 @@ Polymer Element fire-crypto-generatekey
              * @event error-jwk-generated
              */
             _fireCryptoKeyGenError: function (error) {
-                console.error('generated Key error', error);
+                console.error('generated Key error', error.message);
                 this.fire('error-jwk-generated', {error: error});
             },
 
