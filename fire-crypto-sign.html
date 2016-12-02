@@ -65,15 +65,10 @@ Polymer Element fire-crypto-sign
             // --- ---------------------------
             _signPromise: function (jwk, data) {
                 var self = this;
-                var cryptoSubtle = this._getCryptoSubtle();
-                var algoJwk = undefined;
-                return this.getAlgorithmIdentifierFromJwtPromise(jwk).then(function (algo) {
-                    console.log('call _signPromise algo', algo);
-                    algoJwk = algo;
-                    return cryptoSubtle.importKey('jwk', jwk, algo, false, ['sign']);
-                }).then(function (keyBuffer) {
+                return this.importKeyJwkPromise(jwk, false, ['sign']).then(function (algoKey) {
+                    var cryptoSubtle = self._getCryptoSubtle();
                     var dataBuffer = self._convertDataToBuffer(data);
-                    return cryptoSubtle.sign(algoJwk, keyBuffer, dataBuffer);
+                    return cryptoSubtle.sign(algoKey.algo, algoKey.key, dataBuffer);
                 }).then(function (macBuffer) {
                     var macHex = self.bufferToHex(macBuffer);
                     return macHex;
@@ -86,7 +81,6 @@ Polymer Element fire-crypto-sign
                 var self = this;
                 return this._signPromise(jwk, data).then(function (macHex) {
                     self.signature = macHex;
-                    console.log('----------signPromise with', macHex);
                     self._fireCryptoKeySign(macHex);
                     return macHex;
                 }).catch(function (err) {

@@ -52,15 +52,18 @@ Polymer Element fire-hmac-sign-behaviour
             },
             {
                 jwk: {kty: "RSA", alg: "PS256"},
-                algo: {name: "RSA-PSS", hash: {name: "SHA-256"}}
+                algo: {name: "RSA-PSS", hash: {name: "SHA-256"}},
+                usages: ['sign', 'verify']
             },
             {
                 jwk: {kty: "RSA", alg: "PS384"},
-                algo: {name: "RSA-PSS", hash: {name: "SHA-384"}}
+                algo: {name: "RSA-PSS", hash: {name: "SHA-384"}},
+                usages: ['sign', 'verify']
             },
             {
                 jwk: {kty: "RSA", alg: "PS512"},
-                algo: {name: "RSA-PSS", hash: {name: "SHA-512"}}
+                algo: {name: "RSA-PSS", hash: {name: "SHA-512"}},
+                usages: ['sign', 'verify']
             },
             {
                 jwk: {kty: "RSA", alg: "RSA-OAEP"},
@@ -208,21 +211,35 @@ Polymer Element fire-hmac-sign-behaviour
 
         // --- Filter Algorythms
         // --- ---------------------------
+        __filterWithBrowserSupport: function(algoId) {
+            // 192 bit AES keys are not supported in  https://www.chromium.org/blink/webcrypto
+            return !((algoId.algo.length === 192) && (algoId.algo.name.slice(0,4) === 'AES-'));
+        },
+
         __filterFunctionForUsage: function (arrayOfsupportedAlgoNames) {
-            return function (elt) {
+            var self = this;
+            return function (algoId) {
+                if (!self.__filterWithBrowserSupport(algoId)) {
+                    return false;
+                }
                 return arrayOfsupportedAlgoNames.some(function (supportedAlgoName) {
-                    return supportedAlgoName === elt.algo.name;
+                    return supportedAlgoName === algoId.algo.name;
                 });
             };
         },
+
+
         _filterFunctionForSign: function () {
-            return this.__filterFunctionForUsage(['HMAC', 'RSASSA-PKCS1-v1_5', 'ECDSA']);
+            return this.__filterFunctionForUsage(['HMAC', 'RSASSA-PKCS1-v1_5', 'ECDSA']); // TODO add RSA-PSS , AES-CMAC
         },
         _filterFunctionForEncrypt: function () {
-            return this.__filterFunctionForUsage(['AES-CBC', 'AES-CTR', 'AES-GCM', 'RSA-OAEP']);
+            return  this.__filterFunctionForUsage(['AES-CBC', 'AES-CTR', 'AES-GCM', 'RSA-OAEP']); // Add AES-CFB
         },
         _filterFunctionForWrapKey: function () {
-            return this.__filterFunctionForUsage(['AES-CBC', 'AES-CTR', 'AES-GCM', 'RSA-OAEP', 'AES-KW']);
+            return this.__filterFunctionForUsage(['AES-CBC', 'AES-CTR', 'AES-GCM', 'RSA-OAEP', 'AES-KW']); // Add AES-CFB
+        },
+        _filterFunctionForDeriveKey: function () {
+            return this.__filterFunctionForUsage(['ECDH', 'DH', 'CONCAT', 'HKDF-CTR', 'PBKDF2' ]);
         },
 
         // --- Algorithms Name for Usage
@@ -296,7 +313,14 @@ Polymer Element fire-hmac-sign-behaviour
         _filterAlgorithmIdentifierFromJwt: function (jwk) {
             var list = this.algorithmIdentifier;
             var matchAlgos = list.filter(function (elt) {
-                return ((elt.jwk.alg === jwk.alg) && (elt.jwk.kty === jwk.kty));
+                if (elt.jwk.kty === jwk.kty) {
+                    if ( jwk.kty === 'EC') {
+                        return (elt.algo.namedCurve === jwk.crv);
+                    } else {
+                        return (elt.jwk.alg === jwk.alg);
+                    }
+                }
+                return false;
             });
             return matchAlgos;
         },
@@ -319,9 +343,9 @@ Polymer Element fire-hmac-sign-behaviour
             return new Promise(function (resolve, reject) {
                 var matchAlgos = self._filterAlgorithmIdentifierFromJwt(jwk);
                 if (!matchAlgos) {
-                    reject(Error('No algorithm found for JWK ' + JSON.stringify(jwk)));
+                    reject(  Error('No algorithm found for JWK ' + JSON.stringify(jwk)));
                 } else if (matchAlgos.length > 1) {
-                    reject(Error('Too much (' + matchAlgos.length + ') algorithm found for JWK ' + JSON.stringify(jwk)));
+                    reject(  Error('Too much (' + matchAlgos.length + ') algorithm found for JWK ' + JSON.stringify(jwk)));
                 } else if (matchAlgos.length === 1) {
                     var matchAlgo = matchAlgos[0].algo;
                     resolve(matchAlgo);

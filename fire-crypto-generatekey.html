@@ -92,7 +92,7 @@ Polymer Element fire-crypto-generatekey
             // --- ---------------------------
             _configureGenerateCryptoKeyAlgo: function (algoToConfigure) {
                 var algo = algoToConfigure;
-                if (algo.name === 'RSASSA-PKCS1-v1_5') {
+                if ((algo.name === 'RSASSA-PKCS1-v1_5') || (algo.name ===  'RSA-OAEP')) {
                     // sign
                     if ((!algo.modulusLength) || (!algo.publicExponent)) {
                         algo = JSON.parse(JSON.stringify(algo));
@@ -100,26 +100,6 @@ Polymer Element fire-crypto-generatekey
                         algo.modulusLength = algo.modulusLength || 2048; //can be 1024, 2048, or 4096
                         // When generating RSA keys the public exponent must be 3 or 65537. This limitation does not apply when importing keys.
                         algo.publicExponent = algo.publicExponent || new Uint8Array([0x01, 0x00, 0x01]);  // 24 bit representation of 65537
-                    } else if (algo.name === 'AES-CBC') {
-                        // Encrypt
-                        if (!algo.iv) {
-                            algo = JSON.parse(JSON.stringify(algo));
-                            algo.iv = this._getCryptoSubtle(new Uint32Array(16));
-                        }
-                    } else if (algo.name === 'AES-CTR') {
-                        // Encrypt
-                        if  (!algo.counter)  {
-                            algo = JSON.parse(JSON.stringify(algo));
-                            // TODO algo.counter = algo.counter || ;
-                        }
-
-                    } else if (algo.name === 'AES-GCM') {
-                        // Encrypt
-                        if (!algo.iv) {
-                            algo = JSON.parse(JSON.stringify(algo));
-                            algo.iv = this._getCryptoSubtle(new Uint32Array(16));
-                        }
-
                     }
                 }
                 return algo;
@@ -163,6 +143,7 @@ Polymer Element fire-crypto-generatekey
 //                    console.log('publicKey', keys.publicKey);
 //                    console.log('_generateCryptoKey', JSON.stringify(keys, null, '\t'));
                             self.keys = keys;
+//                            if (keys)  {}
                             self.privateKey = keys.privateKey;
                             self.publicKey = keys.publicKey;
                             self._fireCryptoKeyGen(keys);
@@ -191,7 +172,7 @@ Polymer Element fire-crypto-generatekey
              * @event error-jwk-generated
              */
             _fireCryptoKeyGenError: function (error) {
-                console.error('generated Key error', error);
+                console.error('generated Key error', error.message);
                 this.fire('error-jwk-generated', {error: error});
             },
 

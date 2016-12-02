@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>fire-crypto test</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../fire-crypto-sign.html">
+</head>
+<body>
+<test-fixture id="basic">
+    <template is="dom-template">
+        <fire-crypto-encrypt jwk="[[privateKey]]" data="[[data]]"  signature="{{signature}}"></fire-crypto-encrypt>
+    </template>
+</test-fixture>
+
+<script>
+    suite('fire-crypto-encrypt', function () {
+        test('instantiating the element works', function () {
+            var element = fixture('basic');
+            assert.equal(element.is, 'fire-crypto-encrypt');
+        });
+    });
+
+    suite('Encrypt CryptoKey', function () {
+        test('AES-CBS', function () {
+            var element = fixture('basic', {
+                data: {name: 'Hello World'},
+                privateKey: {
+                    "alg": "A256CBC",
+                    "ext": true,
+                    "k": "QeoM9Y26pW9cyFyNwcjt79d55q71PIL9shm-lp2QurE",
+                    "key_ops": [
+                        "encrypt"
+                    ],
+                    "kty": "oct"
+                }
+            });
+            assert.isNotOk(element.signature);
+            return element.sign().then(function (signature) {
+                assert.isOk(signature);
+                assert.equal(signature, 'ada81226c0e5075db75e7fe3aec910273dd28d2cce763027c7db6cedc22122d1');
+                assert.equal(element.signature, 'ada81226c0e5075db75e7fe3aec910273dd28d2cce763027c7db6cedc22122d1');
+                return signature;
+            });
+
+        });
+    });
+
+    suite('Encrypt CryptoPairKey', function () {
+        test('RSA-OAEP', function () {
+            var element = fixture('basic', {
+                data: {name: 'Hello World'},
+                privateKey: {
+                    "alg": "RSA-OAEP-512",
+                    "d": "xixekmaPwU4ogXQS3IPGR_bwQVmh6TFD9QTgtsJIFK0zFDhXoUv867vcwhFYKkBYE_nkhigoeLKHTYoBrprKy_aTf2GUtMP2RTEELn_OrOoWSMr1bch18aem7awv7A1Sg-_c2g-0X-49f3QcqhnzlD7ALQYVFEGFrdNf950i462N1YKNXghGm4ijL3wp6duMkMOl8WuTGOKWPV1VgRSIpWFm_UBZ926CeWjEVdV0f1j0ShYSQ254D3wO4ljhWz__W85A56O13fz-_EYTktg7qpqefgBf4pzhjbCM4-N3LRuysgyGKnz-C4C3cl0TFxm7jxFEId_GO7e7lYBDUGFQQQ",
+                    "dp": "G5GHb8O2jmxJWPouKgGFDK8oBeBO7ZCM8OFTx19zPCF87c5Pr6eEpMJzatqSJCgLR5ZPwAKbbr4udUdDpaLvetv5Q94NgOR-1lCdL3rxcOCrw8zFJ3QfPUIsk8ZHc5Vt6cwBYCWgc-JvbuQQ4IDSoB7tT6JJDLMorfP_8c16sNE",
+                    "dq": "eFvw9_iusSCX73OfWSR3yMlC2t7B4Bxye4gCyVzzOlyla6vFbvTBDApIJf060VHZjIgUDN0kMTLph979B02ogXyTuG0LQOhXNoj1NXhjjeDcRoQ3eCZ0wJwtnPKxu_DFeCqBcyS8e7VdQlGGu8O1viq3Zw-TiFfWskpW_4vjVbU",
+                    "e": "AQAB",
+                    "ext": true,
+                    "key_ops": [
+                        "decrypt"
+                    ],
+                    "kty": "RSA",
+                    "n": "26lArBpwI7y9tcYEfPe1KeiRg9lBGwFdUNKNzlMtiSDYJYcUFqJbfqpeXKpb26HmIHtHRr4ADj_JIkVto-ZfwEWwaR0ErXguPx_dOLGKpmLsHyUUsNE6oAiyVsObaZ_-sHA67WkX32HmynuWqI8u2T3bP4tZQ2hu1qNlCwLOzyBesndBx-KJQhydXBwRW6Ipep_UCTAzzUPVST8OKA-VWeh0q8-cgnH3NL6uA3y4qM47egnInPQHp1yy6Hd3Cb21uScYqwlWKuxLTgLXj-PXov9r7ow1_yUlualz3kFdVy1TeYtDFRIP9ORAmqsJlz8Eh8gNJoBnLOMhsZ1NgADgxQ",
+                    "p": "-_z3Hr8sIqnNM8EhNjAYgB1Ng-dSQhsU-UwS4HsznQ2tSJhwd6cJFC0i9yUYu71tUD-sP8faWC0Hw6ZYAfLmkjmz32nOHn3P-I3Mu2GBdR06pK_8JuRRdISZmSF2iJCVpRgJAL_3xUMr0iNEgE-Eo7lbR8BT8Lnaw68XIRzwKGk",
+                    "q": "3yiIA19aIZ1K7H4nxEqphs_XloDR90DgDaJI2tZAWgmhhFJPwmz_1tQxDEzrxpYg4jV_R2mJsHTia437Gy-eMPtD0ZEWGLGk-5rkoj4_0ptsvckaFTSYHUQwiGSEHzgAeGYaCpq2EJHXdExX53OBu9KWJka_tTlcWY21X2WrSf0",
+                    "qi": "MOyIX-_W_OlSkL66talXRFG3QNGU2rIjqPUb_RoDhIq-QOkyKbclh_XFbMSoNrfxMrZYFnl7ipLrFGpZDsSOsqLfDwlXmeP8pMJta0t8We0DrK5FLI8ifgKkffMfRCan0hTfYxHpyGqk5BVOTEr2kuVEYz7yMMaGZCGyzFCuFM0"
+                },
+                publicKey: {
+                    "alg": "RSA-OAEP-512",
+                    "e": "AQAB",
+                    "ext": true,
+                    "key_ops": [
+                        "encrypt"
+                    ],
+                    "kty": "RSA",
+                    "n": "26lArBpwI7y9tcYEfPe1KeiRg9lBGwFdUNKNzlMtiSDYJYcUFqJbfqpeXKpb26HmIHtHRr4ADj_JIkVto-ZfwEWwaR0ErXguPx_dOLGKpmLsHyUUsNE6oAiyVsObaZ_-sHA67WkX32HmynuWqI8u2T3bP4tZQ2hu1qNlCwLOzyBesndBx-KJQhydXBwRW6Ipep_UCTAzzUPVST8OKA-VWeh0q8-cgnH3NL6uA3y4qM47egnInPQHp1yy6Hd3Cb21uScYqwlWKuxLTgLXj-PXov9r7ow1_yUlualz3kFdVy1TeYtDFRIP9ORAmqsJlz8Eh8gNJoBnLOMhsZ1NgADgxQ"
+                }
+
+
+            }
+
+            });
+            assert.isNotOk(element.signature);
+            return element.sign().then(function (signature) {
+                assert.isOk(signature);
+                assert.equal(signature, 'ada81226c0e5075db75e7fe3aec910273dd28d2cce763027c7db6cedc22122d1');
+                assert.equal(element.signature, 'ada81226c0e5075db75e7fe3aec910273dd28d2cce763027c7db6cedc22122d1');
+                return signature;
+            });
+
+        });
+    });
+
+
+
+</script>
+</body>
+</html>

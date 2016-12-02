@@ -10,18 +10,25 @@ Polymer crypto
 ## Webcrypto
 Chrome : https://sites.google.com/a/chromium.org/dev/blink/webcrypto
 MDN: https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/sign
+Sample: https://github.com/diafygi/webcrypto-examples
 
 TODO encrypt https://blog.engelke.com/2014/08/23/public-key-cryptography-in-the-browser/
 
 
 ## Install the Polymer-CLI
 
-First, make sure you have the [NodeJs](https://nodejs.org/en/) installed. Then run `npm run install` to install all global dependencies to run your application locally.
+First, make sure you have the [NodeJs](https://nodejs.org/en/) installed. Then run `npm run dev-install` to install all global dependencies to run your application locally.
 
-## Viewing Your Application
+## Viewing Your Web Components Demo
 
 ```
 $ npm run dev
+```
+
+## Test Your Web Components
+
+```
+$ npm run test
 ```
 
 ## Building Your Application
