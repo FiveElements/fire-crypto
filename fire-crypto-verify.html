@@ -88,8 +88,8 @@ Polymer Element fire-crypto-verify
                             algoJwk = algo;
                             return cryptoSubtle.importKey('jwk', jwk, algo, true, ['verify']);
                         }).then(function (keyBuffer) {
-                            var signatureBuffer = self.hexToBuffer(signature);
-                            var dataBuffer = self._convertDataToBuffer(data);
+                            var signatureBuffer = self.convertHexToBuffer(signature);
+                            var dataBuffer = self._convertObjectUtf8ToBuffer(data);
                             return cryptoSubtle.verify(algoJwk, keyBuffer, signatureBuffer, dataBuffer);
                         });
                 return promise;

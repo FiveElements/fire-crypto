@@ -219,9 +219,9 @@ Polymer Element fire-hmac-sign-behaviour
 
         // --- Filter Algorythms
         // --- ---------------------------
-        __filterWithBrowserSupport: function(algoId) {
+        __filterWithBrowserSupport: function (algoId) {
             // 192 bit AES keys are not supported in  https://www.chromium.org/blink/webcrypto
-            return !((algoId.algo.length === 192) && (algoId.algo.name.slice(0,4) === 'AES-'));
+            return !((algoId.algo.length === 192) && (algoId.algo.name.slice(0, 4) === 'AES-'));
         },
 
         __filterFunctionForUsage: function (arrayOfsupportedAlgoNames) {
@@ -241,13 +241,13 @@ Polymer Element fire-hmac-sign-behaviour
             return this.__filterFunctionForUsage(['HMAC', 'RSASSA-PKCS1-v1_5', 'ECDSA']); // TODO add RSA-PSS , AES-CMAC
         },
         _filterFunctionForEncrypt: function () {
-            return  this.__filterFunctionForUsage(['AES-CBC', 'AES-CTR', 'AES-GCM', 'RSA-OAEP']); // Add AES-CFB
+            return this.__filterFunctionForUsage(['AES-CBC', 'AES-CTR', 'AES-GCM', 'RSA-OAEP']); // Add AES-CFB
         },
         _filterFunctionForWrapKey: function () {
             return this.__filterFunctionForUsage(['AES-CBC', 'AES-CTR', 'AES-GCM', 'RSA-OAEP', 'AES-KW']); // Add AES-CFB
         },
         _filterFunctionForDeriveKey: function () {
-            return this.__filterFunctionForUsage(['ECDH', 'DH', 'CONCAT', 'HKDF-CTR', 'PBKDF2' ]);
+            return this.__filterFunctionForUsage(['ECDH', 'DH', 'CONCAT', 'HKDF-CTR', 'PBKDF2']);
         },
 
         // --- Algorithms Name for Usage
@@ -304,8 +304,8 @@ Polymer Element fire-hmac-sign-behaviour
             var filter = function (elt) {
                 return elt.jwk.alg === algoName;
             };
-            var mathAlgos =  this.getAlgorithms(filter);
-            if (mathAlgos && mathAlgos.length<=1) {
+            var mathAlgos = this.getAlgorithms(filter);
+            if (mathAlgos && mathAlgos.length <= 1) {
                 return mathAlgos[0]
             } else {
                 return null;
@@ -322,7 +322,7 @@ Polymer Element fire-hmac-sign-behaviour
             var list = this.algorithmIdentifier;
             var matchAlgos = list.filter(function (elt) {
                 if (elt.jwk.kty === jwk.kty) {
-                    if ( jwk.kty === 'EC') {
+                    if (jwk.kty === 'EC') {
                         return (elt.algo.namedCurve === jwk.crv);
                     } else {
                         return (elt.jwk.alg === jwk.alg);
@@ -351,9 +351,9 @@ Polymer Element fire-hmac-sign-behaviour
             return new Promise(function (resolve, reject) {
                 var matchAlgos = self._filterAlgorithmIdentifierFromJwt(jwk);
                 if (!matchAlgos) {
-                    reject(  Error('No algorithm found for JWK ' + JSON.stringify(jwk)));
+                    reject(Error('No algorithm found for JWK ' + JSON.stringify(jwk)));
                 } else if (matchAlgos.length > 1) {
-                    reject(  Error('Too much (' + matchAlgos.length + ') algorithm found for JWK ' + JSON.stringify(jwk)));
+                    reject(Error('Too much (' + matchAlgos.length + ') algorithm found for JWK ' + JSON.stringify(jwk)));
                 } else if (matchAlgos.length === 1) {
                     var matchAlgo = matchAlgos[0].algo;
                     resolve(matchAlgo);
@@ -387,32 +387,54 @@ Polymer Element fire-hmac-sign-behaviour
 
         // --- Utilities
         // --- ---------------------------
-        _convertDataToBuffer: function (data) {
+
+        /**
+         * Conversion of UTf8 Object to a ArrayBuffer
+         */
+        _convertObjectUtf8ToBuffer: function (data) {
             var datastr = JSON.stringify(data);
-//            var buffer = new TextEncoder('utf-8').encode(datastr);
             var buffer = Unibabel.utf8ToBuffer(datastr);
             return buffer;
         },
-        bufferToUtf8: function (buffer) {
+        /**
+         * Conversion of ArrayBuffer to a UTf8 Object
+         */
+        _convertBufferToObjectUtf8: function (arrayBuffer) {
+            var buffer = new Uint8Array(arrayBuffer);
             var str = Unibabel.bufferToUtf8(buffer);
-            return str;
+            return JSON.parse(str);
         },
-
-        bufferToHex: function (arrayBuffer) {
+        /**
+         * Conversion of HEX string to a ArrayBuffer
+         */
+        convertHexToBuffer: function (hexstr) {
+            var hexArray = Unibabel.hexToBuffer(hexstr);
+            return hexArray;
+        },
+        /**
+         * Conversion of ArrayBuffer to a Hex string
+         */
+        convertBufferToHex: function (arrayBuffer) {
             var array = new Uint8Array(arrayBuffer);
             var hexstr = Unibabel.bufferToHex(array);
             return hexstr;
         },
 
         /**
-         * Convertion of HEX string to a ArrayBuffer*
+         * Conversion of ArrayBuffer to a Base4
          */
-        hexToBuffer: function (hexstr) {
-            var hexArray = Unibabel.hexToBuffer(hexstr);
-            return hexArray;
+        convertBufferToBase64: function (arrayBuffer) {
+            var array = new Uint8Array(arrayBuffer);
+            var hexstr = Unibabel.bufferToBase64(array);
+            return hexstr;
         },
-
-
+        /**
+         * Conversion of HEX string to a ArrayBuffer
+         */
+        convertBase64ToBuffer: function (base64) {
+            var buffer = Unibabel.base64ToBuffer(base64);
+            return buffer;
+        },
         // --- End
         // --- ---------------------------
     };

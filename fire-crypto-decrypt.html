@@ -65,7 +65,7 @@ Polymer Element fire-crypto-encrypt
                 var self = this;
                 return this.importKeyJwkPromise(jwk, false, ['decrypt']).then(function (algoKey) {
                     var cryptoSubtle = self._getCryptoSubtle();
-                    var dataBuffer = self._convertDataToBuffer(data);
+                    var dataBuffer = self._convertObjectUtf8ToBuffer(data);
                     var algo =  algoKey.algo;
                     return cryptoSubtle.decrypt(algo, algoKey.key, dataBuffer);
                 }).then(function (ciphertext) {

@@ -41,10 +41,17 @@
                 }
             });
             assert.isNotOk(element.cyphertext);
+//            element.addEventListener('fire-encrypt', function(event) {
+//                console.log(JSON.stringify(event));
+//                assert.isOk(event.detail.ciphertext);
+//                assert.equal(event.detail.ciphertext, element.cyphertext);
+//                assert.notEqual(event.detail.ciphertext, element.data);
+//                done();
+//            });
             return element.encrypt().then(function (cypherText) {
                 assert.isOk(cypherText);
-                assert.equal(cypherText, 'ada81226c0e5075db75e7fe3aec910273dd28d2cce763027c7db6cedc22122d1');
-                assert.equal(element.cyphertext, 'ada81226c0e5075db75e7fe3aec910273dd28d2cce763027c7db6cedc22122d1');
+                assert.equal(element.cyphertext, cypherText);
+                assert.notEqual(element.cyphertext, element.data);
                 return cypherText;
             });
 

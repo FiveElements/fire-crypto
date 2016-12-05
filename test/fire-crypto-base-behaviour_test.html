@@ -26,16 +26,46 @@
         });
     });
 
+    suite('Convert', function () {
+        test('utf8ToBuffer', function () {
+            var element = fixture('basic');
+            var data = 'Hello World ! ';
+            var dataBuffer = element._convertObjectUtf8ToBuffer(data);
+            assert.isOk(dataBuffer);
+            var dataBufferToUtf8 = element._convertBufferToObjectUtf8(dataBuffer);
+            assert.isOk(dataBufferToUtf8);
+            assert.equal(data, dataBufferToUtf8);
+        });
+        test('hexToBuffer', function () {
+            var element = fixture('basic');
+            var data = 'ada81226c0e5075db75e7fe3aec910273dd28d2cce763027c7db6cedc22122d1';
+            var dataBuffer = element.convertHexToBuffer(data);
+            assert.isOk(dataBuffer);
+            var dataBufferToHex = element.convertBufferToHex(dataBuffer);
+            assert.isOk(dataBufferToHex);
+            assert.equal(data, dataBufferToHex);
+        });
+        test('base64ToBuffer', function () {
+            var element = fixture('basic');
+            var data = 'SGVsbG8gV29ybGQgIQ==';
+            var dataBuffer = element.convertBase64ToBuffer(data);
+            assert.isOk(dataBuffer);
+            var dataBufferToHex = element.convertBufferToBase64(dataBuffer);
+            assert.isOk(dataBufferToHex);
+            assert.equal(data, dataBufferToHex);
+        });
+    });
+
     suite('Check Algorithm Identifier', function () {
         test('Unique algo name', function () {
             var element = fixture('basic');
             var names = element.algorithmIdentifier.reduce(function (acc, val) {
                 var algoName = val.jwk.alg;
                 assert.isOk(algoName);
-                assert.isNotOk(acc[algoName], 'duplicate entry for '+ algoName);
+                assert.isNotOk(acc[algoName], 'duplicate entry for ' + algoName);
                 acc[algoName] = val;
                 return acc;
-            }, {}) ;
+            }, {});
         });
     });
 
@@ -49,7 +79,7 @@
         test('Filter kty=oct', function () {
             var element = fixture('basic');
             var filter = function (elt) {
-              return elt.jwk.kty === 'oct';
+                return elt.jwk.kty === 'oct';
             };
             var algoNames = element.getAlgorithms(filter);
             assert.equal(algoNames.length, 19);
@@ -58,19 +88,19 @@
             var element = fixture('basic');
             var algoNames = element.getAlgorithmsForSign();
             assert.equal(algoNames.length, 11);
-            assert.equal(algoNames.length, 4+4+3);
+            assert.equal(algoNames.length, 4 + 4 + 3);
         });
         test('getAlgorithmsForEncrypt', function () {
             var element = fixture('basic');
             var algoNames = element.getAlgorithmsForEncrypt();
-            assert.equal(algoNames.length, 16-4);
-            assert.equal(algoNames.length, 3+3+6+4-4);
+            assert.equal(algoNames.length, 16 - 4);
+            assert.equal(algoNames.length, 3 + 3 + 6 + 4 - 4);
         });
         test('getAlgorithmsForWrapKey', function () {
             var element = fixture('basic');
             var algoNames = element.getAlgorithmsForWrapKey();
-            assert.equal(algoNames.length, 19-5);
-            assert.equal(algoNames.length, 3+3+6+4+3-5);
+            assert.equal(algoNames.length, 19 - 5);
+            assert.equal(algoNames.length, 3 + 3 + 6 + 4 + 3 - 5);
         });
     });
 
@@ -141,7 +171,7 @@
                 assert.equal(algo.hash.name, 'SHA-256');
             });
         });
-  
+
     });
 
     suite('Import JWK ', function () {

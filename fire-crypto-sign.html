@@ -67,10 +67,10 @@ Polymer Element fire-crypto-sign
                 var self = this;
                 return this.importKeyJwkPromise(jwk, false, ['sign']).then(function (algoKey) {
                     var cryptoSubtle = self._getCryptoSubtle();
-                    var dataBuffer = self._convertDataToBuffer(data);
+                    var dataBuffer = self._convertObjectUtf8ToBuffer(data);
                     return cryptoSubtle.sign(algoKey.algo, algoKey.key, dataBuffer);
                 }).then(function (macBuffer) {
-                    var macHex = self.bufferToHex(macBuffer);
+                    var macHex = self.convertBufferToHex(macBuffer);
                     return macHex;
                 });
             },
