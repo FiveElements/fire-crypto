@@ -16,9 +16,9 @@
 <body>
 <test-fixture id="basic">
     <template is="dom-template">
-        <fire-crypto-generatekey id="generator" algo="[[algo]]" private-key="{{privateKey}}"></fire-crypto-generatekey>
-        <fire-crypto-sign id="signor"  jwk="[[privateKey]]" data="[[data]]"  signature="{{signature}}"></fire-crypto-sign>
-        <fire-crypto-verify id="verifyor" jwk="[[privateKey]]" data="[[data]]" signature="[[signature]]"></fire-crypto-verify>
+        <fire-crypto-generatekey id="generator" not-auto algo="[[algo]]" private-key="{{privateKey}}"></fire-crypto-generatekey>
+        <fire-crypto-sign id="signor" not-auto  jwk="[[privateKey]]" data="[[data]]"  signature="{{signature}}"></fire-crypto-sign>
+        <fire-crypto-verify id="verifyor" not-auto jwk="[[privateKey]]" data="[[data]]" signature="[[signature]]"></fire-crypto-verify>
     </template>
 </test-fixture>
 

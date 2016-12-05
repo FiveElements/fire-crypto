@@ -21,7 +21,13 @@ Polymer Element fire-crypto-generatekey
 
 
             properties: {
-
+                /**
+                 * Not Start generated Key automatically when data changed
+                 */
+                notAuto: {
+                    type: Boolean,
+                    value: false
+                },
                 /**
                  *algo is a dictionary object defining the key generation function to use.
                  * Supported algo are: AES-CBC, AES-CTR, AES-GCM, RSA-OAEP, AES-KW, HMAC, RSASSA-PKCS1-v1_5, ECDSA, ECDH, and DH.
@@ -71,13 +77,15 @@ Polymer Element fire-crypto-generatekey
             },
 
             observers: [
-                '_generateCryptoKeyObserver(algo, extractable, usages.splices)'
+                '_generateCryptoKeyObserver(notAuto, algo, extractable, usages.splices)'
             ],
 
             // --- Observer Generate Key
             // --- ---------------------------
-            _generateCryptoKeyObserver: function (algo, extractable, usages) {
-                return this._generateCryptoKey(this.algo, this.extractable, this.usages);
+            _generateCryptoKeyObserver: function (notAuto, algo, extractable, usages) {
+                if (!notAuto) {
+                    this._generateCryptoKey(this.algo, this.extractable, this.usages);
+                }
             },
 
             // --- Api Generate Key

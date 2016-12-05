@@ -23,6 +23,14 @@ Polymer Element fire-crypto-verify
 
             properties: {
                 /**
+                 * Not Start Verify signature automatically when data changed
+                 */
+                notAuto: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
                  * The JSON Web Keyfor the signature
                  */
                 jwk: {
@@ -52,13 +60,15 @@ Polymer Element fire-crypto-verify
             },
 
             observers: [
-                '_verifySignObserver(jwk, data.*, signature)'
+                '_verifySignObserver(notAuto, jwk, data.*, signature)'
             ],
 
             // --- Verify Observer
             // --- ---------------------------
-            _verifySignObserver: function (jwk, dataChanged, signature) {
-                return this._verifySign(jwk, this.data, signature);
+            _verifySignObserver: function (notAuto, jwk, dataChanged, signature) {
+                 if (!notAuto) {
+                     this._verifySign(jwk, this.data, signature);
+                 }
             },
 
             // --- API Verify

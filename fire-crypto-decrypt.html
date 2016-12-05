@@ -21,6 +21,14 @@ Polymer Element fire-crypto-encrypt
 
             properties: {
                 /**
+                 * Not Start decryption automatically when data changed
+                 */
+                notAuto: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
                  * The Json Web Key used for Sign the data.
                  */
                 jwk: {
@@ -36,18 +44,21 @@ Polymer Element fire-crypto-encrypt
                  * The data to sign
                  */
                 clearText: {
-                    type: String
+                    type: String,
+                    notify: true
                 },
             },
 
             observers: [
-                '_decryptObserver(jwk,cypherText)'
+                '_decryptObserver(notAuto, jwk,cypherText)'
             ],
 
             // --- decrypt Observer
             // --- ---------------------------
-            _decryptObserver: function (jwk, dataChanged) {
-                return this._decrypt(jwk, this.cyphertext);
+            _decryptObserver: function (notAuto, jwk, cypherText) {
+                if (!notAuto) {
+                    this._decrypt(jwk, cypherText);
+                }
             },
 
             // --- API decrypt

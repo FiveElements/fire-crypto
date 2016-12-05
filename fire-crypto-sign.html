@@ -23,6 +23,14 @@ Polymer Element fire-crypto-sign
 
             properties: {
                 /**
+                 * Not Start sign automatically when data changed
+                 */
+                notAuto: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
                  * The Json Web Key used for Sign the data.
                  */
                 jwk: {
@@ -45,13 +53,15 @@ Polymer Element fire-crypto-sign
             },
 
             observers: [
-                '_signObserver(jwk,data.*)'
+                '_signObserver(notAuto, jwk,data.*)'
             ],
 
             // --- Verify Observer
             // --- ---------------------------
-            _signObserver: function (jwk, dataChanged) {
-                return this._sign(jwk, this.data);
+            _signObserver: function (notAuto, jwk, dataChanged) {
+                if (!notAuto) {
+                    this._sign(jwk, this.data);
+                }
             },
 
 

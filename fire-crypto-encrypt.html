@@ -21,6 +21,13 @@ Polymer Element fire-crypto-encrypt
 
             properties: {
                 /**
+                 * Not Start encryption automatically when data changed
+                 */
+                notAuto: {
+                   type: Boolean,
+                    value: false
+                },
+                /**
                  * The Json Web Key used for Sign the data.
                  */
                 jwk: {
@@ -39,13 +46,15 @@ Polymer Element fire-crypto-encrypt
             },
 
             observers: [
-                '_encryptObserver(jwk,data.*)'
+                '_encryptObserver(notAuto, jwk,data.*)'
             ],
 
             // --- Encrypt Observer
             // --- ---------------------------
-            _encryptObserver: function (jwk, dataChanged) {
-                return this._encrypt(jwk, this.data);
+            _encryptObserver: function (notAuto, jwk, dataChanged) {
+                if (!notAuto) {
+                    this._encrypt(jwk, this.data);
+                }
             },
 
             // --- API Encrypt
@@ -101,7 +110,6 @@ Polymer Element fire-crypto-encrypt
                     console.log('configured algo ==> ' + JSON.stringify( algo));
                     return cryptoSubtle.encrypt(algo, algoKey.key, dataBuffer);
                 }).then(function (cipherbuffer) {
-                    console.log('cipherbuffer ==> ' + cipherbuffer );
                     var ciphertext = self.convertBufferToBase64(cipherbuffer);
                     console.log('ciphertext ==> ' + ciphertext);
                     return ciphertext;
