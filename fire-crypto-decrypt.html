@@ -1,0 +1,112 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="fire-crypto-base-behaviour.html">
+
+<!--
+`fire-crypto-encrypt`
+Polymer Element fire-crypto-encrypt
+
+@demo demo/index.html 
+-->
+
+<dom-module id="fire-crypto-decrypt">
+    <script>
+        Polymer({
+
+            is: 'fire-crypto-decrypt',
+
+            behaviors: [
+                FiveElements.FireCryptoBaseBehavior
+            ],
+
+            properties: {
+                /**
+                 * The Json Web Key used for Sign the data.
+                 */
+                jwk: {
+                    type: Object
+                },
+                /**
+                 * The cypher text text to decrypt
+                 */
+                cypherText: {
+                    type: String
+                },
+                /**
+                 * The data to sign
+                 */
+                clearText: {
+                    type: String
+                },
+            },
+
+            observers: [
+                '_decryptObserver(jwk,cypherText)'
+            ],
+
+            // --- decrypt Observer
+            // --- ---------------------------
+            _decryptObserver: function (jwk, dataChanged) {
+                return this._decrypt(jwk, this.cypherText);
+            },
+
+            // --- API decrypt
+            // --- ---------------------------
+            decrypt: function () {
+                return this._decrypt(this.jwk, this.cypherText);
+            },
+
+
+
+            // --- Decrypt
+            // --- ---------------------------
+
+            _decryptPromise: function (jwk, data) {
+                var self = this;
+                return this.importKeyJwkPromise(jwk, false, ['decrypt']).then(function (algoKey) {
+                    var cryptoSubtle = self._getCryptoSubtle();
+                    var dataBuffer = self._convertDataToBuffer(data);
+                    var algo =  algoKey.algo;
+                    return cryptoSubtle.decrypt(algo, algoKey.key, dataBuffer);
+                }).then(function (ciphertext) {
+                    return ciphertext;
+                })
+            },
+
+
+            _decrypt: function (jwk, data) {
+                var self = this;
+                return this._decryptPromise(jwk, data).then(function (macHex) {
+                    self.signature = macHex;
+                    self._fireCryptoKeyDecrypt(macHex);
+                    return macHex;
+                }).catch(function (err) {
+                    self.signature = undefined;
+                    self._fireCryptoKeyDecryptError(err);
+                });
+            },
+
+            // --- Event Sign
+            // --- ---------------------------
+            /**
+             * Fired when a Data is decrypted.
+             *
+             * @event fire-decrypt
+             */
+            _fireCryptoKeyDecrypt: function (ciphertext) {
+                console.log('decrypt to', ciphertext);
+                this.fire('fire-decrypt', {ciphertext: ciphertext});
+            },
+            /**
+             * Fired when a Sign Error in decrypted.
+             *
+             * @event fire-error-decrypt
+             */
+            _fireCryptoKeyDecryptError: function (error) {
+                console.error('Decrypt error', error);
+                this.fire('fire-error-decrypt', {error: error});
+            },
+
+        });
+    </script>
+</dom-module>

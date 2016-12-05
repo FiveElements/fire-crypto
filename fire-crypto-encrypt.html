@@ -32,6 +32,10 @@ Polymer Element fire-crypto-encrypt
                 data: {
                     type: Object
                 },
+                cypherText: {
+                    type: String,
+                    notity: true,
+                },
             },
 
             observers: [
@@ -101,14 +105,13 @@ Polymer Element fire-crypto-encrypt
 
 
             _encrypt: function (jwk, data) {
-                console.log('call _sign', data);
                 var self = this;
                 return this._encryptPromise(jwk, data).then(function (macHex) {
-                    self.signature = macHex;
+                    self.cypherText = macHex;
                     self._fireCryptoKeyEncrypt(macHex);
                     return macHex;
                 }).catch(function (err) {
-                    self.signature = undefined;
+                    self.cypherText = undefined;
                     self._fireCryptoKeyEncryptError(err);
                 });
             },
@@ -124,6 +127,7 @@ Polymer Element fire-crypto-encrypt
                 console.log('encrypt to', ciphertext);
                 this.fire('fire-encrypt', {ciphertext: ciphertext});
             },
+
             /**
              * Fired when a Sign Error in encrypted.
              *

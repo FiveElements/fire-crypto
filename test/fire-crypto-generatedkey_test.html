@@ -140,7 +140,6 @@
     });
 
 
-<<<<<<< HEAD
     suite('Generated for all CryptoKey', function () {
         test('getAlgorithmsForSign', function () {
             var element = fixture('basic');
@@ -170,8 +169,8 @@
             });
             var promiseArray = encryptAlgos.map(function (algo) {
                 console.log('requets algo ' + JSON.stringify(algo));
-                return  element._generateCryptoKeyPromise(algo, true, ['sign', 'verify']).catch(function (error) {
-                    console.error('error with '+ JSON.stringify(algo) + ' --> ' + JSON.stringify(error));
+                return  element._generateCryptoKeyPromise(algo, true, ['encrypt', 'decrypt']).catch(function (error) {
+                    console.error('error with '+ JSON.stringify(algo) + ' --> ' + error);
                 });
             });
 //            'RSA-OAEP', 'AES-CBC'
@@ -183,8 +182,7 @@
             });
         });
     });
-=======
->>>>>>> 48450a965d629a71368d985c3bacf7c82f01acc7
+
 </script>
 </body>
 </html>
