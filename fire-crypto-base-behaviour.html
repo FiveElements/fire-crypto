@@ -199,10 +199,18 @@ Polymer Element fire-hmac-sign-behaviour
         // --- Get crypto.subtle
         // --- ---------------------------
         /**
+         * Get the crypto Object from the browser.
+         */
+        _getCrypto: function () {
+            var crypto = window.crypto || window.msCrypto; //for IE11
+            return crypto;
+        },
+
+        /**
          * Get the crypto.subtle Object from the browser.
          */
         _getCryptoSubtle: function () {
-            var crypto = window.crypto || window.msCrypto; //for IE11
+            var crypto = this._getCrypto();
             if (crypto.webkitSubtle) {
                 return window.crypto.webkitSubtle; //for Safari
             }
@@ -384,6 +392,10 @@ Polymer Element fire-hmac-sign-behaviour
 //            var buffer = new TextEncoder('utf-8').encode(datastr);
             var buffer = Unibabel.utf8ToBuffer(datastr);
             return buffer;
+        },
+        bufferToUtf8: function (buffer) {
+            var str = Unibabel.bufferToUtf8(buffer);
+            return str;
         },
 
         bufferToHex: function (arrayBuffer) {

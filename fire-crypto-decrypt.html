@@ -29,7 +29,7 @@ Polymer Element fire-crypto-encrypt
                 /**
                  * The cypher text text to decrypt
                  */
-                cypherText: {
+                cyphertext: {
                     type: String
                 },
                 /**
@@ -47,13 +47,13 @@ Polymer Element fire-crypto-encrypt
             // --- decrypt Observer
             // --- ---------------------------
             _decryptObserver: function (jwk, dataChanged) {
-                return this._decrypt(jwk, this.cypherText);
+                return this._decrypt(jwk, this.cyphertext);
             },
 
             // --- API decrypt
             // --- ---------------------------
             decrypt: function () {
-                return this._decrypt(this.jwk, this.cypherText);
+                return this._decrypt(this.jwk, this.cyphertext);
             },
 
 

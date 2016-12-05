@@ -32,7 +32,7 @@ Polymer Element fire-crypto-encrypt
                 data: {
                     type: Object
                 },
-                cypherText: {
+                cyphertext: {
                     type: String,
                     notity: true,
                 },
@@ -51,18 +51,20 @@ Polymer Element fire-crypto-encrypt
             // --- API Encrypt
             // --- ---------------------------
             encrypt: function () {
+                console.log('JWK' + JSON.stringify(this.jwk));
                 return this._encrypt(this.jwk, this.data);
             },
 
             // --- Encrypt Configure
             // --- ---------------------------
             _configureEncryptCryptoKeyAlgo: function (algoToConfigure) {
-                var algo = JSON.parse(JSON.stringify(algo));
+                var algo = JSON.parse(JSON.stringify(algoToConfigure));
 
                 if (algo.name === 'AES-CBC') {
                     //Don't re-use initialization vectors!
                     //Always generate a new iv every time your encrypt!
-                    algo.iv = this._getCryptoSubtle().getRandomValues(new Uint8Array(16));
+                    console.log()
+                    algo.iv = this._getCrypto().getRandomValues(new Uint8Array(16));
                 } else if (algo.name === 'AES-CTR') {
                     //Don't re-use counters!
                     //Always use a new counter every time your encrypt!
@@ -71,7 +73,7 @@ Polymer Element fire-crypto-encrypt
                     //Don't re-use initialization vectors!
                     //Always generate a new iv every time your encrypt!
                     //Recommended to use 12 bytes length
-                    algo.iv = this._getCryptoSubtle().getRandomValues(new Uint8Array(12));
+                    algo.iv = this._getCrypto().getRandomValues(new Uint8Array(12));
 
                     //Additional authentication data (optional)
                     //algo.additionalData= ArrayBuffer;
@@ -83,7 +85,7 @@ Polymer Element fire-crypto-encrypt
                 } else if (algo.name === 'AES-CFB') {
                     //Don't re-use initialization vectors!
                     //Always generate a new iv every time your encrypt!
-                    algo.iv = this._getCryptoSubtle().getRandomValues(new Uint8Array(16));
+                    algo.iv = this._getCrypto().getRandomValues(new Uint8Array(16));
                 }
                 return algo;
             },
@@ -96,9 +98,11 @@ Polymer Element fire-crypto-encrypt
                 return this.importKeyJwkPromise(jwk, false, ['encrypt']).then(function (algoKey) {
                     var cryptoSubtle = self._getCryptoSubtle();
                     var dataBuffer = self._convertDataToBuffer(data);
-                    var algo = this._configureEncryptCryptoKeyAlgo(algoKey.algo);
+                    var algo = self._configureEncryptCryptoKeyAlgo(algoKey.algo);
                     return cryptoSubtle.encrypt(algo, algoKey.key, dataBuffer);
-                }).then(function (ciphertext) {
+                }).then(function (cipherbuffer) {
+                    var ciphertext = self.bufferToUtf8(cipherbuffer);
+                    console.log('ciphertext ==> ' + ciphertext);
                     return ciphertext;
                 })
             },
@@ -107,11 +111,11 @@ Polymer Element fire-crypto-encrypt
             _encrypt: function (jwk, data) {
                 var self = this;
                 return this._encryptPromise(jwk, data).then(function (macHex) {
-                    self.cypherText = macHex;
+                    self.cyphertext = macHex;
                     self._fireCryptoKeyEncrypt(macHex);
                     return macHex;
                 }).catch(function (err) {
-                    self.cypherText = undefined;
+                    self.cyphertext = undefined;
                     self._fireCryptoKeyEncryptError(err);
                 });
             },
