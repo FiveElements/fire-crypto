@@ -4,6 +4,6 @@ module.exports = {
         local: { browsers: ['chrome'] }
     },
     expanded: true,
-    persistent:  true,
+    persistent:  false,
     verbose: false
 };
