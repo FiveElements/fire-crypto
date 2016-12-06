@@ -34,7 +34,7 @@ Polymer Element fire-crypto-generatekey
                  */
                 algo: {
                     type: Object,
-                    notify: true,
+                    notify: true
                 },
                 /**
                  * The usage of th key.
@@ -70,7 +70,6 @@ Polymer Element fire-crypto-generatekey
                 },
 
             },
-
             observers: [
                 '_generateCryptoKeyObserver(notAuto, algo, extractable, usages.splices)'
             ],
@@ -88,6 +87,7 @@ Polymer Element fire-crypto-generatekey
             // --- ---------------------------
 
             generateCryptoKey: function () {
+                console.log('algo', this.algo);
                 return this._generateCryptoKey(this.algo, this.extractable, this.usages);
             },
 

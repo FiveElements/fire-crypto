@@ -37,10 +37,14 @@
             </demo-fire-crypto>
 
 
+
+
+
         </template>
 
         <script>
             var demo = document.querySelector('#demo');
+            demo.usages = ['sign', 'verify'];
             function generateCryptoKey() {
                 document.getElementById('generator').generateCryptoKey();
             }
@@ -53,6 +57,36 @@
 
         </script>
     </demo-snippet>
+
+    <div class="vertical-section-container centered">
+        <h3>Encrypt fire-crypto demo</h3>
+        <demo-snippet>
+            <template is="dom-bind" id="demoEncrypt">
+
+                <demo-algo-listbox usage="encrypt" algo="{{algoEncrypt}}"></demo-algo-listbox>
+                <fire-crypto-generatekey id="generatorKeyEncrypt" algo="{{algoEncrypt}}" usages="[[usages]]"
+                                         private-key="{{privateKey}}" public-key="{{publicKey}}">
+                </fire-crypto-generatekey>
+                <demo-jwk-display private-key="{{privateKey}}" public-key="{{publicKey}}"></demo-jwk-display>
+
+            </template>
+
+            <script>
+                var demo = document.querySelector('#demoEncrypt');
+                demo.usages = ['encrypt', 'decrypt'];
+                function generateCryptoKey() {
+                    document.getElementById('generatorKeyEncrypt').generateCryptoKey();
+                }
+                function sign() {
+                    document.getElementById('signor').sign();
+                }
+                function verifySign() {
+                    document.getElementById('verifyor').verifySign();
+                }
+
+            </script>
+        </demo-snippet>
+
 </div>
 
 

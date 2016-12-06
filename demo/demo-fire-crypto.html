@@ -25,19 +25,24 @@ Polymer Element demo-fire-crypto
             }
         </style>
 
-
         <fire-crypto-generatekey id="generator" algo="{{algo}}"
-                                 private-key="{{privateKey}}" public-key="{{publicKey}}"></fire-crypto-generatekey>
+                                 private-key="{{privateKey}}" public-key="{{publicKey}}">
+        </fire-crypto-generatekey>
 
         <fire-crypto-sign id="signor"  signature="{{signature}}"
-                          jwk="{{privateKey}}" data="{{data}}"></fire-crypto-sign>
+                          jwk="{{privateKey}}" data="{{data}}">
+        </fire-crypto-sign>
 
-        <fire-crypto-verify id="verifyor" jwk="{{publicKey}}" data="{{data}}" signature="{{signature}}"
-                             is-verify="{{isVerify}}"></fire-crypto-verify>
+        <fire-crypto-verify id="verifyor" jwk="{{publicKey}}"
+                            data="{{data}}" signature="{{signature}}"
+                            is-verify="{{isVerify}}">
+        </fire-crypto-verify>
+
+
 
         <demo-algo-listbox usage="sign" algo="{{algo}}"></demo-algo-listbox>
-
         <paper-input value="{{data.name}}" label="Data to sign"></paper-input>
+
 
         <div>
             <h2 on-tap="genJwk">Generate JWK</h2>
@@ -65,6 +70,12 @@ Polymer Element demo-fire-crypto
             properties: {
                 signAlgos: {
                   type: Array
+                },
+                usages: {
+                    type: Array,
+                    value: function () {
+                      return ['sign', 'verify'];
+                    }
                 },
                 algo: {
                    type: Object,

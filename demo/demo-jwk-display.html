@@ -49,12 +49,12 @@ Polymer Element demo-jwk-display
             },
 
             _privateKeyChanged: function(newValue, oldValue) {
-                this._privateKeyStr =JSON.stringify(newValue, null, '\t');
+                this._privateKeyStr =JSON.stringify(newValue, null, '  ');
 //                console.log('_privateKeyChanged :',  this._privateKeyStr);
             },
             _publicKeyChanged: function(newValue, oldValue) {
-                this._publicKeyStr =JSON.stringify(newValue, null, '\t');
-                console.log('_privateKeyChanged :',  this._publicKeyStr);
+                this._publicKeyStr =JSON.stringify(newValue, null, '  ');
+//                console.log('_privateKeyChanged :',  this._publicKeyStr);
             },
 
         });

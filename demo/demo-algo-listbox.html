@@ -52,19 +52,17 @@
                 },
                 algoName: {
                     type: String,
-                    notify: true,
                     observer: '_algoNameChanged'
                 },
                 algoStr: {
-                    type: String,
-                    notify: true,
+                    type: String
                 },
                 algo: {
                     type: Object,
                     notify: true
                 },
                 listAlgos: {
-                    type: Array,
+                    type: Array
                 },
             },
 
@@ -76,8 +74,10 @@
                 }
             },
             _algoNameChanged: function (newValue, oldValue) {
-                this.algo = this.getAlgorithByName(newValue);
-                this.algoStr = JSON.stringify(this.algo);
+                var algo = this.getAlgorithByName(newValue);
+//                this.set('algo', algo);
+                this.algo = algo;
+                this.algoStr = JSON.stringify(algo);
             }
 
 
