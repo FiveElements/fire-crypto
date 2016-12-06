@@ -16,10 +16,12 @@ Polymer Element demo-jwk-display
                 display: block;
             }
         </style>
-        <paper-tabs selected="{{selected}}">
-            <paper-tab>Private Key</paper-tab>
-            <paper-tab>Public Key</paper-tab>
-        </paper-tabs>
+        <template is="dom-if" if="{{_publicKeyStr}}">
+            <paper-tabs selected="{{selected}}">
+                <paper-tab>Private Key</paper-tab>
+                <paper-tab>Public Key</paper-tab>
+            </paper-tabs>
+        </template>
         <iron-pages selected="{{selected}}">
             <pre>[[_privateKeyStr]]</pre>
             <pre>[[_publicKeyStr]]</pre>
@@ -32,6 +34,10 @@ Polymer Element demo-jwk-display
             is: 'demo-jwk-display',
 
             properties: {
+                selected: {
+                    type: Number,
+                    value: 0
+                },
                 privateKey: {
                     type: Object,
                     observer: '_privateKeyChanged'
@@ -48,12 +54,15 @@ Polymer Element demo-jwk-display
                 },
             },
 
-            _privateKeyChanged: function(newValue, oldValue) {
-                this._privateKeyStr =JSON.stringify(newValue, null, '  ');
+            _privateKeyChanged: function (newValue, oldValue) {
+                this._privateKeyStr = JSON.stringify(newValue, null, '  ');
 //                console.log('_privateKeyChanged :',  this._privateKeyStr);
             },
-            _publicKeyChanged: function(newValue, oldValue) {
-                this._publicKeyStr =JSON.stringify(newValue, null, '  ');
+            _publicKeyChanged: function (newValue, oldValue) {
+                if (!newValue) {
+                    this.selected = 0;
+                }
+                this._publicKeyStr = JSON.stringify(newValue, null, '  ');
 //                console.log('_privateKeyChanged :',  this._publicKeyStr);
             },
 

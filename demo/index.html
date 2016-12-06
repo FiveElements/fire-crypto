@@ -37,9 +37,6 @@
             </demo-fire-crypto>
 
 
-
-
-
         </template>
 
         <script>
@@ -63,17 +60,32 @@
         <demo-snippet>
             <template is="dom-bind" id="demoEncrypt">
 
-                <demo-algo-listbox usage="encrypt" algo="{{algoEncrypt}}"></demo-algo-listbox>
-                <fire-crypto-generatekey id="generatorKeyEncrypt" algo="{{algoEncrypt}}" usages="[[usages]]"
-                                         private-key="{{privateKey}}" public-key="{{publicKey}}">
-                </fire-crypto-generatekey>
-                <demo-jwk-display private-key="{{privateKey}}" public-key="{{publicKey}}"></demo-jwk-display>
+                <div>
+                    <h1>Generate Key</h1>
+                    <demo-algo-listbox usage="encrypt" algo="{{algo}}"></demo-algo-listbox>
+                    <fire-crypto-generatekey algo="{{algo}}" usages="[[usages]]"
+                                             private-key="{{privateKey}}" public-key="{{publicKey}}">
+                    </fire-crypto-generatekey>
+                    <demo-jwk-display private-key="{{privateKey}}" public-key="{{publicKey}}"></demo-jwk-display>
+                </div>
+
+                <div>
+                    <h1>Encrypt Data</h1>
+                    <paper-input value="{{data.name}}" label="Data to encrypt"></paper-input>
+                    <fire-crypto-encrypt jwk="[[privateKey]]" data="[[data]]"
+                                         cyphertext="{{cyphertext}}"></fire-crypto-encrypt>
+                    <div>
+                        <h2>Secured Text</h2>
+                        <pre>[[cyphertext]]</pre>
+                    </div>
+                </div>
 
             </template>
 
             <script>
                 var demo = document.querySelector('#demoEncrypt');
                 demo.usages = ['encrypt', 'decrypt'];
+                demo.data = {name: 'Super Secret Text'};
                 function generateCryptoKey() {
                     document.getElementById('generatorKeyEncrypt').generateCryptoKey();
                 }
@@ -87,8 +99,7 @@
             </script>
         </demo-snippet>
 
-</div>
-
+    </div>
 
 
 </body>
