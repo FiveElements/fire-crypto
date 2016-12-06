@@ -3,6 +3,7 @@
 <link rel="import" href="../../paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../paper-listbox/paper-listbox.html">
 <link rel="import" href="../../paper-item/paper-item.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel="import" href="../fire-crypto-base-behaviour.html">
 
@@ -14,21 +15,23 @@
 
 <dom-module id="demo-algo-listbox">
     <template>
-        <style>
+        <style is="custom-style" include="iron-flex iron-flex-alignment">
             :host {
                 display: block;
             }
         </style>
+        <div class="layout horizontal wrap">
+            <paper-dropdown-menu label="Algorithm">
+                <paper-listbox selected="{{algoName}}" attr-for-selected="code" class="dropdown-content">
+                    <template id="menu" is="dom-repeat" items="[[listAlgos]]">
+                        <paper-item code="[[item]]">[[item]]</paper-item>
+                    </template>
+                </paper-listbox>
+            </paper-dropdown-menu>
 
-        <paper-dropdown-menu label="Algorithm">
-            <paper-listbox selected="{{algoName}}" attr-for-selected="code" class="dropdown-content">
-                <template id="menu" is="dom-repeat" items="[[listAlgos]]">
-                    <paper-item code="[[item]]">[[item]]</paper-item>
-                </template>
-            </paper-listbox>
-        </paper-dropdown-menu>
+            <pre class="flex">[[algoStr]]</pre>
+        </div>
 
-        <pre>[[algoStr]]</pre>
 
     </template>
 
