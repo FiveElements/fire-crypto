@@ -1,0 +1,83 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<link rel="import" href="../../paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../paper-listbox/paper-listbox.html">
+<link rel="import" href="../../paper-item/paper-item.html">
+
+<link rel="import" href="../fire-crypto-base-behaviour.html">
+
+<!--
+`demo-algo-listbox`
+
+
+-->
+
+<dom-module id="demo-algo-listbox">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+
+        <paper-dropdown-menu label="Algorithm">
+            <paper-listbox selected="{{algoName}}" attr-for-selected="code" class="dropdown-content">
+                <template id="menu" is="dom-repeat" items="[[listAlgos]]">
+                    <paper-item code="[[item]]">[[item]]</paper-item>
+                </template>
+            </paper-listbox>
+        </paper-dropdown-menu>
+
+        <pre>[[algoStr]]</pre>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'demo-algo-listbox',
+
+            behaviors: [
+                FiveElements.FireCryptoBaseBehavior
+            ],
+
+
+            properties: {
+                usage: {
+                    type:String,
+                    observer: '_usageChanged'
+                },
+                algoName: {
+                    type: String,
+                    notify: true,
+                    observer: '_algoNameChanged'
+                },
+                algoStr: {
+                    type: String,
+                    notify: true,
+                },
+                algo: {
+                    type: Object,
+                    notify: true
+                },
+                listAlgos: {
+                    type: Array,
+                },
+            },
+
+            _usageChanged: function (newValue, oldValue) {
+                if (newValue === 'sign') {
+                    this.listAlgos =  this.getAlgorithmNamesForSign();
+                } else if (newValue === 'encrypt') {
+                    this.listAlgos =  this.getAlgorithmNamesForEncrypt();
+                }
+            },
+            _algoNameChanged: function (newValue, oldValue) {
+                this.algo = this.getAlgorithByName(newValue);
+                this.algoStr = JSON.stringify(this.algo);
+            }
+
+
+        });
+    </script>
+</dom-module>

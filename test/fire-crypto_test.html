@@ -14,74 +14,155 @@
     <link rel="import" href="../fire-crypto-verify.html">
 </head>
 <body>
-<test-fixture id="basic">
+<test-fixture id="sign">
     <template is="dom-template">
-        <fire-crypto-generatekey id="generator" not-auto algo="[[algo]]" private-key="{{privateKey}}"></fire-crypto-generatekey>
-        <fire-crypto-sign id="signor" not-auto  jwk="[[privateKey]]" data="[[data]]"  signature="{{signature}}"></fire-crypto-sign>
-        <fire-crypto-verify id="verifyor" not-auto jwk="[[privateKey]]" data="[[data]]" signature="[[signature]]"></fire-crypto-verify>
+        <fire-crypto-generatekey id="generator" not-auto algo="[[algo]]"
+                                 private-key="{{privateKey}}"></fire-crypto-generatekey>
+        <fire-crypto-sign id="signor" not-auto jwk="[[privateKey]]" data="[[data]]"
+                          signature="{{signature}}"></fire-crypto-sign>
+        <fire-crypto-verify id="verifyor" not-auto jwk="[[privateKey]]" data="[[data]]"
+                            signature="[[signature]]"></fire-crypto-verify>
+    </template>
+</test-fixture>
+
+<test-fixture id="encrypt">
+    <template is="dom-template">
+        <fire-crypto-generatekey id="generator" not-auto algo="[[algo]]"
+                                 private-key="{{privateKey}}"></fire-crypto-generatekey>
+        <fire-crypto-encrypt id="signor" not-auto jwk="[[privateKey]]" data="[[data]]"
+                          signature="{{signature}}"></fire-crypto-encrypt>
+        <fire-crypto-decrypt id="verifyor" not-auto jwk="[[privateKey]]" data="[[data]]"
+                            signature="[[signature]]"></fire-crypto-decrypt>
     </template>
 </test-fixture>
 
 <script>
 
-//        suite('Sign all algo Promise', function () {
-//                test('instantiating the element works', function () {
-//                    var element = fixture('basic');
-//                    var data = {title: 'Hello World !'};
-//                    var algoIds = element.algorithmIdentifier.filter(function (elt) {
-//                       return true;
-//                    }).forEach(function (elt) {
-//                        var algo = elt.algo;
-//                        return element.$.generator._generateCryptoKeyPromise(algo, true, ['sign', 'verify']).then(function (jwk) {
-//                            return element.$.signor._signPromise(jwk.privateKey, data);
-//                        });
+    suite('Encrypt & Decrypt', function () {
+
+//        test('Bindings between Elements', function () {
+//            var element = fixture('encrypt', {
+//                algo: {name: "HMAC", hash: {name: "SHA-256"}},
+//                usages: ['encrypt', 'decrypt'],
+//                data: {title: 'Hello Wolrd!'}
+//            });
+//            var generator = document.getElementById('generator');
+//            var signor = document.getElementById('signor');
+//            var verifyor = document.getElementById('verifyor');
+//            return generator.generateCryptoKey().then(function (keys) {
+//                assert.isOk(keys);
+//                assert.isOk(keys.privateKey);
+//                assert.equal(generator.privateKey, keys.privateKey);
+//                assert.equal(generator.publicKey, keys.publicKey);
+//                return signor.sign();
+//            }).then(function (signature) {
+//                assert.isOk(signature);
+//                assert.equal(signor.signature, signature);
+//                return verifyor.verifySign();
+//            }).then(function (isVerify) {
+//                assert.isTrue(isVerify);
+//                assert.equal(verifyor.isVerify, isVerify);
+//                return isVerify;
+//            });
+//        });
+
+
+//        test('All Promise Sign Algo', function () {
+//            var element = fixture('sign');
+//            var data=  {title: 'Hello Wolrd!'};
+//            var generator = document.getElementById('generator');
+//            var signor = document.getElementById('signor');
+//            var verifyor = document.getElementById('verifyor');
+//            // Test
+//            var signAlgo = generator.getAlgorithmsForSign();
+//            var promiseArray= signAlgo.map(function (algo) {
+//                return generator._generateCryptoKeyPromise(algo, true, ['sign', 'verify']).then(function (keys) {
+//                    assert.isOk(keys);
+//                    return signor._signPromise(keys.privateKey, data).then(function (signature) {
+//                        return signature;
+//                    }).then(function (signature) {
+//                        assert.isOk(signature);
+//                        var jwk = keys.publicKey ||keys.privateKey;
+//                        return verifyor._verifySignPromise(jwk, data, signature);
+//                    }).then(function (isVerify) {
+//                        assert.isTrue(isVerify);
+//                        return isVerify;
 //                    });
-//                    return algoIds;
 //                });
 //            });
+//            return Promise.all(promiseArray);
+//        });
+    });
 
 
-//    suite('Generated CryptoKey', function () {
-//        test('SHA-256', function () {
-//            var element = fixture('basic', {
-//                algo: {name: "HMAC", hash: {name: "SHA-256"}}
-//            });
-//            return element.generateCryptoKey().then(function (keys) {
-//                assert.isOk(keys.privateKey);
-//                assert.isNotOk(keys.publicKey);
-//            });
-//
+
+    suite('Sign & Verify', function () {
+//        var generator;
+//        var signor;
+//        var verifyor;
+//        setup(function () {
+//            generator = document.getElementById('generator');
+//            signor = document.getElementById('signor');
+//            verifyor = document.getElementById('verifyor');
+        // Check Elements
+//            assert.isOk(generator);
+//            assert.isOk(signor);
+//            assert.isOk(verifyor);
 //        });
-//    });
-//
-//    suite('Generated CryptoPairKey', function () {
-//        test('RS256', function () {
-//            var element = fixture('basic', {
-//                algo: {
-//                    name: "RSASSA-PKCS1-v1_5",
-//                    modulusLength: 2048, //can be 1024, 2048, or 4096
-//                    publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-//                    hash: {name: "SHA-256"}
-//                }
-//            });
-//            return element.generateCryptoKey().then(function (keys) {
-//                assert.isOk(keys.privateKey);
-//                assert.isOk(keys.publicKey);
-//            });
-//
-//        });
-//
-//        test('ES256', function () {
-//            var element = fixture('basic', {
-//                algo: {name: "ECDSA", namedCurve: "P-256", hash: {name: "SHA-256"}}
-//            });
-//            return element.generateCryptoKey().then(function (keys) {
-//                assert.isOk(keys.privateKey);
-//                assert.isOk(keys.publicKey);
-//            });
-//
-//        });
-//    });
+
+        test('Bindings between Elements', function () {
+            var element = fixture('sign', {
+                algo: {name: "HMAC", hash: {name: "SHA-256"}},
+                usages: ['sign', 'verify'],
+                data: {title: 'Hello Wolrd!'}
+            });
+            var generator = document.getElementById('generator');
+            var signor = document.getElementById('signor');
+            var verifyor = document.getElementById('verifyor');
+            return generator.generateCryptoKey().then(function (keys) {
+                assert.isOk(keys);
+                assert.isOk(keys.privateKey);
+                assert.equal(generator.privateKey, keys.privateKey);
+                assert.equal(generator.publicKey, keys.publicKey);
+                return signor.sign();
+            }).then(function (signature) {
+                assert.isOk(signature);
+                assert.equal(signor.signature, signature);
+                return verifyor.verifySign();
+            }).then(function (isVerify) {
+                assert.isTrue(isVerify);
+                assert.equal(verifyor.isVerify, isVerify);
+                return isVerify;
+            });
+        });
+
+
+        test('All Promise Sign Algo', function () {
+            var element = fixture('sign');
+            var data=  {title: 'Hello Wolrd!'};
+            var generator = document.getElementById('generator');
+            var signor = document.getElementById('signor');
+            var verifyor = document.getElementById('verifyor');
+            // Test
+            var signAlgo = generator.getAlgorithmsForSign();
+            var promiseArray= signAlgo.map(function (algo) {
+                return generator._generateCryptoKeyPromise(algo, true, ['sign', 'verify']).then(function (keys) {
+                    assert.isOk(keys);
+                    return signor._signPromise(keys.privateKey, data).then(function (signature) {
+                        return signature;
+                    }).then(function (signature) {
+                        assert.isOk(signature);
+                        var jwk = keys.publicKey ||keys.privateKey;
+                        return verifyor._verifySignPromise(jwk, data, signature);
+                    }).then(function (isVerify) {
+                        assert.isTrue(isVerify);
+                        return isVerify;
+                    });
+                });
+            });
+            return Promise.all(promiseArray);
+        });
+    });
 
 
 

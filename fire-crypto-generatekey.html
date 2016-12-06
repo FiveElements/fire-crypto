@@ -34,12 +34,7 @@ Polymer Element fire-crypto-generatekey
                  */
                 algo: {
                     type: Object,
-                    value: function () {
-                        // https://w3c.github.io/webcrypto/Overview.html#jwk-mapping
-                        //can be 'SHA-1', 'SHA-256', 'SHA-384', or 'SHA-512'
-                        return {name: "HMAC", hash: {name: "SHA-256"}};
-//                        return {name: "ECDSA", namedCurve: "P-256", hash: {name: "SHA-256"}}
-                    }
+                    notify: true,
                 },
                 /**
                  * The usage of th key.
@@ -83,6 +78,7 @@ Polymer Element fire-crypto-generatekey
             // --- Observer Generate Key
             // --- ---------------------------
             _generateCryptoKeyObserver: function (notAuto, algo, extractable, usages) {
+                console.log('Gen Change : ' + JSON.stringify(algo) + "  <-- " + JSON.stringify(this.algo));
                 if (!notAuto) {
                     this._generateCryptoKey(this.algo, this.extractable, this.usages);
                 }
