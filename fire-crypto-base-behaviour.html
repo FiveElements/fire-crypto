@@ -393,6 +393,8 @@ Polymer Element fire-hmac-sign-behaviour
             var buffer;
             if (format === 'hex') {
                 buffer = Unibabel.hexToBuffer(datastr);
+            } else if (format === 'base32') {
+                buffer = Unibabel.base32ToBuffer(datastr);
             } else if (format === 'base64') {
                 buffer = Unibabel.base64ToBuffer(datastr);
             } else if (format === 'utf16') {
@@ -412,6 +414,8 @@ Polymer Element fire-hmac-sign-behaviour
             var str;
             if (format === 'hex') {
                 str = Unibabel.bufferToHex(new Uint8Array(buffer));
+            } else if (format === 'base32') {
+                str = Unibabel.bufferToBase32(new Uint8Array(buffer));
             } else if (format === 'base64') {
                 str = Unibabel.bufferToBase64(new Uint8Array(buffer));
             } else if (format === 'utf16') {
