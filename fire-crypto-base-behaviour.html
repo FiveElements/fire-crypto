@@ -391,8 +391,8 @@ Polymer Element fire-hmac-sign-behaviour
         /**
          * Conversion of UTf8 Object to a ArrayBuffer
          */
-        _convertObjectUtf8ToBuffer: function (data) {
-            var datastr = JSON.stringify(data);
+        _convertObjectUtf8ToBuffer: function (data, isString) {
+            var datastr = isString ? data : JSON.stringify(data);
             var buffer = Unibabel.utf8ToBuffer(datastr);
             return buffer;
         },
@@ -401,8 +401,9 @@ Polymer Element fire-hmac-sign-behaviour
          */
         _convertBufferToObjectUtf8: function (arrayBuffer) {
             var buffer = new Uint8Array(arrayBuffer);
-            var str = Unibabel.bufferToUtf8(buffer);
-            return JSON.parse(str);
+            var str = Unibabel.bufferToUtf8(buffer, isString);
+            var result = isString ? str : JSON.parse(str);
+            return result;
         },
         /**
          * Conversion of HEX string to a ArrayBuffer
@@ -425,14 +426,16 @@ Polymer Element fire-hmac-sign-behaviour
          */
         convertBufferToBase64: function (arrayBuffer) {
             var array = new Uint8Array(arrayBuffer);
-            var hexstr = Unibabel.bufferToBase64(array);
-            return hexstr;
+            var str = Unibabel.bufferToBase64(array);
+            var result = isString ? str : JSON.parse(str);
+            return result;
         },
         /**
          * Conversion of HEX string to a ArrayBuffer
          */
-        convertBase64ToBuffer: function (base64) {
-            var buffer = Unibabel.base64ToBuffer(base64);
+        convertBase64ToBuffer: function (data) {
+            var datastr = isString ? data : JSON.stringify(data);
+            var buffer = Unibabel.base64ToBuffer(datastr);
             return buffer;
         },
         // --- End

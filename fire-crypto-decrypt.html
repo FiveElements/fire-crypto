@@ -27,7 +27,13 @@ Polymer Element fire-crypto-encrypt
                     type: Boolean,
                     value: false
                 },
-
+                /**
+                 * Assume that the data is String. Not Apply JSON.stringly in crypto process.
+                 */
+                isString: {
+                    type: Boolean,
+                    value: false,
+                },
                 /**
                  * The Json Web Key used for Sign the data.
                  */
@@ -76,7 +82,7 @@ Polymer Element fire-crypto-encrypt
                 var self = this;
                 return this.importKeyJwkPromise(jwk, false, ['decrypt']).then(function (algoKey) {
                     var cryptoSubtle = self._getCryptoSubtle();
-                    var dataBuffer = self._convertObjectUtf8ToBuffer(data);
+                    var dataBuffer = self._convertObjectUtf8ToBuffer(data, self.isString);
                     var algo =  algoKey.algo;
                     return cryptoSubtle.decrypt(algo, algoKey.key, dataBuffer);
                 }).then(function (ciphertext) {
