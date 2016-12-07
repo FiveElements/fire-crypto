@@ -26,33 +26,60 @@
         });
     });
 
-    suite('Convert', function () {
-        test('utf8ToBuffer', function () {
+    suite('Convert cryptoBufferSerialize', function () {
+        test('hex', function () {
+            var element = fixture('basic');
+            var data = '4920c2bd20e299a520f0a9b698';
+            var isDataString = true;
+            var cryptoFormat = 'hex';
+            var dataBuffer = element.cryptoBufferDeserialize(data, cryptoFormat, isDataString);
+            assert.isOk(dataBuffer);
+            var dataSerialize = element.cryptoBufferSerialize(dataBuffer, cryptoFormat, isDataString);
+            assert.typeOf(dataSerialize, 'string', 'we have a string');
+            assert.isOk(dataSerialize);
+            assert.equal(data, dataSerialize);
+        });
+        test('base64', function () {
+            var element = fixture('basic');
+            var data = 'SSDCvSDimaUg8Km2mA==';
+            var isDataString = true;
+            var cryptoFormat = 'base64';
+            var dataBuffer = element.cryptoBufferDeserialize(data, cryptoFormat, isDataString);
+            assert.isOk(dataBuffer);
+            var dataSerialize = element.cryptoBufferSerialize(dataBuffer, cryptoFormat, isDataString);
+            assert.typeOf(dataSerialize, 'string', 'we have a string');
+            assert.isOk(dataSerialize);
+            assert.equal(data, dataSerialize);
+        });
+        test('String as [utf16,utf8,binaryString]', function () {
             var element = fixture('basic');
             var data = 'Hello World ! ';
-            var dataBuffer = element._convertObjectUtf8ToBuffer(data);
-            assert.isOk(dataBuffer);
-            var dataBufferToUtf8 = element._convertBufferToObjectUtf8(dataBuffer);
-            assert.isOk(dataBufferToUtf8);
-            assert.equal(data, dataBufferToUtf8);
+            var isDataString = true;
+            var cryptoFormats = ['utf16', 'utf8', 'binaryString'];
+            cryptoFormats.map(function (cryptoFormat) {
+                var dataBuffer = element.cryptoBufferDeserialize(data, cryptoFormat, isDataString);
+                assert.isOk(dataBuffer);
+                var dataSerialize = element.cryptoBufferSerialize(dataBuffer, cryptoFormat, isDataString);
+                assert.typeOf(dataSerialize, 'string', 'we have a string');
+                assert.isOk(dataSerialize);
+                assert.equal(data, dataSerialize);
+            });
+
         });
-        test('hexToBuffer', function () {
+        test('Object as [utf16,utf8,binaryString]', function () {
             var element = fixture('basic');
-            var data = 'ada81226c0e5075db75e7fe3aec910273dd28d2cce763027c7db6cedc22122d1';
-            var dataBuffer = element.convertHexToBuffer(data);
-            assert.isOk(dataBuffer);
-            var dataBufferToHex = element.convertBufferToHex(dataBuffer);
-            assert.isOk(dataBufferToHex);
-            assert.equal(data, dataBufferToHex);
-        });
-        test('base64ToBuffer', function () {
-            var element = fixture('basic');
-            var data = 'SGVsbG8gV29ybGQgIQ==';
-            var dataBuffer = element.convertBase64ToBuffer(data);
-            assert.isOk(dataBuffer);
-            var dataBufferToHex = element.convertBufferToBase64(dataBuffer);
-            assert.isOk(dataBufferToHex);
-            assert.equal(data, dataBufferToHex);
+            var data = {name: 'Hello World!'};
+            var isDataString = false;
+            var cryptoFormats = [  'utf16', 'utf8', 'binaryString'];
+            cryptoFormats.map(function (cryptoFormat) {
+                var dataBuffer = element.cryptoBufferDeserialize(data, cryptoFormat, isDataString);
+                assert.isOk(dataBuffer);
+                var dataSerialize = element.cryptoBufferSerialize(dataBuffer, cryptoFormat, isDataString);
+                assert.isOk(dataSerialize);
+                assert.typeOf(dataSerialize, 'object', 'we have an object');
+                assert.deepEqual(data, dataSerialize);
+            });
+
         });
     });
 

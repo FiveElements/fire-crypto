@@ -14,6 +14,7 @@ Sample: https://github.com/diafygi/webcrypto-examples
 
 TODO encrypt https://blog.engelke.com/2014/08/23/public-key-cryptography-in-the-browser/
 
+Encoding: https://coolaj86.github.io/web-crypto-utahjs-preso/
 
 ## Install the Polymer-CLI
 

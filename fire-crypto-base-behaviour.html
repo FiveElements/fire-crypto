@@ -1,6 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 
 <link rel="import" href="fire-unibabel.html">
+<link rel="import" href="fire-text-encoding.html">
 
 <!--
 `fire-hmac-sign-behaviour`
@@ -394,28 +395,35 @@ Polymer Element fire-hmac-sign-behaviour
                 buffer = Unibabel.hexToBuffer(datastr);
             } else if (format === 'base64') {
                 buffer = Unibabel.base64ToBuffer(datastr);
+            } else if (format === 'utf16') {
+//                buffer = this._convertStr2ab(datastr);
+                buffer = new TextEncoder('utf-16').encode(datastr);
             } else if (format === 'utf8') {
-                buffer = Unibabel.utf8ToBuffer(datastr);
+//                buffer = Unibabel.utf8ToBuffer(datastr);
+                buffer = new TextEncoder('utf-8').encode(datastr);
             } else if (format === 'binaryString') {
                 buffer = Unibabel.binaryStringToBuffer(datastr);
             } else {
-                console.error('Unknown Crypto format : [' + ']');
+                buffer = new TextEncoder(format).encode(datastr);
             }
             return buffer;
         },
-        cryptoBufferSerialize: function (arrayBuffer, format, isString) {
-            var array = new Uint8Array(arrayBuffer);
+        cryptoBufferSerialize: function (buffer, format, isString) {
             var str;
             if (format === 'hex') {
-                str = Unibabel.bufferToHex(array);
+                str = Unibabel.bufferToHex(new Uint8Array(buffer));
             } else if (format === 'base64') {
-                str = Unibabel.bufferToBase64(array);
+                str = Unibabel.bufferToBase64(new Uint8Array(buffer));
+            } else if (format === 'utf16') {
+//                str = this._convertAb2str(buffer);
+                str = new TextDecoder('utf-16').decode(new Uint16Array(buffer));
             } else if (format === 'utf8') {
-                str = Unibabel.bufferToUtf8(array);
+//                str = Unibabel.bufferToUtf8(new Uint8Array(buffer));
+                str = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
             } else if (format === 'binaryString') {
-                str = Unibabel.bufferToBinaryString(array);
+                str = Unibabel.bufferToBinaryString(new Uint8Array(buffer));
             } else {
-                console.error('Unknown Crypto format : [' + ']');
+                str = new TextDecoder(format).decode(new Uint8Array(buffer));
             }
             var result = str;
             if (!isString) {
@@ -430,8 +438,8 @@ Polymer Element fire-hmac-sign-behaviour
         /**
          * https://developers.google.com/web/updates/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
          */
-        _convertAb2str: function (buf) {
-            return String.fromCharCode.apply(null, new Uint16Array(buf));
+        _convertAb2str: function (buffer) {
+            return String.fromCharCode.apply(null, new Uint16Array(buffer));
         },
         _convertStr2ab: function (str) {
             var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
@@ -442,57 +450,6 @@ Polymer Element fire-hmac-sign-behaviour
             return buf;
         },
 
-
-        /**
-         * Conversion of UTf8 Object to a ArrayBuffer
-         */
-        _convertObjectUtf8ToBuffer: function (data, isString) {
-            var datastr = isString ? data : JSON.stringify(data);
-            var buffer = Unibabel.utf8ToBuffer(datastr);
-            return buffer;
-        },
-        /**
-         * Conversion of ArrayBuffer to a UTf8 Object
-         */
-        _convertBufferToObjectUtf8: function (arrayBuffer) {
-            var buffer = new Uint8Array(arrayBuffer);
-            var str = Unibabel.bufferToUtf8(buffer);
-            var result = isString ? str : JSON.parse(str);
-            return result;
-        },
-        /**
-         * Conversion of HEX string to a ArrayBuffer
-         */
-        convertHexToBuffer: function (hexstr) {
-            var hexArray = Unibabel.hexToBuffer(hexstr);
-            return hexArray;
-        },
-        /**
-         * Conversion of ArrayBuffer to a Hex string
-         */
-        convertBufferToHex: function (arrayBuffer) {
-            var array = new Uint8Array(arrayBuffer);
-            var hexstr = Unibabel.bufferToHex(array);
-            return hexstr;
-        },
-
-        /**
-         * Conversion of ArrayBuffer to a Base4
-         */
-        convertBufferToBase64: function (arrayBuffer) {
-            var array = new Uint8Array(arrayBuffer);
-            var str = Unibabel.bufferToBase64(array);
-            var result = isString ? str : JSON.parse(str);
-            return result;
-        },
-        /**
-         * Conversion of HEX string to a ArrayBuffer
-         */
-        convertBase64ToBuffer: function (data) {
-            var datastr = isString ? data : JSON.stringify(data);
-            var buffer = Unibabel.base64ToBuffer(datastr);
-            return buffer;
-        },
         // --- End
         // --- ---------------------------
     };
