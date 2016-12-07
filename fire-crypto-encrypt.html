@@ -24,13 +24,20 @@ Polymer Element fire-crypto-encrypt
                  * Not Start encryption automatically when data changed
                  */
                 notAuto: {
-                   type: Boolean,
+                    type: Boolean,
                     value: false
+                },
+                /**
+                 * hex, base64, utf8, binaryString
+                 */
+                cryptoFormat: {
+                    type: String,
+                    value: 'base64'
                 },
                 /**
                  * Assume that the data is String. Not Apply JSON.stringly in crypto process.
                  */
-                isString: {
+                isDataString: {
                     type: Boolean,
                     value: false,
                 },
@@ -46,19 +53,20 @@ Polymer Element fire-crypto-encrypt
                 data: {
                     type: Object
                 },
-                cyphertext: {
+                ciphertext: {
                     type: String,
-                    notity: true,
+                    notify: true
                 },
             },
 
             observers: [
-                '_encryptObserver(notAuto, jwk,data.*)'
+                '_encryptObserver(notAuto,jwk,data.*)'
             ],
 
             // --- Encrypt Observer
             // --- ---------------------------
             _encryptObserver: function (notAuto, jwk, dataChanged) {
+                console.log('_encryptObserver');
                 if (!notAuto) {
                     this._encrypt(jwk, this.data);
                 }
@@ -108,17 +116,16 @@ Polymer Element fire-crypto-encrypt
             // --- Encrypt
             // --- ---------------------------
 
-            _encryptPromise: function (jwk, data) {
+            _encryptPromise: function (jwkeys, data) {
                 var self = this;
+                var jwk = jwkeys.publicKey || jwkeys;
                 return this.importKeyJwkPromise(jwk, false, ['encrypt']).then(function (algoKey) {
                     var cryptoSubtle = self._getCryptoSubtle();
-                    var dataBuffer = self._convertObjectUtf8ToBuffer(data);
+                    var dataBuffer = self.cryptoBufferDeserialize(data, 'utf8', self.isDataString);
                     var algo = self._configureEncryptCryptoKeyAlgo(algoKey.algo);
-                    console.log('configured algo ==> ' + JSON.stringify( algo));
                     return cryptoSubtle.encrypt(algo, algoKey.key, dataBuffer);
                 }).then(function (cipherbuffer) {
-                    var ciphertext = self.convertBufferToBase64(cipherbuffer, self.isString);
-                    console.log('ciphertext ==> ' + ciphertext);
+                    var ciphertext = self.cryptoBufferSerialize(cipherbuffer, self.cryptoFormat, true);
                     return ciphertext;
                 })
             },
@@ -127,11 +134,12 @@ Polymer Element fire-crypto-encrypt
             _encrypt: function (jwk, data) {
                 var self = this;
                 return this._encryptPromise(jwk, data).then(function (ciphertext) {
-                    self.cyphertext = ciphertext;
+                    self.ciphertext = ciphertext;
+                    console.log('isset ciphertext ==> ' +  self.ciphertext );
                     self._fireCryptoKeyEncrypt(ciphertext);
                     return ciphertext;
                 }).catch(function (err) {
-                    self.cyphertext = undefined;
+                    self.ciphertext = undefined;
                     self._fireCryptoKeyEncryptError(err);
                 });
             },
@@ -144,8 +152,8 @@ Polymer Element fire-crypto-encrypt
              * @event fire-encrypt
              */
             _fireCryptoKeyEncrypt: function (ciphertext) {
-                console.log('encrypt to', ciphertext);
-                this.fire('fire-encrypt', {ciphertext: ciphertext});
+                console.log('fire-encrypt', ciphertext);
+                this.fire('fire-encrypt', {encrypt: ciphertext});
             },
 
             /**
@@ -154,7 +162,7 @@ Polymer Element fire-crypto-encrypt
              * @event fire-error-encrypt
              */
             _fireCryptoKeyEncryptError: function (error) {
-                console.error('Encrypt error', error);
+                console.error('fire-error-encrypt', error);
                 this.fire('fire-error-encrypt', {error: error});
             },
 

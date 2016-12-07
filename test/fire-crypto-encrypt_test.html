@@ -14,7 +14,7 @@
 <body>
 <test-fixture id="basic">
     <template is="dom-template">
-        <fire-crypto-encrypt not-auto jwk="[[privateKey]]" data="[[data]]"  cyphertext="{{cyphertext}}"></fire-crypto-encrypt>
+        <fire-crypto-encrypt not-auto jwk="[[privateKey]]" data="[[data]]" ciphertext="{{cyphertext}}"></fire-crypto-encrypt>
     </template>
 </test-fixture>
 
@@ -40,18 +40,18 @@
                     "kty": "oct"
                 }
             });
-            assert.isNotOk(element.cyphertext);
+            assert.isNotOk(element.ciphertext);
 //            element.addEventListener('fire-encrypt', function(event) {
 //                console.log(JSON.stringify(event));
 //                assert.isOk(event.detail.ciphertext);
-//                assert.equal(event.detail.ciphertext, element.cyphertext);
+//                assert.equal(event.detail.ciphertext, element.ciphertext);
 //                assert.notEqual(event.detail.ciphertext, element.data);
 //                done();
 //            });
             return element.encrypt().then(function (cypherText) {
                 assert.isOk(cypherText);
-                assert.equal(element.cyphertext, cypherText);
-                assert.notEqual(element.cyphertext, element.data);
+                assert.equal(element.ciphertext, cypherText);
+                assert.notEqual(element.ciphertext, element.data);
                 return cypherText;
             });
 
@@ -89,12 +89,12 @@
 //                    "n": "26lArBpwI7y9tcYEfPe1KeiRg9lBGwFdUNKNzlMtiSDYJYcUFqJbfqpeXKpb26HmIHtHRr4ADj_JIkVto-ZfwEWwaR0ErXguPx_dOLGKpmLsHyUUsNE6oAiyVsObaZ_-sHA67WkX32HmynuWqI8u2T3bP4tZQ2hu1qNlCwLOzyBesndBx-KJQhydXBwRW6Ipep_UCTAzzUPVST8OKA-VWeh0q8-cgnH3NL6uA3y4qM47egnInPQHp1yy6Hd3Cb21uScYqwlWKuxLTgLXj-PXov9r7ow1_yUlualz3kFdVy1TeYtDFRIP9ORAmqsJlz8Eh8gNJoBnLOMhsZ1NgADgxQ"
 //                }
 //            });
-//            assert.isNotOk(element.cyphertext);
-//            return element.encrypt().then(function (cyphertext) {
-//                assert.isOk(cyphertext);
-//                assert.equal(element.cyphertext, cyphertext);
-//                assert.notEqual(element.cyphertext, element.data);
-//                return cyphertext;
+//            assert.isNotOk(element.ciphertext);
+//            return element.encrypt().then(function (ciphertext) {
+//                assert.isOk(ciphertext);
+//                assert.equal(element.ciphertext, ciphertext);
+//                assert.notEqual(element.ciphertext, element.data);
+//                return ciphertext;
 //            });
 //
 //        });

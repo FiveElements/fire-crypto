@@ -28,9 +28,16 @@ Polymer Element fire-crypto-encrypt
                     value: false
                 },
                 /**
+                 * hex, base64, utf8, binaryString
+                 */
+                cryptoFormat: {
+                    type: String,
+                    value: 'base64'
+                },
+                /**
                  * Assume that the data is String. Not Apply JSON.stringly in crypto process.
                  */
-                isString: {
+                isDataString: {
                     type: Boolean,
                     value: false,
                 },
@@ -43,34 +50,34 @@ Polymer Element fire-crypto-encrypt
                 /**
                  * The cypher text text to decrypt
                  */
-                cyphertext: {
+                ciphertext: {
                     type: String
                 },
                 /**
                  * The data to sign
                  */
-                clearText: {
-                    type: String,
+                data: {
+                    type: Object,
                     notify: true
                 },
             },
 
             observers: [
-                '_decryptObserver(notAuto, jwk,cypherText)'
+                '_decryptObserver(notAuto,jwk,ciphertext)'
             ],
 
             // --- decrypt Observer
             // --- ---------------------------
-            _decryptObserver: function (notAuto, jwk, cypherText) {
+            _decryptObserver: function (notAuto, jwk, ciphertext) {
                 if (!notAuto) {
-                    this._decrypt(jwk, cypherText);
+                    this._decrypt(jwk, ciphertext);
                 }
             },
 
             // --- API decrypt
             // --- ---------------------------
             decrypt: function () {
-                return this._decrypt(this.jwk, this.cyphertext);
+                return this._decrypt(this.jwk, this.ciphertext);
             },
 
 
@@ -78,27 +85,34 @@ Polymer Element fire-crypto-encrypt
             // --- Decrypt
             // --- ---------------------------
 
-            _decryptPromise: function (jwk, data) {
+            _decryptPromise: function (jwkeys, ciphertext) {
                 var self = this;
+                var jwk = jwkeys.privateKey || jwkeys;
                 return this.importKeyJwkPromise(jwk, false, ['decrypt']).then(function (algoKey) {
                     var cryptoSubtle = self._getCryptoSubtle();
-                    var dataBuffer = self._convertObjectUtf8ToBuffer(data, self.isString);
+                    var cipherBuffer = self.cryptoBufferDeserialize(ciphertext, self.cryptoFormat, true);
                     var algo =  algoKey.algo;
-                    return cryptoSubtle.decrypt(algo, algoKey.key, dataBuffer);
-                }).then(function (ciphertext) {
-                    return ciphertext;
-                })
+                    console.log('decrypt with jwk : ', jwk);
+                    console.log('decrypt with algo : ', algo);
+                    console.log('decrypt with ciphertext : ', cipherBuffer);
+                    return cryptoSubtle.decrypt(algo, algoKey.key, cipherBuffer);
+                }).then(function (clearbuffer) {
+                    console.log('Decoded Data Buffer', clearbuffer);
+                    var decodedData = self.cryptoBufferSerialize(clearbuffer, 'utf8', self.isDataString);
+                    console.log('Decoded Data', decodedData);
+                    return decodedData;
+                });
             },
 
 
-            _decrypt: function (jwk, data) {
+            _decrypt: function (jwk, ciphertext) {
                 var self = this;
-                return this._decryptPromise(jwk, data).then(function (macHex) {
-                    self.signature = macHex;
-                    self._fireCryptoKeyDecrypt(macHex);
-                    return macHex;
+                return this._decryptPromise(jwk, ciphertext).then(function (decodedData) {
+                    self.data = decodedData;
+                    self._fireCryptoKeyDecrypt(decodedData);
+                    return decodedData;
                 }).catch(function (err) {
-                    self.signature = undefined;
+                    self.data = undefined;
                     self._fireCryptoKeyDecryptError(err);
                 });
             },
@@ -110,9 +124,9 @@ Polymer Element fire-crypto-encrypt
              *
              * @event fire-decrypt
              */
-            _fireCryptoKeyDecrypt: function (ciphertext) {
-                console.log('decrypt to', ciphertext);
-                this.fire('fire-decrypt', {ciphertext: ciphertext});
+            _fireCryptoKeyDecrypt: function (decodedData) {
+                console.log('fire-decrypt', decodedData);
+                this.fire('fire-decrypt', {decrypt: decodedData});
             },
             /**
              * Fired when a Sign Error in decrypted.
@@ -120,7 +134,7 @@ Polymer Element fire-crypto-encrypt
              * @event fire-error-decrypt
              */
             _fireCryptoKeyDecryptError: function (error) {
-                console.error('Decrypt error', error);
+                console.error('fire-error-decrypt', error);
                 this.fire('fire-error-decrypt', {error: error});
             },
 

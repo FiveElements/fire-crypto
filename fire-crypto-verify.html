@@ -29,7 +29,13 @@ Polymer Element fire-crypto-verify
                     type: Boolean,
                     value: false
                 },
-
+                /**
+                 * Assume that the data is String. Not Apply JSON.stringly in crypto process.
+                 */
+                isDataString: {
+                    type: Boolean,
+                    value: false,
+                },
                 /**
                  * The JSON Web Keyfor the signature
                  */
@@ -89,20 +95,15 @@ Polymer Element fire-crypto-verify
              * @returns {IPromise<R>} result is a Promise that returns a Boolean indicating if the signature has been a success on success.
              * @private
              */
-            _verifySignPromise: function (jwk, data, signature) {
+            _verifySignPromise: function (jwkeys, data, signature) {
                 var self = this;
-                var cryptoSubtle = this._getCryptoSubtle();
-                var algoJwk = undefined;
-                var promise = this.getAlgorithmIdentifierFromJwtPromise(jwk)
-                        .then(function (algo) {
-                            algoJwk = algo;
-                            return cryptoSubtle.importKey('jwk', jwk, algo, true, ['verify']);
-                        }).then(function (keyBuffer) {
-                            var signatureBuffer = self.convertHexToBuffer(signature);
-                            var dataBuffer = self._convertObjectUtf8ToBuffer(data);
-                            return cryptoSubtle.verify(algoJwk, keyBuffer, signatureBuffer, dataBuffer);
-                        });
-                return promise;
+                var jwk = jwkeys.publicKey || jwkeys;
+                return this.importKeyJwkPromise(jwk, false, ['verify']).then(function (algoKey) {
+                    var cryptoSubtle = self._getCryptoSubtle();
+                    var dataBuffer = self.cryptoBufferDeserialize(data, 'utf8', self.isDataString);
+                    var signatureBuffer = self.cryptoBufferDeserialize(signature, 'hex', true);
+                    return cryptoSubtle.verify(algoKey.algo, algoKey.key, signatureBuffer, dataBuffer);
+                });
             },
 
             _verifySign: function (jwk, data, signature) {

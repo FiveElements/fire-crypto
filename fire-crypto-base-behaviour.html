@@ -385,8 +385,63 @@ Polymer Element fire-hmac-sign-behaviour
             return keyPromise;
         },
 
+        // --- Crypto Serializer
+        // --- ---------------------------
+        cryptoBufferDeserialize: function (data, format, isString) {
+            var datastr = isString ? data : JSON.stringify(data);
+            var buffer;
+            if (format === 'hex') {
+                buffer = Unibabel.hexToBuffer(datastr);
+            } else if (format === 'base64') {
+                buffer = Unibabel.base64ToBuffer(datastr);
+            } else if (format === 'utf8') {
+                buffer = Unibabel.utf8ToBuffer(datastr);
+            } else if (format === 'binaryString') {
+                buffer = Unibabel.binaryStringToBuffer(datastr);
+            } else {
+                console.error('Unknown Crypto format : [' + ']');
+            }
+            return buffer;
+        },
+        cryptoBufferSerialize: function (arrayBuffer, format, isString) {
+            var array = new Uint8Array(arrayBuffer);
+            var str;
+            if (format === 'hex') {
+                str = Unibabel.bufferToHex(array);
+            } else if (format === 'base64') {
+                str = Unibabel.bufferToBase64(array);
+            } else if (format === 'utf8') {
+                str = Unibabel.bufferToUtf8(array);
+            } else if (format === 'binaryString') {
+                str = Unibabel.bufferToBinaryString(array);
+            } else {
+                console.error('Unknown Crypto format : [' + ']');
+            }
+            var result = str;
+            if (!isString) {
+                result = JSON.parse(str);
+            }
+            return result;
+        },
+
+
         // --- Utilities
         // --- ---------------------------
+        /**
+         * https://developers.google.com/web/updates/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
+         */
+        _convertAb2str: function (buf) {
+            return String.fromCharCode.apply(null, new Uint16Array(buf));
+        },
+        _convertStr2ab: function (str) {
+            var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
+            var bufView = new Uint16Array(buf);
+            for (var i = 0, strLen = str.length; i < strLen; i++) {
+                bufView[i] = str.charCodeAt(i);
+            }
+            return buf;
+        },
+
 
         /**
          * Conversion of UTf8 Object to a ArrayBuffer
@@ -401,7 +456,7 @@ Polymer Element fire-hmac-sign-behaviour
          */
         _convertBufferToObjectUtf8: function (arrayBuffer) {
             var buffer = new Uint8Array(arrayBuffer);
-            var str = Unibabel.bufferToUtf8(buffer, isString);
+            var str = Unibabel.bufferToUtf8(buffer);
             var result = isString ? str : JSON.parse(str);
             return result;
         },

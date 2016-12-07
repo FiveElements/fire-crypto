@@ -12,11 +12,16 @@
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
 
     <link rel="import" href="../fire-crypto-generatekey.html">
+
     <link rel="import" href="../fire-crypto-sign.html">
     <link rel="import" href="../fire-crypto-verify.html">
 
+    <link rel="import" href="../fire-crypto-encrypt.html">
+    <link rel="import" href="../fire-crypto-decrypt.html">
+
     <link rel="import" href="demo-fire-crypto.html">
     <link rel="import" href="demo-algo-listbox.html">
+    <link rel="import" href="demo-encrypt-display.html">
 
 
     <style is="custom-style" include="demo-pages-shared-styles">
@@ -63,23 +68,23 @@
                 <div>
                     <h1>Generate Key</h1>
                     <demo-algo-listbox usage="encrypt" algo="{{algo}}"></demo-algo-listbox>
-                    <fire-crypto-generatekey algo="{{algo}}" usages="[[usages]]"
-                                             private-key="{{privateKey}}" public-key="{{publicKey}}">
+                    <fire-crypto-generatekey algo="{{algo}}" usages="[[usages]]" keys="{{encryptJWK}}">
                     </fire-crypto-generatekey>
-                    <demo-jwk-display private-key="{{privateKey}}" public-key="{{publicKey}}"></demo-jwk-display>
+                    <demo-jwk-display private-key="{{encryptJWK.privateKey}}" public-key="{{encryptJWK.publicKey}}"></demo-jwk-display>
                 </div>
 
                 <div>
                     <h1>Encrypt Data</h1>
                     <paper-input value="{{data.name}}" label="Data to encrypt"></paper-input>
-                    <fire-crypto-encrypt jwk="[[privateKey]]" data="[[data]]"
-                                         cyphertext="{{cyphertext}}"></fire-crypto-encrypt>
-                    <div>
-                        <h2>Secured Text</h2>
-                        <pre>[[cyphertext]]</pre>
-                    </div>
+                    <fire-crypto-encrypt jwk="[[encryptJWK]]" data="[[data]]"
+                                         ciphertext="{{ciphertext}}"></fire-crypto-encrypt>
                 </div>
-
+                <div>
+                    <h1>Decrypt Data</h1>
+                    <fire-crypto-decrypt jwk="[[encryptJWK]]" data="{{decodedData}}"
+                                         ciphertext="[[ciphertext]]"></fire-crypto-decrypt>
+                    <demo-encrypt-display ciphertext="{{ciphertext}}" data="[[decodedData]]" ></demo-encrypt-display>
+                </div>
             </template>
 
             <script>

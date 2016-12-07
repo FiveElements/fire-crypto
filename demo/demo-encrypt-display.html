@@ -1,0 +1,57 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../paper-tabs/paper-tabs.html">
+<link rel="import" href="../../iron-pages/iron-pages.html">
+
+<!--
+`demo-jwk-display`
+Polymer Element demo-jwk-display
+
+@demo demo/index.html 
+-->
+
+<dom-module id="demo-encrypt-display">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+            <paper-tabs selected="{{selected}}">
+                <paper-tab>Encoded Data</paper-tab>
+                <paper-tab>Decoded Data</paper-tab>
+            </paper-tabs>
+        <iron-pages selected="{{selected}}">
+            <pre>[[ciphertext]]</pre>
+            <pre>[[_dataStr]]</pre>
+        </iron-pages>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'demo-encrypt-display',
+
+            properties: {
+                selected: {
+                    type: Number,
+                    value: 0
+                },
+                ciphertext: {
+                    type: String,
+                },
+                data: {
+                    type: Object,
+                    observer: '_dataChanged'
+                },
+                _dataStr: {
+                    type: String
+                },
+            },
+
+            _dataChanged: function (newValue, oldValue) {
+                this._dataStr = JSON.stringify(newValue, null, '  ');
+            },
+
+        });
+    </script>
+</dom-module>
