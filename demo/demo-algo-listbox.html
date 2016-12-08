@@ -20,6 +20,9 @@
                 display: block;
             }
         </style>
+
+        <fire-crypto-generatekey id="generator"></fire-crypto-generatekey>
+
         <div class="layout horizontal wrap">
             <paper-dropdown-menu label="Algorithm">
                 <paper-listbox selected="{{algoName}}" attr-for-selected="code" class="dropdown-content">
@@ -39,10 +42,6 @@
         Polymer({
 
             is: 'demo-algo-listbox',
-
-            behaviors: [
-                FiveElements.FireCryptoBaseBehavior
-            ],
 
 
             properties: {
@@ -68,9 +67,9 @@
 
             _usageChanged: function (newValue, oldValue) {
                 if (newValue === 'sign') {
-                    this.listAlgos =  this.getAlgorithmNamesForSign();
+                    this.listAlgos =  this.$.generator.getAlgorithmNamesForSign();
                 } else if (newValue === 'encrypt') {
-                    this.listAlgos =  this.getAlgorithmNamesForEncrypt();
+                    this.listAlgos =  this.$.generator.getAlgorithmNamesForEncrypt();
                 }
             },
             _algoNameChanged: function (newValue, oldValue) {
