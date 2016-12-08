@@ -114,9 +114,10 @@ Polymer Element fire-crypto-derivekey
                 if ((algo.name === 'ECDH') || (algo.name ===  'RSA-OAEP')) {
                     algo.public = this.masterKey;
                 } else if (algo.name === 'PBKDF2')  {
-                    algo.salt = algo.salt ||  Unibabel.hexToBuffer('e85c53e7f119d41fd7895cdc9d7bb9dd');
+//                    algo.salt = algo.salt ||  Unibabel.hexToBuffer('e85c53e7f119d41fd7895cdc9d7bb9dd');
+                    algo.salt = algo.salt ||  this._getCrypto().getRandomValues(new Uint8Array(16));
                     algo.iterations = algo.iterations || 100;
-                    algo.hash =  algo.hash || 'SHA-256';
+                    algo.hash =  algo.hash || 'SHA-256'; //can be "SHA-1", "SHA-256", "SHA-384", or "SHA-512"
                 } else if (algo.name === 'HKDF-CTR')  {
 //                    algo.hash =  algo.hash || 'SHA-256';
 //                    algo.label =
@@ -124,6 +125,14 @@ Polymer Element fire-crypto-derivekey
                 }
                 return algo;
             },
+            _importPasswordAsCryptoKeyPromise: function (passphrase, algo, usages) {
+                var cryptoSubtle = self._getCryptoSubtle();
+                var passphraseKey = Unibabel.utf8ToBuffer(passphrase);
+                var passAlgo = algo ||  {name: 'PBKDF2'};
+                var passUsages = usages ||  ['deriveBits', 'deriveKey'];
+                return cryptoSubtle.importKey('raw', passphraseKey, passAlgo, false, passUsages);
+            },
+
             /**
              * The SubtleCrypto.deriveKey() method returns a Promise of a newly generated CryptoKey derivated
              * from a master key and a specific algorithm given as parameters.
@@ -137,8 +146,9 @@ Polymer Element fire-crypto-derivekey
              * @returns {IPromise<{privateKey, publicKey}>} result is a Promise that returns the generated key as a  CryptoKeyPair {privateKey, publicKey] with publicKey=undefined for symmetric algorithm.
              * @private
              */
-            _deriveKeyPromise: function (algorithm, masterKey, derivedKeyAlgo, extractable, keyUsages) {
+            _deriveKeyPromise: function (algorithm, jwkeys, derivedKeyAlgo, extractable, keyUsages) {
                var self = this;
+                var jwk = jwkeys.privateKey || jwkeys;
                 return this.importKeyJwkPromise(jwk, false, ['deriveBits', 'deriveKey']).then(function (algoKey) {
                     var cryptoSubtle = self._getCryptoSubtle();
                     var algo = self._configureDeriveKeyAlgo(algorithm);

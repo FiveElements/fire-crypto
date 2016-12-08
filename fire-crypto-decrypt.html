@@ -92,14 +92,9 @@ Polymer Element fire-crypto-encrypt
                     var cryptoSubtle = self._getCryptoSubtle();
                     var cipherBuffer = self.cryptoBufferDeserialize(ciphertext, self.cryptoFormat, true);
                     var algo =  algoKey.algo;
-                    console.log('decrypt with jwk : ', jwk);
-                    console.log('decrypt with algo : ', algo);
-                    console.log('decrypt with ciphertext : ', cipherBuffer);
                     return cryptoSubtle.decrypt(algo, algoKey.key, cipherBuffer);
                 }).then(function (clearbuffer) {
-                    console.log('Decoded Data Buffer', clearbuffer);
                     var decodedData = self.cryptoBufferSerialize(clearbuffer, 'utf8', self.isDataString);
-                    console.log('Decoded Data', decodedData);
                     return decodedData;
                 });
             },
