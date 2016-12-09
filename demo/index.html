@@ -84,8 +84,8 @@
                 </div>
                 <div>
                     <h3>Decrypt Data</h3>
-                    <fire-crypto-decrypt jwk="[[encryptJWK]]" data="{{decodedData}}"
-                                         ciphertext="[[ciphertext]]">
+                    <fire-crypto-decrypt jwk="[[encryptJWK]]"  ciphertext="[[ciphertext]]"
+                                         data="{{decodedData}}">
                     </fire-crypto-decrypt>
                     <demo-encrypt-display ciphertext="{{ciphertext}}" data="[[decodedData]]" ></demo-encrypt-display>
                 </div>

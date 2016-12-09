@@ -12,6 +12,9 @@
     <link rel="import" href="../fire-crypto-generatekey.html">
     <link rel="import" href="../fire-crypto-sign.html">
     <link rel="import" href="../fire-crypto-verify.html">
+
+    <link rel="import" href="../fire-crypto-encrypt.html">
+    <link rel="import" href="../fire-crypto-decrypt.html">
 </head>
 <body>
 <test-fixture id="sign">
@@ -27,12 +30,12 @@
 
 <test-fixture id="encrypt">
     <template is="dom-template">
-        <fire-crypto-generatekey id="encryptGenerator" not-auto algo="[[algo]]"
-                                keys="{{jwks}}"></fire-crypto-generatekey>
-        <fire-crypto-encrypt id="encrypter" not-auto jwk="[[jwks]]" data="[[data]]"
+        <fire-crypto-generatekey id="encryptGenerator" not-auto algo="[[algo]]" usages="[[usages]]"
+                                 keys="{{jwks}}"></fire-crypto-generatekey>
+        <fire-crypto-encrypt id="encryptor" not-auto jwk="[[jwks]]" data="[[data]]"
                              ciphertext="{{ciphertext}}"></fire-crypto-encrypt>
-        <fire-crypto-decrypt id="decrypter" not-auto jwk="[[jwks]]" data="{{decryptedData}}"
-                             ciphertext="[[ciphertext]]"></fire-crypto-decrypt>
+        <fire-crypto-decrypt id="decrypter" not-auto jwk="[[jwks]]" ciphertext="[[ciphertext]]"
+                             data="{{decryptedData}}"></fire-crypto-decrypt>
     </template>
 </test-fixture>
 
@@ -41,13 +44,14 @@
     suite('Encrypt & Decrypt', function () {
 
         test('Bindings between Elements', function () {
+            var data = {title: 'Hello Wolrd!'};
             var element = fixture('encrypt', {
-                algo:  {kty: "RSA", alg: "RSA-OAEP-512"},
+                algo: {name: "RSA-OAEP", hash: {name: "SHA-384"}},
                 usages: ['encrypt', 'decrypt'],
-                data: {title: 'Hello Wolrd!'}
+                data: data
             });
             var generator = document.getElementById('encryptGenerator');
-            var encrypter = document.getElementById('encrypter');
+            var encryptor = document.getElementById('encryptor');
             var decrypter = document.getElementById('decrypter');
             return generator.generateCryptoKey().then(function (keys) {
                 assert.isOk(keys);
@@ -55,46 +59,84 @@
                 assert.isOk(keys.publicKey);
                 assert.equal(generator.privateKey, keys.privateKey);
                 assert.equal(generator.publicKey, keys.publicKey);
-                return encrypter.encrypt();
+                return encryptor.encrypt();
             }).then(function (ciphertext) {
                 assert.isOk(ciphertext);
-                assert.equal(encrypter.ciphertext, ciphertext);
+                assert.equal(encryptor.ciphertext, ciphertext);
                 return decrypter.decrypt();
             }).then(function (decryptedData) {
-                assert.isTrue(decryptedData);
+                assert.ok(decryptedData);
                 assert.equal(decrypter.data, decryptedData);
+                assert.deepEqual(data, decryptedData);
                 return decryptedData;
             });
         });
 
 
-//        test('All Promise Sign Algo', function () {
-//            var element = fixture('sign');
-//            var data=  {title: 'Hello Wolrd!'};
-//            var generator = document.getElementById('generator');
-//            var signor = document.getElementById('signor');
-//            var verifyor = document.getElementById('verifyor');
-//            // Test
-//            var signAlgo = generator.getAlgorithmsForSign();
-//            var promiseArray= signAlgo.map(function (algo) {
-//                return generator._generateCryptoKeyPromise(algo, true, ['sign', 'verify']).then(function (keys) {
-//                    assert.isOk(keys);
-//                    return signor._signPromise(keys.privateKey, data).then(function (signature) {
-//                        return signature;
-//                    }).then(function (signature) {
-//                        assert.isOk(signature);
-//                        var jwk = keys.publicKey ||keys.privateKey;
-//                        return verifyor._verifySignPromise(jwk, data, signature);
-//                    }).then(function (isVerify) {
-//                        assert.isTrue(isVerify);
-//                        return isVerify;
-//                    });
-//                });
-//            });
-//            return Promise.all(promiseArray);
-//        });
-    });
+        var encryptDecryptPromiseTest = function(generator, encryptor, decrypter) {
+            var data = {title: 'Hello Wolrd!'};
+            return function (algo) {
+//                console.log('encrypt with algo ' + JSON.stringify(algo));
+                return generator._generateCryptoKeyPromise(algo, true, ['encrypt', 'decrypt']).then(function (keys) {
+                    assert.isOk(keys);
 
+                    return encryptor._encryptPromise(keys, data).then(function (ciphertext) {
+                        return {jwk: keys, ciphertext: ciphertext}
+                    });
+                }).then(function (opt) {
+                    var ciphertext = opt.ciphertext;
+                    assert.isOk(ciphertext);
+//                    console.log('preencrypt genkey ' + JSON.stringify(opt.ciphertext));
+                    return decrypter._decryptPromise(opt.jwk, ciphertext);
+                }).then(function (decryptedData) {
+                    assert.isOk(decryptedData);
+                    assert.deepEqual(data, decryptedData);
+                    return decryptedData;
+                });
+
+            };
+        };
+
+        setup(function () {
+           console.log('----------- setup ------');
+        });
+        test('RSA Algo Promise Encrypt & Decrypt', function () {
+            var element = fixture('encrypt');
+            var generator = document.getElementById('encryptGenerator');
+            var encryptor = document.getElementById('encryptor');
+            var decrypter = document.getElementById('decrypter');
+            // Test
+            var encryptAlgo = generator.getAlgorithmsForEncrypt().filter(function (algo) {
+               return algo.name.slice(0,3) === 'RSA';
+            });
+            return Promise.all(encryptAlgo.map(encryptDecryptPromiseTest(generator, encryptor, decrypter)) );
+        });
+
+//        test('AES-CTR Algo Promise Encrypt & Decrypt', function () {
+//            var element = fixture('encrypt');
+//            var generator = document.getElementById('encryptGenerator');
+//            var encryptor = document.getElementById('encryptor');
+//            var decrypter = document.getElementById('decrypter');
+//            // Test
+//            var encryptAlgo = generator.getAlgorithmsForEncrypt().filter(function (algo) {
+//                return ((algo.name === 'AES-CTR')  && (algo.length===128));
+//            });
+//            return Promise.all(encryptAlgo.map(encryptDecryptPromiseTest(generator, encryptor, decrypter)) );
+//        });
+//
+//        test('AES-CBC Algo Promise Encrypt & Decrypt', function () {
+//            var element = fixture('encrypt');
+//            var generator = document.getElementById('encryptGenerator');
+//            var encryptor = document.getElementById('encryptor');
+//            var decrypter = document.getElementById('decrypter');
+//            // Test
+//            var encryptAlgo = generator.getAlgorithmsForEncrypt().filter(function (algo) {
+//                return ((algo.name === 'AES-CBC') && (algo.length===128) );
+//            });
+//            return Promise.all(encryptAlgo.map(encryptDecryptPromiseTest(generator, encryptor, decrypter)) );
+//        });
+
+    });
 
 
     suite('Sign & Verify', function () {
@@ -140,20 +182,20 @@
 
         test('All Promise Sign Algo', function () {
             var element = fixture('sign');
-            var data=  {title: 'Hello Wolrd!'};
+            var data = {title: 'Hello Wolrd!'};
             var generator = document.getElementById('generator');
             var signor = document.getElementById('signor');
             var verifyor = document.getElementById('verifyor');
             // Test
             var signAlgo = generator.getAlgorithmsForSign();
-            var promiseArray= signAlgo.map(function (algo) {
+            var promiseArray = signAlgo.map(function (algo) {
                 return generator._generateCryptoKeyPromise(algo, true, ['sign', 'verify']).then(function (keys) {
                     assert.isOk(keys);
                     return signor._signPromise(keys.privateKey, data).then(function (signature) {
                         return signature;
                     }).then(function (signature) {
                         assert.isOk(signature);
-                        var jwk = keys.publicKey ||keys.privateKey;
+                        var jwk = keys.publicKey || keys.privateKey;
                         return verifyor._verifySignPromise(jwk, data, signature);
                     }).then(function (isVerify) {
                         assert.isTrue(isVerify);
@@ -164,7 +206,6 @@
             return Promise.all(promiseArray);
         });
     });
-
 
 
 </script>

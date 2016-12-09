@@ -66,7 +66,6 @@ Polymer Element fire-crypto-encrypt
             // --- Encrypt Observer
             // --- ---------------------------
             _encryptObserver: function (notAuto, jwk, dataChanged) {
-                console.log('_encryptObserver');
                 if (!notAuto) {
                     this._encrypt(jwk, this.data);
                 }
@@ -86,7 +85,6 @@ Polymer Element fire-crypto-encrypt
                 if (algo.name === 'AES-CBC') {
                     //Don't re-use initialization vectors!
                     //Always generate a new iv every time your encrypt!
-                    console.log()
                     algo.iv = this._getCrypto().getRandomValues(new Uint8Array(16));
                 } else if (algo.name === 'AES-CTR') {
                     //Don't re-use counters!
@@ -113,21 +111,55 @@ Polymer Element fire-crypto-encrypt
                 return algo;
             },
 
+            _extractEncryptAlgoOpt: function (algo) {
+                var algoOpt = undefined;
+                if (algo.iv) {
+                    algoOpt = algoOpt || {};
+                    algoOpt.iv = this.cryptoBufferSerialize(algo.iv, 'hex', true);
+                }
+                if (algo.counter) {
+                    algoOpt = algoOpt || {};
+                    algoOpt.counter = this.cryptoBufferSerialize(algo.counter, 'hex', true);
+                }
+//                if (algo.label) {
+//                    algoOpt = algoOpt || {};
+//                    algoOpt.label = this.cryptoBufferSerialize(algo.label, 'hex', true);
+//                }
+                if (algo.additionalData) {
+                    algoOpt = algoOpt || {};
+                    algoOpt.additionalData = this.cryptoBufferSerialize(algo.additionalData, 'hex', true);
+                }
+                if (algo.tagLength) {
+                    algoOpt = algoOpt || {};
+                    algoOpt.tagLength = algo.tagLength;
+                }
+
+                return algoOpt;
+            },
+
             // --- Encrypt
             // --- ---------------------------
 
             _encryptPromise: function (jwkeys, data) {
                 var self = this;
-                var jwk = jwkeys.publicKey || jwkeys;
+                var jwk = jwkeys.publicKey || jwkeys.privateKey || jwkeys;
+                console.log('use jwk = ' + JSON.stringify(jwk));
                 return this.importKeyJwkPromise(jwk, false, ['encrypt']).then(function (algoKey) {
                     var cryptoSubtle = self._getCryptoSubtle();
                     var dataBuffer = self.cryptoBufferDeserialize(data, 'utf8', self.isDataString);
                     var algo = self._configureEncryptCryptoKeyAlgo(algoKey.algo);
-                    return cryptoSubtle.encrypt(algo, algoKey.key, dataBuffer);
-                }).then(function (cipherbuffer) {
-                    var ciphertext = self.cryptoBufferSerialize(cipherbuffer, self.cryptoFormat, true);
+                    return cryptoSubtle.encrypt(algo, algoKey.key, dataBuffer).then(function (cipherbuffer) {
+                        return {cipherbuffer: cipherbuffer, algo: algo};
+                    });
+                }).then(function (opt) {
+                    var ciphertext = self.cryptoBufferSerialize(opt.cipherbuffer, self.cryptoFormat, true);
+                    var algoOpt = self._extractEncryptAlgoOpt(opt.algo);
+                    if (algoOpt) {
+                        console.log('algoOpt = ' + JSON.stringify(algoOpt));
+                    }
+                    console.log('ciphertext = ' + ciphertext);
                     return ciphertext;
-                })
+                });
             },
 
 

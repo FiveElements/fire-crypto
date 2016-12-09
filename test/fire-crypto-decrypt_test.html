@@ -9,81 +9,82 @@
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
 
-    <link rel="import" href="../fire-crypto-encrypt.html">
+    <link rel="import" href="../fire-crypto-decrypt.html">
 </head>
 <body>
 <test-fixture id="basic">
     <template is="dom-template">
-        <fire-crypto-encrypt not-auto jwk="[[privateKey]]" data="[[data]]" ciphertext="{{cyphertext}}"></fire-crypto-encrypt>
+        <fire-crypto-decrypt not-auto jwk="[[privateKey]]" ciphertext="[[ciphertext]]"
+                             data="{{decryptedData}}"></fire-crypto-decrypt>
     </template>
 </test-fixture>
 
 <script>
-    suite('fire-crypto-encrypt', function () {
+    suite('fire-crypto-decrypt', function () {
         test('instantiating the element works', function () {
             var element = fixture('basic');
-            assert.equal(element.is, 'fire-crypto-encrypt');
+            assert.equal(element.is, 'fire-crypto-decrypt');
         });
     });
 
-    suite('Encrypt CryptoKey', function () {
-        test('AES-CBS', function () {
+    suite('Decrypt CryptoKey', function () {
+        test('RSA-OAEP-256', function () {
+            var data =  {name: 'Super Secret Text'};
             var element = fixture('basic', {
-                data: {name: 'Hello World'},
                 privateKey: {
-                    "alg": "A256CBC",
+                    "alg": "RSA-OAEP-256",
+                    "d": "bEaNEgW8NgZR08uWcUqsFxT5_9S9MIaXM_cdPtmaLIKt0krI5HpMJcTkerESopK1L0m6pVtodXFRT3p0vSk6Yj4HdjBVqMr_mGur2350_ftEUtLsp7DE7Pjzk2EQ8fziZy2Rfc7azttrMZIfwLX-T4RwdChWLWjRuXmj03aEm92TiM7kkxowXUbMSfAMgy7WpGpaywVEGNnZXb1UaM_ukmTGCNKA-YQ16iQY9VpPDbwYBc3lMHyeI8OktFEfaBy1yEWuTPQVf6lDlrNzT8VBnu6c-mWbOizzUrgLHa9fW78AoFfaRjA5RVIzjpKaRRudvgZP5o7N2CBTLsWUTaua4Q",
+                    "dp": "EG6ccPTJQ-3QZK3N1aJfyMbHC46nOjErD4fB3phCQPNbhRT9Dk50sce1fwy74LMah8KIr2gtJJXz3dZC8M0io6DsQFDRD5KywK7Wv53Be8FERLfzox9zBjKMZMuGhdAVNvyR-XYmjnD8e5W455V3URkHDa49H7hTw2kUwQCelsc",
+                    "dq": "StpcSzE6NVLzIATCo7SyWcUi8MpV9yHgx-5MyOaFinWz6OuIDjKcOAnYqsmM3gaVaH8887gTRQ9MrFA362vBzpJgjEyGzqklU-otAz7gHa18Cqimlq1kzu_6iHbe78Lu7E7OW9z-tErV7X_q9In7R78WTcfgzW5bCXC1F4M3EME",
+                    "e": "AQAB",
                     "ext": true,
-                    "k": "QeoM9Y26pW9cyFyNwcjt79d55q71PIL9shm-lp2QurE",
                     "key_ops": [
-                        "encrypt"
+                        "decrypt"
                     ],
-                    "kty": "oct"
-                }
+                    "kty": "RSA",
+                    "n": "0OEspTOuV5zzYuDCVcs7H2Ln1PJxjmQxB-ovnBljPrPoZ-AiHZ-6yxuY6Ny-SWgzYLgQgt0rQsdpxqMaQE8HtmUrxL0FtJanrZ13Y1Y9w-XajHVPgWHY26mONvReEUkRe6yhh19YY__VqEPkDJUjN8EP8ypOtxPq6uU-SFwOPse35q1HUHF3CVnPZGtFVEH2E7ksfkY4LwC1l5KFTcNOzmJ4ms-DNNdT8sPKYjYwNSzYwr_tGMh2tJWHlK6oHsF4nZ3R_hJL4wv65irD_eKGL_jCl-4SpMpnqdUrS9qpUunOKoWlzBoZvVz7oNj09F0ikTRWb8q5meAOEx9np_XNOw",
+                    "p": "7mmT9A30XZMW3i0kaPk5BfuRutb0iv0uOsLtX7shrTuXhEBG6rgi7M9jgdrfuE4q5SPJebrGSqVnFFp_PQsFFlyZi6aIJ6igPcCa-YLPoPE1joyv3bd28LryauJSBw_e2WRs7kST12Uaf96z9bTJdEJucU84Y5po1V8qkUdUlM8",
+                    "q": "4EneWywSbeUhvlwrK-hJlGgVmwdh9cq4Y84NwU2DGfmdGsX1EJrO30xqPLOu0BlSY37YtSZ48Zw0YnfnOqiy9w9YkFodKHM39bG7PcBd-Es1p6mut2KjodvHuunNI8psy7mGBiAlqBgXIcb7LuApaD6GnImgvbIxt9nHik2zc9U",
+                    "qi": "mf2coLVAiWwd0h8yQsxonwV7DoUfFa7fNvLj3WvRavOpVq4JxFeWsuuBzDA6Q2_WjWn2L99juL2TrcnMaZELp3m6_Rrfq7TcViRndUAetXiD-Ve3ok4xFLMp1pt9svbNj-4XrXMPJdTvflqPFwb3Z3s2PCbbK7pJ8XeNwOiij70"
+                },
+                ciphertext: 'Gu++UtEYTezaKNdzA9/QQ1r7MUum0qsZQmzOpnSe6gvULMBeIl1C91TvKntxn7bls0uMJRsc0/DYwb1sumgWMEqRWJRm0MsvsDpHYE4UAjMi6fgRA+JmGhEkFwpM6gR2B0NfmB+dRhZ8VnTLc9bEF0gpthGFoedePD1cr+AGgR4xV9qksTzZLj2iMcY2gxvpYlrRKxe+RbTFDDnFVcbnpNDa0Jxky79CqUiHNKJwBa0HiAFoLJBsq39jqcJcUKJtfGGVsAw4mmRZuW/1up4iynxv0psqE4eoHbnaiTb2dqNFDxdB/XPisH+ES9YuugXzn1N8EWEnFVjDDSrlre+RkQ==',
             });
-            assert.isNotOk(element.ciphertext);
-//            element.addEventListener('fire-encrypt', function(event) {
-//                console.log(JSON.stringify(event));
-//                assert.isOk(event.detail.ciphertext);
-//                assert.equal(event.detail.ciphertext, element.ciphertext);
-//                assert.notEqual(event.detail.ciphertext, element.data);
-//                done();
-//            });
-            return element.encrypt().then(function (cypherText) {
-                assert.isOk(cypherText);
-                assert.equal(element.ciphertext, cypherText);
-                assert.notEqual(element.ciphertext, element.data);
-                return cypherText;
+            assert.isNotOk(element.decryptedData);
+            return element.decrypt().then(function (decryptedData) {
+                assert.isOk(decryptedData);
+                assert.deepEqual(decryptedData, data);
+                assert.deepEqual(element.data, data);
+                assert.equal(element.data, decryptedData);
+                assert.notEqual(decryptedData, data);
+                return decryptedData;
             });
         });
+
         test('AES-CRT', function () {
             var element = fixture('basic', {
                 data: {name: 'Hello World'},
                 privateKey: {
-                    "alg": "A128CTR",
+                    "alg": "A256CTR",
                     "ext": true,
-                    "k": "-C1T_CKV6VWrFBsQmf1WfQ",
+                    "k": "KxREg11lZkXkdWjU2JevebYPSHmIAXVqNx5iqU_tfdM",
                     "key_ops": [
                         "encrypt",
                         "decrypt"
                     ],
                     "kty": "oct"
-                }
+                },
+                ciphertext: 'LRMnSII5ltlnAaCwEUMWFXzt7NbiJN++DeFT3sAAcHSqorbusqQxLskeh3Av9RUV88PvNOwUlzoHu2p9NiKDcOLByC6QkH1A1U+H5A1f5JA667/++SyEf49zaIc48d/pYS39CehACuyCQywXlCkaziGbk9khyOkoZaqNYB+x0pVqhPtkHOW/YCS36CEM+Z5gOXcCFlBrDQGvABBpTaSfIPqCv1bJsuKYEHZHNlhE+FFBizSEuZVR2+fcOUtZo/xD4g08X1O9B3SdTCA1kcSC3w7l6/DLO/Fh/vOrlgpqkpWgDeqpBBT/DiKOsvqziNNh3VbV1IQNzSmeKDUAUczy8g==',
             });
-            assert.isNotOk(element.ciphertext);
-//            element.addEventListener('fire-encrypt', function(event) {
-//                console.log(JSON.stringify(event));
-//                assert.isOk(event.detail.ciphertext);
-//                assert.equal(event.detail.ciphertext, element.ciphertext);
-//                assert.notEqual(event.detail.ciphertext, element.data);
-//                done();
-//            });
-            return element.encrypt().then(function (cypherText) {
-                assert.isOk(cypherText);
-                assert.equal(element.ciphertext, cypherText);
-                assert.notEqual(element.ciphertext, element.data);
-                return cypherText;
+            assert.isNotOk(element.decryptedData);
+            return element.decrypt().then(function (decryptedData) {
+                assert.isOk(decryptedData);
+                assert.deepEqual(element.decryptedData, data);
+                assert.notEqual(element.decryptedData, data);
+                return decryptedData;
             });
         });
+
+
     });
 
 //    suite('Encrypt CryptoPairKey', function () {
