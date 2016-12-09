@@ -27,12 +27,12 @@
 
 <test-fixture id="encrypt">
     <template is="dom-template">
-        <fire-crypto-generatekey id="generator" not-auto algo="[[algo]]"
-                                 private-key="{{privateKey}}"></fire-crypto-generatekey>
-        <fire-crypto-encrypt id="signor" not-auto jwk="[[privateKey]]" data="[[data]]"
-                          signature="{{signature}}"></fire-crypto-encrypt>
-        <fire-crypto-decrypt id="verifyor" not-auto jwk="[[privateKey]]" data="[[data]]"
-                            signature="[[signature]]"></fire-crypto-decrypt>
+        <fire-crypto-generatekey id="encryptGenerator" not-auto algo="[[algo]]"
+                                keys="{{jwks}}"></fire-crypto-generatekey>
+        <fire-crypto-encrypt id="encrypter" not-auto jwk="[[jwks]]" data="[[data]]"
+                             ciphertext="{{ciphertext}}"></fire-crypto-encrypt>
+        <fire-crypto-decrypt id="decrypter" not-auto jwk="[[jwks]]" data="{{decryptedData}}"
+                             ciphertext="[[ciphertext]]"></fire-crypto-decrypt>
     </template>
 </test-fixture>
 
@@ -40,31 +40,32 @@
 
     suite('Encrypt & Decrypt', function () {
 
-//        test('Bindings between Elements', function () {
-//            var element = fixture('encrypt', {
-//                algo: {name: "HMAC", hash: {name: "SHA-256"}},
-//                usages: ['encrypt', 'decrypt'],
-//                data: {title: 'Hello Wolrd!'}
-//            });
-//            var generator = document.getElementById('generator');
-//            var signor = document.getElementById('signor');
-//            var verifyor = document.getElementById('verifyor');
-//            return generator.generateCryptoKey().then(function (keys) {
-//                assert.isOk(keys);
-//                assert.isOk(keys.privateKey);
-//                assert.equal(generator.privateKey, keys.privateKey);
-//                assert.equal(generator.publicKey, keys.publicKey);
-//                return signor.sign();
-//            }).then(function (signature) {
-//                assert.isOk(signature);
-//                assert.equal(signor.signature, signature);
-//                return verifyor.verifySign();
-//            }).then(function (isVerify) {
-//                assert.isTrue(isVerify);
-//                assert.equal(verifyor.isVerify, isVerify);
-//                return isVerify;
-//            });
-//        });
+        test('Bindings between Elements', function () {
+            var element = fixture('encrypt', {
+                algo:  {kty: "RSA", alg: "RSA-OAEP-512"},
+                usages: ['encrypt', 'decrypt'],
+                data: {title: 'Hello Wolrd!'}
+            });
+            var generator = document.getElementById('encryptGenerator');
+            var encrypter = document.getElementById('encrypter');
+            var decrypter = document.getElementById('decrypter');
+            return generator.generateCryptoKey().then(function (keys) {
+                assert.isOk(keys);
+                assert.isOk(keys.privateKey);
+                assert.isOk(keys.publicKey);
+                assert.equal(generator.privateKey, keys.privateKey);
+                assert.equal(generator.publicKey, keys.publicKey);
+                return encrypter.encrypt();
+            }).then(function (ciphertext) {
+                assert.isOk(ciphertext);
+                assert.equal(encrypter.ciphertext, ciphertext);
+                return decrypter.decrypt();
+            }).then(function (decryptedData) {
+                assert.isTrue(decryptedData);
+                assert.equal(decrypter.data, decryptedData);
+                return decryptedData;
+            });
+        });
 
 
 //        test('All Promise Sign Algo', function () {
