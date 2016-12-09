@@ -1,0 +1,213 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="fire-crypto-base-behaviour.html">
+
+<!--
+`fire-crypto-derivekey`
+Polymer Element fire-crypto-derivekey
+
+@demo demo/index.html 
+-->
+
+<dom-module id="fire-crypto-derivekey">
+    <script>
+        Polymer({
+
+            is: 'fire-crypto-derivekey',
+
+            behaviors: [
+                FiveElements.FireCryptoBaseBehavior
+            ],
+
+
+            properties: {
+                /**
+                 * Not Start generated Key automatically when data changed
+                 */
+                notAuto: {
+                    type: Boolean,
+                    value: false
+                },
+                /**
+                 * algo is an object defining the derivation algorithm to use
+                 * Supported algo are: ECDH, DH, PBKDF2, HKDF-CTR.
+                 */
+                algo: {
+                    type: Object,
+                    notify: true
+                },
+                /**
+                 * masterKey is a CryptoKey representing the master key to be used by the key derivation algorithm.
+                 */
+                masterKey: {
+                    type: Object,
+                    value: function () {
+                        return  { "name": 'AES-CBC', "length": 256 };
+                    }
+                },
+                /**
+                 * derivedKeyAlgo is an object defining the algorithm the derived key will be used
+                 * for or a DOMString as a shortcut for {"name": derivedKeyAlgo}.
+                 * For AES a length property is also required, possible values are 128, 192 or 256 bits.
+                 */
+                derivedKeyAlgo: {
+                    type: Object,
+                },
+                /**
+                 * keyUsages  is an Array indicating what can be done with the derivated key.
+                 * Usages is an Array of Possible values ['encrypt', 'decrypt', 'sign', 'verify', 'deriveKey', 'deriveBits', 'wrapKey', 'unwrapKey']
+                 */
+                keyUsages: {
+                    type: Array,
+                    value: function () {
+                        return ['encrypt', 'decrypt' ];
+                    }
+                },
+                /**
+                 * extractable is a Boolean indicating if the key can be extracted from the CryptoKey object at a later stage.
+                 */
+                extractable: {
+                    type: Boolean,
+                    value: true
+                },
+                /**
+                 * The generated Json Web Key.
+                 */
+                keys: {
+                    type: Object,
+                    notify: true
+                },
+                privateKey: {
+                    type: Object,
+                    notify: true
+                },
+                publicKey: {
+                    type: Object,
+                    notify: true
+                },
+
+            },
+            observers: [
+                '_deriveCryptoKeyObserver(notAuto, algo, masterKey, derivedKeyAlgo, extractable, keyUsages)'
+            ],
+
+            // --- Observer Generate Key
+            // --- ---------------------------
+            _deriveCryptoKeyObserver: function (notAuto, algo, masterKey, derivedKeyAlgo, extractable, keyUsages) {
+                if (!notAuto) {
+                    this._deriveKey(this.algo,  this.masterKey, this.derivedKeyAlgo, this.extractable, this.keyUsages);
+                }
+            },
+
+            // --- Api Generate Key
+            // --- ---------------------------
+
+            deriveKey: function () {
+                return this._deriveKey(this.algo,  this.masterKey, this.derivedKeyAlgo, this.extractable, this.keyUsages);
+            },
+
+
+            // --- Key generation
+            // --- ---------------------------
+            _configureDeriveKeyAlgo: function (algoToConfigure) {
+                var algo = JSON.parse(JSON.stringify(algoToConfigure));
+                if ((algo.name === 'ECDH') || (algo.name ===  'RSA-OAEP')) {
+                    algo.public = this.masterKey;
+                } else if (algo.name === 'PBKDF2')  {
+//                    algo.salt = algo.salt ||  Unibabel.hexToBuffer('e85c53e7f119d41fd7895cdc9d7bb9dd');
+                    algo.salt = algo.salt ||  this._getCrypto().getRandomValues(new Uint8Array(16));
+                    algo.iterations = algo.iterations || 100;
+                    algo.hash =  algo.hash || 'SHA-256'; //can be "SHA-1", "SHA-256", "SHA-384", or "SHA-512"
+                } else if (algo.name === 'HKDF-CTR')  {
+//                    algo.hash =  algo.hash || 'SHA-256';
+//                    algo.label =
+//                    algo.context =
+                }
+                return algo;
+            },
+            _importPasswordAsCryptoKeyPromise: function (passphrase, algo, usages) {
+                var cryptoSubtle = self._getCryptoSubtle();
+                var passphraseKey = Unibabel.utf8ToBuffer(passphrase);
+                var passAlgo = algo ||  {name: 'PBKDF2'};
+                var passUsages = usages ||  ['deriveBits', 'deriveKey'];
+                return cryptoSubtle.importKey('raw', passphraseKey, passAlgo, false, passUsages);
+            },
+
+            /**
+             * The SubtleCrypto.deriveKey() method returns a Promise of a newly generated CryptoKey derivated
+             * from a master key and a specific algorithm given as parameters.
+             * @see https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/deriveKey
+             *
+             * @param algo is an object defining the derivation algorithm to use. Supported algo are: ECDH, DH, PBKDF2, HKDF-CTR.
+             * @param masterKey is a CryptoKey representing the master key to be used by the key derivation algorithm.
+             * @param derivedKeyAlgo is an object defining the algorithm the derived key will be used for or a DOMString as a shortcut for {"name": derivedKeyAlgo}. For AES a length property is also required, possible values are 128, 192 or 256 bits.
+             * @param extractable is a Boolean indicating if the key can be extracted from the CryptoKey object at a later stage.
+             * @param keyUsages  is an Array indicating what can be done with the derivated key. . Possible values of the array are: ['encrypt', 'decrypt', 'sign', 'verify', 'deriveKey', 'deriveBits', 'wrapKey', 'unwrapKey']
+             * @returns {IPromise<{privateKey, publicKey}>} result is a Promise that returns the generated key as a  CryptoKeyPair {privateKey, publicKey] with publicKey=undefined for symmetric algorithm.
+             * @private
+             */
+            _deriveKeyPromise: function (algorithm, jwkeys, derivedKeyAlgo, extractable, keyUsages) {
+               var self = this;
+                var jwk = jwkeys.privateKey || jwkeys;
+                return this.importKeyJwkPromise(jwk, false, ['deriveBits', 'deriveKey']).then(function (algoKey) {
+                    var cryptoSubtle = self._getCryptoSubtle();
+                    var algo = self._configureDeriveKeyAlgo(algorithm);
+                    return cryptoSubtle.deriveKey(algo, algoKey.key, derivedKeyAlgo, extractable, keyUsages);
+                }).then(function (key) {
+                    if (key.privateKey || key.publicKey) {
+                        promiseKeys[0] = cryptoSubtle.exportKey('jwk', key.privateKey);
+                        promiseKeys[1] = cryptoSubtle.exportKey('jwk', key.publicKey);
+                    } else {
+                        promiseKeys[0] = cryptoSubtle.exportKey('jwk', key);
+                    }
+                    return Promise.all(promiseKeys);
+                }).then(function (keys) {
+                    return {privateKey: keys[0], publicKey: keys[1]};
+                });
+                return promise;
+            },
+
+            _deriveKey: function (algo, extractable, usages) {
+                var self = this;
+                var keyPromise = this._deriveKeyPromise(algo, extractable, usages)
+                        .then(function (keys) {
+//                    console.log('privateKey', keys.privateKey);
+//                    console.log('publicKey', keys.publicKey);
+//                    console.log('_generateCryptoKey', JSON.stringify(keys, null, '\t'));
+                            self.keys = keys;
+//                            if (keys)  {}
+                            self.privateKey = keys.privateKey;
+                            self.publicKey = keys.publicKey;
+                            self._fireCryptoDeriveKey(keys);
+                            return keys;
+                        }).catch(function (err) {
+                            self.key = undefined;
+                            self._fireCryptoDeriveKeyError(err);
+                        });
+                return keyPromise;
+            },
+
+            // --- Event Generate Key
+            // --- ---------------------------
+            /**
+             * Fired when a JWK is derive.
+             *
+             * @event jwk-generated
+             */
+            _fireCryptoDeriveKey: function (keys) {
+                console.log('fire jwk-derive', keys);
+                this.fire('jwk-generated', {jwk: keys});
+            },
+            /**
+             * Fired when an error occur in JWK generation .
+             *
+             * @event error-jwk-generated
+             */
+            _fireCryptoDeriveKeyError: function (error) {
+                console.error('derive Key error', error.message);
+                this.fire('error-jwk-derive', {error: error});
+            },
+
+        });
+    </script>
+</dom-module>

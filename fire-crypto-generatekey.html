@@ -123,9 +123,8 @@ Polymer Element fire-crypto-generatekey
             _generateCryptoKeyPromise: function (algorithm, extractable, usages) {
                 var cryptoSubtle = this._getCryptoSubtle();
                 var algo = this._configureGenerateCryptoKeyAlgo(algorithm);
-                var promise = cryptoSubtle.generateKey(algo, extractable, usages);
-                var promiseKeys = [];
-                promise = promise.then(function (key) {
+                return cryptoSubtle.generateKey(algo, extractable, usages).then(function (key) {
+                    var promiseKeys = [];
                     if (key.privateKey || key.publicKey) {
                         promiseKeys[0] = cryptoSubtle.exportKey('jwk', key.privateKey);
                         promiseKeys[1] = cryptoSubtle.exportKey('jwk', key.publicKey);
@@ -136,18 +135,13 @@ Polymer Element fire-crypto-generatekey
                 }).then(function (keys) {
                     return {privateKey: keys[0], publicKey: keys[1]};
                 });
-                return promise;
             },
 
             _generateCryptoKey: function (algo, extractable, usages) {
                 var self = this;
                 var keyPromise = this._generateCryptoKeyPromise(algo, extractable, usages)
                         .then(function (keys) {
-//                    console.log('privateKey', keys.privateKey);
-//                    console.log('publicKey', keys.publicKey);
-//                    console.log('_generateCryptoKey', JSON.stringify(keys, null, '\t'));
                             self.keys = keys;
-//                            if (keys)  {}
                             self.privateKey = keys.privateKey;
                             self.publicKey = keys.publicKey;
                             self._fireCryptoKeyGen(keys);

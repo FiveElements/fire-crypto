@@ -135,7 +135,6 @@ Polymer Element fire-crypto-encrypt
                 var self = this;
                 return this._encryptPromise(jwk, data).then(function (ciphertext) {
                     self.ciphertext = ciphertext;
-                    console.log('isset ciphertext ==> ' +  self.ciphertext );
                     self._fireCryptoKeyEncrypt(ciphertext);
                     return ciphertext;
                 }).catch(function (err) {

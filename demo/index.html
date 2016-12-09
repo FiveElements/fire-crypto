@@ -32,7 +32,7 @@
 </head>
 <body>
 <div class="vertical-section-container centered">
-    <h3>Sign fire-crypto demo</h3>
+    <h2>Sign fire-crypto demo</h2>
     <demo-snippet>
         <template is="dom-bind" id="demo">
 
@@ -61,28 +61,32 @@
     </demo-snippet>
 
     <div class="vertical-section-container centered">
-        <h3>Encrypt fire-crypto demo</h3>
+        <h2>Encrypt fire-crypto demo</h2>
         <demo-snippet>
             <template is="dom-bind" id="demoEncrypt">
 
                 <div>
-                    <h1>Generate Key</h1>
-                    <demo-algo-listbox usage="encrypt" algo="{{algo}}"></demo-algo-listbox>
+                    <h3>Generate Key</h3>
                     <fire-crypto-generatekey algo="{{algo}}" usages="[[usages]]" keys="{{encryptJWK}}">
                     </fire-crypto-generatekey>
+                    <demo-algo-listbox usage="encrypt" algo="{{algo}}"></demo-algo-listbox>
                     <demo-jwk-display private-key="{{encryptJWK.privateKey}}" public-key="{{encryptJWK.publicKey}}"></demo-jwk-display>
                 </div>
 
                 <div>
-                    <h1>Encrypt Data</h1>
+                    <h3>Encrypt Data</h3>
+                    <fire-crypto-encrypt id="encrypter"
+                                         jwk="[[encryptJWK]]" data="[[data]]"
+                                         ciphertext="{{ciphertext}}">
+                    </fire-crypto-encrypt>
                     <paper-input value="{{data.name}}" label="Data to encrypt"></paper-input>
-                    <fire-crypto-encrypt jwk="[[encryptJWK]]" data="[[data]]"
-                                         ciphertext="{{ciphertext}}"></fire-crypto-encrypt>
+
                 </div>
                 <div>
-                    <h1>Decrypt Data</h1>
+                    <h3>Decrypt Data</h3>
                     <fire-crypto-decrypt jwk="[[encryptJWK]]" data="{{decodedData}}"
-                                         ciphertext="[[ciphertext]]"></fire-crypto-decrypt>
+                                         ciphertext="[[ciphertext]]">
+                    </fire-crypto-decrypt>
                     <demo-encrypt-display ciphertext="{{ciphertext}}" data="[[decodedData]]" ></demo-encrypt-display>
                 </div>
             </template>
@@ -91,21 +95,52 @@
                 var demo = document.querySelector('#demoEncrypt');
                 demo.usages = ['encrypt', 'decrypt'];
                 demo.data = {name: 'Super Secret Text'};
-                function generateCryptoKey() {
-                    document.getElementById('generatorKeyEncrypt').generateCryptoKey();
+                function encrypt() {
+                    document.getElementById('encrypter').sign();
                 }
-                function sign() {
-                    document.getElementById('signor').sign();
-                }
-                function verifySign() {
-                    document.getElementById('verifyor').verifySign();
-                }
-
             </script>
         </demo-snippet>
-
     </div>
 
+
+    <div class="vertical-section-container centered">
+        <h2>DeriveKey fire-crypto demo</h2>
+        <demo-snippet>
+            <template is="dom-bind" id="demoDeriveKey">
+
+                <div>
+                    <h3>Generate Key</h3>
+                    <fire-crypto-generatekey algo="{{algo}}" usages="[[usages]]" keys="{{jwk}}">
+                    </fire-crypto-generatekey>
+                    <demo-algo-listbox usage="encrypt" algo="{{algo}}"></demo-algo-listbox>
+                    <demo-jwk-display private-key="{{jwk.privateKey}}" public-key="{{jwk.publicKey}}"></demo-jwk-display>
+                </div>
+
+                <div>
+                    <h3>Derive Key</h3>
+                    <fire-crypto-derivekey id="deriver" algo="[[deriveKeyAlgo]]"
+                                         master-key="[[jwk]]" derived-key-algo="[[derivedKeyAlgo]]"
+                                         key-usages="{{keyUsages}}">
+                    </fire-crypto-derivekey>
+
+                </div>
+
+            </template>
+
+            <script>
+                var demo = document.querySelector('#demoDeriveKey');
+                demo.usages = ['deriveKey', 'deriveBits'];
+                demo.algo = { 'name': 'PBKDF2'};
+                demo.deriveKeyAlgo = { 'name': 'PBKDF2'};
+                demo.derivedKeyAlgo = { 'name': 'AES-CTR',  length: 256};
+                demo.keyUsages = ['encrypt', 'decrypt'];
+
+                function encrypt() {
+                    document.getElementById('encrypter').sign();
+                }
+            </script>
+        </demo-snippet>
+    </div>
 
 </body>
 </html>

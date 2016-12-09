@@ -239,7 +239,7 @@ Polymer Element fire-hmac-sign-behaviour
 
 
         _filterFunctionForSign: function () {
-            return this.__filterFunctionForUsage(['HMAC', 'RSASSA-PKCS1-v1_5', 'ECDSA']); // TODO add RSA-PSS , AES-CMAC
+            return this.__filterFunctionForUsage(['HMAC', 'RSASSA-PKCS1-v1_5', 'ECDSA']); //   add RSA-PSS , AES-CMAC
         },
         _filterFunctionForEncrypt: function () {
             return this.__filterFunctionForUsage(['AES-CBC', 'AES-CTR', 'AES-GCM', 'RSA-OAEP']); // Add AES-CFB
@@ -248,7 +248,7 @@ Polymer Element fire-hmac-sign-behaviour
             return this.__filterFunctionForUsage(['AES-CBC', 'AES-CTR', 'AES-GCM', 'RSA-OAEP', 'AES-KW']); // Add AES-CFB
         },
         _filterFunctionForDeriveKey: function () {
-            return this.__filterFunctionForUsage(['ECDH', 'DH', 'CONCAT', 'HKDF-CTR', 'PBKDF2']);
+            return this.__filterFunctionForUsage(['ECDH', 'DH', 'HKDF-CTR', 'PBKDF2']); // add , 'CONCAT'
         },
 
         // --- Algorithms Name for Usage
@@ -273,6 +273,9 @@ Polymer Element fire-hmac-sign-behaviour
         },
         getAlgorithmsForWrapKey: function () {
             return this.getAlgorithms(this._filterFunctionForWrapKey());
+        },
+        getAlgorithmsForDeriveKey: function () {
+            return this.getAlgorithms(this._filterFunctionForDeriveKey());
         },
         getAlgorithmsForDigest: function () {
             return ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
@@ -375,15 +378,12 @@ Polymer Element fire-hmac-sign-behaviour
          */
         importKeyJwkPromise: function (jwk, extractable, usages) {
             var self = this;
-            var keyPromise = this.getAlgorithmIdentifierFromJwtPromise(jwk)
-                    .then(function (algo) {
-                        var cryptoSubtle = self._getCryptoSubtle();
-                        return cryptoSubtle.importKey('jwk', jwk, algo, extractable, usages)
-                                .then(function (key) {
-                                    return {algo: algo, key: key}
-                                });
-                    });
-            return keyPromise;
+            return this.getAlgorithmIdentifierFromJwtPromise(jwk).then(function (algo) {
+                var cryptoSubtle = self._getCryptoSubtle();
+                return cryptoSubtle.importKey('jwk', jwk, algo, extractable, usages).then(function (key) {
+                    return {algo: algo, key: key}
+                });
+            });
         },
 
         // --- Crypto Serializer
