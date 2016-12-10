@@ -48,11 +48,11 @@
 //                assert.notEqual(event.detail.ciphertext, element.data);
 //                done();
 //            });
-            return element.encrypt().then(function (cypherText) {
-                assert.isOk(cypherText);
-                assert.equal(element.ciphertext, cypherText);
+            return element.encrypt().then(function (cipher) {
+                assert.isOk(cipher.text);
+                assert.equal(element.ciphertext, cipher.text);
                 assert.notEqual(element.ciphertext, element.data);
-                return cypherText;
+                return cipher;
             });
         });
         test('AES-CRT', function () {
@@ -77,11 +77,11 @@
 //                assert.notEqual(event.detail.ciphertext, element.data);
 //                done();
 //            });
-            return element.encrypt().then(function (cypherText) {
-                assert.isOk(cypherText);
-                assert.equal(element.ciphertext, cypherText);
+            return element.encrypt().then(function (cipher) {
+                assert.isOk(cipher.text);
+                assert.equal(element.ciphertext, cipher.text);
                 assert.notEqual(element.ciphertext, element.data);
-                return cypherText;
+                return cipher;
             });
         });
     });

@@ -60,9 +60,9 @@
                 assert.equal(generator.privateKey, keys.privateKey);
                 assert.equal(generator.publicKey, keys.publicKey);
                 return encryptor.encrypt();
-            }).then(function (ciphertext) {
-                assert.isOk(ciphertext);
-                assert.equal(encryptor.ciphertext, ciphertext);
+            }).then(function (opt) {
+                assert.isOk(opt.cipher);
+                assert.equal(encryptor.ciphertext, opt.cipher);
                 return decrypter.decrypt();
             }).then(function (decryptedData) {
                 assert.ok(decryptedData);
@@ -80,14 +80,13 @@
                 return generator._generateCryptoKeyPromise(algo, true, ['encrypt', 'decrypt']).then(function (keys) {
                     assert.isOk(keys);
 
-                    return encryptor._encryptPromise(keys, data).then(function (ciphertext) {
-                        return {jwk: keys, ciphertext: ciphertext}
+                    return encryptor._encryptPromise(keys, data).then(function (cipher) {
+                        return {jwk: keys, ciphertext: cipher.text, cipherparam: cipher.param}
                     });
-                }).then(function (opt) {
-                    var ciphertext = opt.ciphertext;
-                    assert.isOk(ciphertext);
-//                    console.log('preencrypt genkey ' + JSON.stringify(opt.ciphertext));
-                    return decrypter._decryptPromise(opt.jwk, ciphertext);
+                }).then(function (cipherkey) {
+                    assert.isOk(cipherkey.ciphertext);
+//                    console.log('preencrypt genkey ' + JSON.stringify(cipherkey.ciphertext));
+                    return decrypter._decryptPromise(cipherkey.jwk, cipherkey.ciphertext);
                 }).then(function (decryptedData) {
                     assert.isOk(decryptedData);
                     assert.deepEqual(data, decryptedData);

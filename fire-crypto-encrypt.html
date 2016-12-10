@@ -53,8 +53,25 @@ Polymer Element fire-crypto-encrypt
                 data: {
                     type: Object
                 },
+                /**
+                 * the result cipher object {text: 'base64', param: { iv: 'hex', counter: 'hex' }  }
+                 */
+                cipher: {
+                    type: Object,
+                    notify: true
+                },
+                /**
+                 * the result cipher text in format base64
+                 */
                 ciphertext: {
                     type: String,
+                    notify: true
+                },
+                /**
+                 * the result cipher parameter object like  { iv: 'hex', counter: 'hex' }
+                 */
+                cipherparam: {
+                    type: Object,
                     notify: true
                 },
             },
@@ -111,30 +128,29 @@ Polymer Element fire-crypto-encrypt
                 return algo;
             },
 
-            _extractEncryptAlgoOpt: function (algo) {
-                var algoOpt = undefined;
+            _extractEncryptCipherParam: function (algo) {
+                var param = undefined;
                 if (algo.iv) {
-                    algoOpt = algoOpt || {};
-                    algoOpt.iv = this.cryptoBufferSerialize(algo.iv, 'hex', true);
+                    param = param || {};
+                    param.iv = this.cryptoBufferSerialize(algo.iv, 'hex', true);
                 }
                 if (algo.counter) {
-                    algoOpt = algoOpt || {};
-                    algoOpt.counter = this.cryptoBufferSerialize(algo.counter, 'hex', true);
+                    param = param || {};
+                    param.counter = this.cryptoBufferSerialize(algo.counter, 'hex', true);
                 }
 //                if (algo.label) {
 //                    algoOpt = algoOpt || {};
 //                    algoOpt.label = this.cryptoBufferSerialize(algo.label, 'hex', true);
 //                }
                 if (algo.additionalData) {
-                    algoOpt = algoOpt || {};
-                    algoOpt.additionalData = this.cryptoBufferSerialize(algo.additionalData, 'hex', true);
+                    param = param || {};
+                    param.additionalData = this.cryptoBufferSerialize(algo.additionalData, 'hex', true);
                 }
                 if (algo.tagLength) {
-                    algoOpt = algoOpt || {};
-                    algoOpt.tagLength = algo.tagLength;
+                    param = param || {};
+                    param.tagLength = algo.tagLength;
                 }
-
-                return algoOpt;
+                return param;
             },
 
             // --- Encrypt
@@ -153,22 +169,24 @@ Polymer Element fire-crypto-encrypt
                     });
                 }).then(function (opt) {
                     var ciphertext = self.cryptoBufferSerialize(opt.cipherbuffer, self.cryptoFormat, true);
-                    var algoOpt = self._extractEncryptAlgoOpt(opt.algo);
-                    if (algoOpt) {
-                        console.log('algoOpt = ' + JSON.stringify(algoOpt));
+                    var cipherparam = self._extractEncryptCipherParam(opt.algo);
+                    var cipher = {text: ciphertext};
+                    if (cipherparam) {
+                        cipher.param = cipherparam;
                     }
-                    console.log('ciphertext = ' + ciphertext);
-                    return ciphertext;
+                    return cipher;
                 });
             },
 
 
             _encrypt: function (jwk, data) {
                 var self = this;
-                return this._encryptPromise(jwk, data).then(function (ciphertext) {
-                    self.ciphertext = ciphertext;
-                    self._fireCryptoKeyEncrypt(ciphertext);
-                    return ciphertext;
+                return this._encryptPromise(jwk, data).then(function (cipher) {
+                    self.ciphertext = cipher.text;
+                    self.cipherparam = cipher.param;
+                    self.cipher = cipher;
+                    self._fireCryptoKeyEncrypt(cipher);
+                    return cipher;
                 }).catch(function (err) {
                     self.ciphertext = undefined;
                     self._fireCryptoKeyEncryptError(err);
@@ -182,9 +200,9 @@ Polymer Element fire-crypto-encrypt
              *
              * @event fire-encrypt
              */
-            _fireCryptoKeyEncrypt: function (ciphertext) {
-                console.log('fire-encrypt', ciphertext);
-                this.fire('fire-encrypt', {encrypt: ciphertext});
+            _fireCryptoKeyEncrypt: function (cipher) {
+                console.log('fire-encrypt', cipher);
+                this.fire('fire-encrypt', cipher);
             },
 
             /**
