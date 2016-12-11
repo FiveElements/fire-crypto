@@ -27,6 +27,20 @@
         });
     });
 
+    suite('Decrypt tools', function () {
+        test('_configureAlgoParam', function () {
+            var element = fixture('basic');
+            var algo = {name: "AES-CBC", length: 128};
+            var param = {tagLength: 128, counter: new Uint8Array(16)};
+            param.iv = element._getCrypto().getRandomValues(new Uint8Array(16));
+            var cipherparam = element._configureAlgoParam(algo, param);
+            assert.notEqual(algo, param);
+            assert.equal(cipherparam.name, algo.name);
+            assert.equal(cipherparam.length, algo.length);
+            assert.equal(cipherparam.iv, param.iv);
+        });
+    });
+
     suite('Decrypt CryptoKey', function () {
         test('RSA-OAEP-256', function () {
             var data =  {name: 'Super Secret Text'};

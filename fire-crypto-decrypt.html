@@ -84,6 +84,19 @@ Polymer Element fire-crypto-encrypt
 
             // --- Decrypt
             // --- ---------------------------
+            _configureAlgoParam: function(algo, cipherparam){
+                var param = algo;
+                if (cipherparam) {
+                    // clone
+                    param = JSON.parse(JSON.stringify(algo));
+                    // copy properties
+                    var keys = Object.keys(cipherparam);
+                    keys.forEach(function (key) {
+                       param[key] = cipherparam[key];
+                    });
+                }
+                return param;
+            },
 
             _decryptPromise: function (jwkeys, ciphertext) {
                 var self = this;
@@ -91,7 +104,8 @@ Polymer Element fire-crypto-encrypt
                 return this.importKeyJwkPromise(jwk, false, ['decrypt']).then(function (algoKey) {
                     var cryptoSubtle = self._getCryptoSubtle();
                     var cipherBuffer = self.cryptoBufferDeserialize(ciphertext, self.cryptoFormat, true);
-                    var algo =  algoKey.algo;
+                    var cipherparam = undefined; // TODO
+                    var algo =  self._configureAlgoParam(algoKey.algo, cipherparam);
                     return cryptoSubtle.decrypt(algo, algoKey.key, cipherBuffer);
                 }).then(function (clearbuffer) {
                     var decodedData = self.cryptoBufferSerialize(clearbuffer, 'utf8', self.isDataString);
