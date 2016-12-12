@@ -21,7 +21,10 @@ Polymer Element demo-jwk-display
                 <paper-tab>Decoded Data</paper-tab>
             </paper-tabs>
         <iron-pages selected="{{selected}}">
-            <pre>[[ciphertext]]</pre>
+            <div>
+                <pre>[[ciphertext]]</pre>
+                <pre>[[_cipherparamStr]]</pre>
+            </div>
             <pre>[[_dataStr]]</pre>
         </iron-pages>
     </template>
@@ -36,8 +39,19 @@ Polymer Element demo-jwk-display
                     type: Number,
                     value: 0
                 },
+                cipher: {
+                    type: Object,
+                    observer: '_cipherChanged'
+                },
                 ciphertext: {
                     type: String,
+                },
+                cipherparam: {
+                    type: Object,
+                    observer: '_cipherparamChanged'
+                },
+                _cipherparamStr: {
+                    type: Object,
                 },
                 data: {
                     type: Object,
@@ -47,9 +61,19 @@ Polymer Element demo-jwk-display
                     type: String
                 },
             },
-
+            _cipherChanged: function (newValue, oldValue) {
+                if (newValue.text) {
+                    this.ciphertext = newValue.text;
+                    this.cipherparam = newValue.param;
+                } else {
+                    this.ciphertext = newValue;
+                }
+            },
             _dataChanged: function (newValue, oldValue) {
                 this._dataStr = JSON.stringify(newValue, null, '  ');
+            },
+            _cipherparamChanged: function (newValue, oldValue) {
+                this._cipherparamStr = JSON.stringify(newValue, null, '  ');
             },
 
         });

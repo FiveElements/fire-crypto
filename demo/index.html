@@ -74,20 +74,20 @@
                 </div>
 
                 <div>
-                    <h3>Encrypt Data</h3>
+                    <h3>Encrypt Data <button onclick="encrypt()">Encrypt</button></h3>
                     <fire-crypto-encrypt id="encrypter"
                                          jwk="[[encryptJWK]]" data="[[data]]"
-                                         ciphertext="{{ciphertext}}">
+                                         cipher="{{cipher}}">
                     </fire-crypto-encrypt>
                     <paper-input value="{{data.name}}" label="Data to encrypt"></paper-input>
 
                 </div>
                 <div>
                     <h3>Decrypt Data</h3>
-                    <fire-crypto-decrypt jwk="[[encryptJWK]]"  ciphertext="[[ciphertext]]"
+                    <fire-crypto-decrypt jwk="[[encryptJWK]]"  cipher="[[cipher]]"
                                          data="{{decodedData}}">
                     </fire-crypto-decrypt>
-                    <demo-encrypt-display ciphertext="{{ciphertext}}" data="[[decodedData]]" ></demo-encrypt-display>
+                    <demo-encrypt-display cipher="{{cipher}}" data="[[decodedData]]" ></demo-encrypt-display>
                 </div>
             </template>
 
@@ -96,7 +96,7 @@
                 demo.usages = ['encrypt', 'decrypt'];
                 demo.data = {name: 'Super Secret Text'};
                 function encrypt() {
-                    document.getElementById('encrypter').sign();
+                    document.getElementById('encrypter').encrypt();
                 }
             </script>
         </demo-snippet>
@@ -135,7 +135,7 @@
                 demo.derivedKeyAlgo = { 'name': 'AES-CTR',  length: 256};
                 demo.keyUsages = ['encrypt', 'decrypt'];
 
-                function encrypt() {
+                function derivekey() {
                     document.getElementById('encrypter').sign();
                 }
             </script>

@@ -89,14 +89,14 @@ Polymer Element fire-crypto-encrypt
             },
             _decryptObserver: function (notAuto, jwk, ciphertext) {
                 if (!notAuto) {
-                    this._decrypt(jwk, ciphertext);
+                    this._decrypt(jwk,  this.cipher);
                 }
             },
 
             // --- API decrypt
             // --- ---------------------------
             decrypt: function () {
-                return this._decrypt(this.jwk, this.ciphertext);
+                return this._decrypt(this.jwk, this.cipher);
             },
 
 
@@ -105,26 +105,34 @@ Polymer Element fire-crypto-encrypt
             // --- ---------------------------
             _configureAlgoParam: function(algo, cipherparam){
                 var param = algo;
+                var self = this;
                 if (cipherparam) {
                     // clone
                     param = JSON.parse(JSON.stringify(algo));
                     // copy properties
                     var keys = Object.keys(cipherparam);
                     keys.forEach(function (key) {
-                       param[key] = cipherparam[key];
+                        if ((key === 'iv')|| (key === 'counter') || (key === 'additionalData')){
+                            param[key] = self.cryptoBufferDeserialize(cipherparam[key], 'hex', true);
+                        } else {
+                            param[key] = cipherparam[key];
+                        }
                     });
                 }
                 return param;
             },
 
-            _decryptPromise: function (jwkeys, ciphertext) {
+            _decryptPromise: function (jwkeys, cipher) {
                 var self = this;
                 var jwk = jwkeys.privateKey || jwkeys;
+                console.log('_decryptPromise : ' ,cipher);
                 return this.importKeyJwkPromise(jwk, false, ['decrypt']).then(function (algoKey) {
                     var cryptoSubtle = self._getCryptoSubtle();
+                    var ciphertext= cipher.text || cipher;
+                    var cipherparam = cipher.param; // TODO
                     var cipherBuffer = self.cryptoBufferDeserialize(ciphertext, self.cryptoFormat, true);
-                    var cipherparam = undefined; // TODO
                     var algo =  self._configureAlgoParam(algoKey.algo, cipherparam);
+                    console.log('_decryptPromise algo : ' ,algo);
                     return cryptoSubtle.decrypt(algo, algoKey.key, cipherBuffer);
                 }).then(function (clearbuffer) {
                     var decodedData = self.cryptoBufferSerialize(clearbuffer, 'utf8', self.isDataString);
