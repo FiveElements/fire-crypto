@@ -48,10 +48,22 @@ Polymer Element fire-crypto-encrypt
                     type: Object
                 },
                 /**
+                 * The cypher object with {text: 'base64, param: {} } to decrypt
+                 */
+                cipher: {
+                    type: Object
+                },
+                /**
                  * The cypher text text to decrypt
                  */
                 ciphertext: {
                     type: String
+                },
+                /**
+                 * The cypher text text to decrypt
+                 */
+                cipherparam: {
+                    type: Object
                 },
                 /**
                  * The data to sign
@@ -63,11 +75,18 @@ Polymer Element fire-crypto-encrypt
             },
 
             observers: [
+                '_cipherChangeObserver(notAuto,cipher)',
                 '_decryptObserver(notAuto,jwk,ciphertext)'
             ],
 
             // --- decrypt Observer
             // --- ---------------------------
+            _cipherChangeObserver: function (notAuto, cipher) {
+                if (!notAuto) {
+                    this.ciphertext = cipher.text;
+                    this.cipherparam = cipher.param;
+                }
+            },
             _decryptObserver: function (notAuto, jwk, ciphertext) {
                 if (!notAuto) {
                     this._decrypt(jwk, ciphertext);
