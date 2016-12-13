@@ -132,7 +132,6 @@ Polymer Element fire-crypto-verify
              * @event key-verify
              */
             _fireCryptoKeyVerify: function (isValid, signature) {
-                console.log('isValid', isValid, ' for signature', signature);
                 this.fire('key-verify', {isValid: isValid, signature: signature});
             },
 
@@ -142,7 +141,7 @@ Polymer Element fire-crypto-verify
              * @event error-key-verify
              */
             _fireCryptoKeyVerifyError: function (error, signature) {
-                console.error('verify error' , error, ' for signature', signature);
+                console.error('error-key-verify' + error );
                 this.fire('error-key-verify', {error: error, signature: signature});
             },
 

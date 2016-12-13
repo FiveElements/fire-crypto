@@ -113,7 +113,8 @@ Polymer Element fire-crypto-encrypt
                     var keys = Object.keys(cipherparam);
                     keys.forEach(function (key) {
                         if ((key === 'iv')|| (key === 'counter') || (key === 'additionalData')){
-                            param[key] = self.cryptoBufferDeserialize(cipherparam[key], 'hex', true);
+                            var buffer = self.cryptoBufferDeserialize(cipherparam[key], 'hex', true);
+                            param[key] = new Uint8Array( buffer);
                         } else {
                             param[key] = cipherparam[key];
                         }
@@ -148,7 +149,8 @@ Polymer Element fire-crypto-encrypt
                     self._fireCryptoKeyDecrypt(decodedData);
                     return decodedData;
                 }).catch(function (err) {
-                    self.data = undefined;
+                    self.data = null;
+                    self.set('data', undefined);
                     self._fireCryptoKeyDecryptError(err);
                 });
             },
@@ -161,7 +163,7 @@ Polymer Element fire-crypto-encrypt
              * @event fire-decrypt
              */
             _fireCryptoKeyDecrypt: function (decodedData) {
-                console.log('fire-decrypt', decodedData);
+                console.log('fire-decrypt: ' ,decodedData);
                 this.fire('fire-decrypt', {decrypt: decodedData});
             },
             /**
@@ -170,7 +172,7 @@ Polymer Element fire-crypto-encrypt
              * @event fire-error-decrypt
              */
             _fireCryptoKeyDecryptError: function (error) {
-                console.error('fire-error-decrypt', error);
+                console.error('fire-error-decrypt : '+ error);
                 this.fire('fire-error-decrypt', {error: error});
             },
 

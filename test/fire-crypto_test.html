@@ -33,8 +33,8 @@
         <fire-crypto-generatekey id="encryptGenerator" not-auto algo="[[algo]]" usages="[[usages]]"
                                  jwk="{{jwks}}"></fire-crypto-generatekey>
         <fire-crypto-encrypt id="encryptor" not-auto jwk="[[jwks]]" data="[[data]]"
-                             ciphertext="{{ciphertext}}"></fire-crypto-encrypt>
-        <fire-crypto-decrypt id="decrypter" not-auto jwk="[[jwks]]" ciphertext="[[ciphertext]]"
+                             cipher="{{cipher}}"></fire-crypto-encrypt>
+        <fire-crypto-decrypt id="decrypter" not-auto jwk="[[jwks]]" cipher="[[cipher]]"
                              data="{{decryptedData}}"></fire-crypto-decrypt>
     </template>
 </test-fixture>
@@ -61,8 +61,8 @@
                 assert.equal(generator.publicKey, jwk.publicKey);
                 return encryptor.encrypt();
             }).then(function (opt) {
-                assert.isOk(opt.cipher);
-                assert.equal(encryptor.ciphertext, opt.cipher);
+                assert.isOk(opt.text);
+                assert.equal(encryptor.ciphertext, opt.text);
                 return decrypter.decrypt();
             }).then(function (decryptedData) {
                 assert.ok(decryptedData);
@@ -81,12 +81,12 @@
                     assert.isOk(jwk);
 
                     return encryptor._encryptPromise(jwk, data).then(function (cipher) {
-                        return {jwk: jwk, ciphertext: cipher.text, cipherparam: cipher.param}
+                        return {jwk: jwk, cipher:cipher }
                     });
-                }).then(function (cipherkey) {
-                    assert.isOk(cipherkey.ciphertext);
+                }).then(function (opt) {
+                    assert.isOk(opt.cipher.text);
 //                    console.log('preencrypt genkey ' + JSON.stringify(cipherkey.ciphertext));
-                    return decrypter._decryptPromise(cipherkey.jwk, cipherkey.ciphertext);
+                    return decrypter._decryptPromise(opt.jwk, opt.cipher);
                 }).then(function (decryptedData) {
                     assert.isOk(decryptedData);
                     assert.deepEqual(data, decryptedData);
@@ -111,29 +111,29 @@
             return Promise.all(encryptAlgo.map(encryptDecryptPromiseTest(generator, encryptor, decrypter)) );
         });
 
-//        test('AES-CTR Algo Promise Encrypt & Decrypt', function () {
-//            var element = fixture('encrypt');
-//            var generator = document.getElementById('encryptGenerator');
-//            var encryptor = document.getElementById('encryptor');
-//            var decrypter = document.getElementById('decrypter');
-//            // Test
-//            var encryptAlgo = generator.getAlgorithmsForEncrypt().filter(function (algo) {
-//                return ((algo.name === 'AES-CTR')  && (algo.length===128));
-//            });
-//            return Promise.all(encryptAlgo.map(encryptDecryptPromiseTest(generator, encryptor, decrypter)) );
-//        });
-//
-//        test('AES-CBC Algo Promise Encrypt & Decrypt', function () {
-//            var element = fixture('encrypt');
-//            var generator = document.getElementById('encryptGenerator');
-//            var encryptor = document.getElementById('encryptor');
-//            var decrypter = document.getElementById('decrypter');
-//            // Test
-//            var encryptAlgo = generator.getAlgorithmsForEncrypt().filter(function (algo) {
-//                return ((algo.name === 'AES-CBC') && (algo.length===128) );
-//            });
-//            return Promise.all(encryptAlgo.map(encryptDecryptPromiseTest(generator, encryptor, decrypter)) );
-//        });
+        test('AES-CTR Algo Promise Encrypt & Decrypt', function () {
+            var element = fixture('encrypt');
+            var generator = document.getElementById('encryptGenerator');
+            var encryptor = document.getElementById('encryptor');
+            var decrypter = document.getElementById('decrypter');
+            // Test
+            var encryptAlgo = generator.getAlgorithmsForEncrypt().filter(function (algo) {
+                return ((algo.name === 'AES-CTR') && (algo.length===128) );
+            });
+            return Promise.all(encryptAlgo.map(encryptDecryptPromiseTest(generator, encryptor, decrypter)) );
+        });
+
+        test('AES-CBC Algo Promise Encrypt & Decrypt', function () {
+            var element = fixture('encrypt');
+            var generator = document.getElementById('encryptGenerator');
+            var encryptor = document.getElementById('encryptor');
+            var decrypter = document.getElementById('decrypter');
+            // Test
+            var encryptAlgo = generator.getAlgorithmsForEncrypt().filter(function (algo) {
+                return ((algo.name === 'AES-CBC') );
+            });
+            return Promise.all(encryptAlgo.map(encryptDecryptPromiseTest(generator, encryptor, decrypter)) );
+        });
 
     });
 
@@ -194,8 +194,8 @@
                         return signature;
                     }).then(function (signature) {
                         assert.isOk(signature);
-                        var jwk = jwk.publicKey || jwk.privateKey;
-                        return verifyor._verifySignPromise(jwk, data, signature);
+                        var verifyKey = jwk.publicKey || jwk.privateKey;
+                        return verifyor._verifySignPromise(verifyKey, data, signature);
                     }).then(function (isVerify) {
                         assert.isTrue(isVerify);
                         return isVerify;

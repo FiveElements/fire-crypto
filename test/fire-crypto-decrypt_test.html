@@ -14,7 +14,7 @@
 <body>
 <test-fixture id="basic">
     <template is="dom-template">
-        <fire-crypto-decrypt not-auto jwk="[[privateKey]]" cipher="[[ciphertext]]"
+        <fire-crypto-decrypt not-auto jwk="[[privateKey]]" cipher="[[cipher]]"
                              data="{{decryptedData}}"></fire-crypto-decrypt>
     </template>
 </test-fixture>
@@ -67,7 +67,7 @@
                     "q": "4EneWywSbeUhvlwrK-hJlGgVmwdh9cq4Y84NwU2DGfmdGsX1EJrO30xqPLOu0BlSY37YtSZ48Zw0YnfnOqiy9w9YkFodKHM39bG7PcBd-Es1p6mut2KjodvHuunNI8psy7mGBiAlqBgXIcb7LuApaD6GnImgvbIxt9nHik2zc9U",
                     "qi": "mf2coLVAiWwd0h8yQsxonwV7DoUfFa7fNvLj3WvRavOpVq4JxFeWsuuBzDA6Q2_WjWn2L99juL2TrcnMaZELp3m6_Rrfq7TcViRndUAetXiD-Ve3ok4xFLMp1pt9svbNj-4XrXMPJdTvflqPFwb3Z3s2PCbbK7pJ8XeNwOiij70"
                 },
-                ciphertext: 'Gu++UtEYTezaKNdzA9/QQ1r7MUum0qsZQmzOpnSe6gvULMBeIl1C91TvKntxn7bls0uMJRsc0/DYwb1sumgWMEqRWJRm0MsvsDpHYE4UAjMi6fgRA+JmGhEkFwpM6gR2B0NfmB+dRhZ8VnTLc9bEF0gpthGFoedePD1cr+AGgR4xV9qksTzZLj2iMcY2gxvpYlrRKxe+RbTFDDnFVcbnpNDa0Jxky79CqUiHNKJwBa0HiAFoLJBsq39jqcJcUKJtfGGVsAw4mmRZuW/1up4iynxv0psqE4eoHbnaiTb2dqNFDxdB/XPisH+ES9YuugXzn1N8EWEnFVjDDSrlre+RkQ==',
+                cipher: 'Gu++UtEYTezaKNdzA9/QQ1r7MUum0qsZQmzOpnSe6gvULMBeIl1C91TvKntxn7bls0uMJRsc0/DYwb1sumgWMEqRWJRm0MsvsDpHYE4UAjMi6fgRA+JmGhEkFwpM6gR2B0NfmB+dRhZ8VnTLc9bEF0gpthGFoedePD1cr+AGgR4xV9qksTzZLj2iMcY2gxvpYlrRKxe+RbTFDDnFVcbnpNDa0Jxky79CqUiHNKJwBa0HiAFoLJBsq39jqcJcUKJtfGGVsAw4mmRZuW/1up4iynxv0psqE4eoHbnaiTb2dqNFDxdB/XPisH+ES9YuugXzn1N8EWEnFVjDDSrlre+RkQ==',
             });
             assert.isNotOk(element.decryptedData);
             return element.decrypt().then(function (decryptedData) {
@@ -81,25 +81,30 @@
         });
 
         test('AES-CRT', function () {
+            var data ={name: 'Super Secret Text'};
             var element = fixture('basic', {
-                data: {name: 'Hello World'},
                 privateKey: {
-                    "alg": "A256CTR",
+                    "alg": "A128CTR",
                     "ext": true,
-                    "k": "KxREg11lZkXkdWjU2JevebYPSHmIAXVqNx5iqU_tfdM",
+                    "k": "2TSBxoTK92K8lXnXe0dtOQ",
                     "key_ops": [
                         "encrypt",
                         "decrypt"
                     ],
                     "kty": "oct"
                 },
-                ciphertext: 'LRMnSII5ltlnAaCwEUMWFXzt7NbiJN++DeFT3sAAcHSqorbusqQxLskeh3Av9RUV88PvNOwUlzoHu2p9NiKDcOLByC6QkH1A1U+H5A1f5JA667/++SyEf49zaIc48d/pYS39CehACuyCQywXlCkaziGbk9khyOkoZaqNYB+x0pVqhPtkHOW/YCS36CEM+Z5gOXcCFlBrDQGvABBpTaSfIPqCv1bJsuKYEHZHNlhE+FFBizSEuZVR2+fcOUtZo/xD4g08X1O9B3SdTCA1kcSC3w7l6/DLO/Fh/vOrlgpqkpWgDeqpBBT/DiKOsvqziNNh3VbV1IQNzSmeKDUAUczy8g==',
+                cipher: {
+                    text: 'rDSLVeNWWQczpWjOkWpXI8Dh9mNAK306TNeCyg==',
+                    param: {
+                        counter: "00000000000000000000000000000000"
+                    }
+                },
             });
             assert.isNotOk(element.decryptedData);
             return element.decrypt().then(function (decryptedData) {
                 assert.isOk(decryptedData);
-                assert.deepEqual(element.decryptedData, data);
-                assert.notEqual(element.decryptedData, data);
+                assert.deepEqual(element.data, data);
+                assert.notEqual(element.data, data);
                 return decryptedData;
             });
         });

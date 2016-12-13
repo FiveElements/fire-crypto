@@ -94,7 +94,6 @@ Polymer Element fire-crypto-sign
 
 
             _sign: function (jwk, data) {
-                console.log('call _sign', data);
                 var self = this;
                 return this._signPromise(jwk, data).then(function (macHex) {
                     self.signature = macHex;
@@ -114,7 +113,6 @@ Polymer Element fire-crypto-sign
              * @event fire-sign
              */
             _fireCryptoKeySign: function (signature) {
-                console.log('sign with', signature);
                 this.fire('fire-sign', {signature: signature});
             },
             /**
@@ -123,7 +121,7 @@ Polymer Element fire-crypto-sign
              * @event fire-error-sign
              */
             _fireCryptoKeySignError: function (error) {
-                console.error('sign error', error);
+                console.error('fire-error-sign : '+ error);
                 this.fire('fire-error-sign', {error: error});
             },
         });
