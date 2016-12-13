@@ -66,6 +66,7 @@ Polymer Element fire-crypto-sign
             // --- ---------------------------
             _signObserver: function (notAuto, jwk, dataChanged) {
                 if (!notAuto) {
+                    this.signature = undefined;
                     this._sign(jwk, this.data);
                 }
             },

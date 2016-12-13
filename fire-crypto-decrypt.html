@@ -75,8 +75,8 @@ Polymer Element fire-crypto-encrypt
             },
 
             observers: [
-                '_cipherChangeObserver(notAuto,cipher)',
-                '_decryptObserver(notAuto,jwk,ciphertext)'
+//                '_cipherChangeObserver(notAuto,cipher)',
+                '_decryptObserver(notAuto,jwk,cipher)'
             ],
 
             // --- decrypt Observer
@@ -87,9 +87,11 @@ Polymer Element fire-crypto-encrypt
                     this.cipherparam = cipher.param;
                 }
             },
-            _decryptObserver: function (notAuto, jwk, ciphertext) {
+            _decryptObserver: function (notAuto, jwk, cipher) {
                 if (!notAuto) {
-                    this._decrypt(jwk,  this.cipher);
+                    console.log('_decryptObserver : jwk', jwk,'cipher: ', cipher);
+                    this.data = undefined;
+                    this._decrypt(jwk, cipher);
                 }
             },
 
@@ -133,6 +135,7 @@ Polymer Element fire-crypto-encrypt
                     var cipherparam = cipher.param; // TODO
                     var cipherBuffer = self.cryptoBufferDeserialize(ciphertext, self.cryptoFormat, true);
                     var algo =  self._configureAlgoParam(algoKey.algo, cipherparam);
+                    console.log('_decryptPromise param : ' ,cipherparam);
                     console.log('_decryptPromise algo : ' ,algo);
                     return cryptoSubtle.decrypt(algo, algoKey.key, cipherBuffer);
                 }).then(function (clearbuffer) {

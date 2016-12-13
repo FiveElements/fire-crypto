@@ -84,6 +84,9 @@ Polymer Element fire-crypto-encrypt
             // --- ---------------------------
             _encryptObserver: function (notAuto, jwk, dataChanged) {
                 if (!notAuto) {
+                    this.cipher = undefined;
+                    this.ciphertext = undefined;
+                    this.cipherparam = undefined;
                     this._encrypt(jwk, this.data);
                 }
             },

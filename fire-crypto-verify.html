@@ -73,6 +73,7 @@ Polymer Element fire-crypto-verify
             // --- ---------------------------
             _verifySignObserver: function (notAuto, jwk, dataChanged, signature) {
                  if (!notAuto) {
+                     this.isVerify = undefined;
                      this._verifySign(jwk, this.data, signature);
                  }
             },

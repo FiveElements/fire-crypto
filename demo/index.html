@@ -26,7 +26,7 @@
 
     <style is="custom-style" include="demo-pages-shared-styles">
         .centered {
-            max-width: 600px;
+            max-width: 800px;
         }
     </style>
 </head>
@@ -37,9 +37,11 @@
         <template is="dom-bind" id="demo">
 
             <div>
-                <h3>Generate Key</h3>
+                <h3>Generate Key
+                    <button onclick="signGenKey()">GenerateKey</button>
+                </h3>
                 <demo-algo-listbox usage="sign" algo="{{algo}}"></demo-algo-listbox>
-                <fire-crypto-generatekey id="signGenerator" algo="{{algo}}" usages="[[signUsages]]"
+                <fire-crypto-generatekey id="signGenKey" algo="{{algo}}" usages="[[signUsages]]"
                                          private-key="{{privateKey}}" public-key="{{publicKey}}">
                 </fire-crypto-generatekey>
                 <demo-display-jwk private-key="{{privateKey}}" public-key="{{publicKey}}"></demo-display-jwk>
@@ -79,8 +81,8 @@
             var demo = document.querySelector('#demo');
             demo.signUsages = ['sign', 'verify'];
             demo.data ={name: "Hello World"};
-            function generateCryptoKey() {
-                document.getElementById('signGenerator').generateCryptoKey();
+            function signGenKey() {
+                document.getElementById('signGenKey').generateCryptoKey();
             }
             function sign() {
                 document.getElementById('signor').sign();
@@ -98,8 +100,10 @@
             <template is="dom-bind" id="demoEncrypt">
 
                 <div>
-                    <h3>Generate Key</h3>
-                    <fire-crypto-generatekey algo="{{algo}}" usages="[[encryptUsages]]" jwk="{{encryptJWK}}">
+                    <h3>Generate Key
+                        <button onclick="encryptGenKey()">GenerateKey</button>
+                    </h3>
+                    <fire-crypto-generatekey id="encryptGenKey" algo="{{algo}}" usages="[[encryptUsages]]" jwk="{{encryptJWK}}">
                     </fire-crypto-generatekey>
                     <demo-algo-listbox usage="encrypt" algo="{{algo}}"></demo-algo-listbox>
                     <demo-display-jwk private-key="{{encryptJWK.privateKey}}"
@@ -130,6 +134,9 @@
                 var demo = document.querySelector('#demoEncrypt');
                 demo.encryptUsages = ['encrypt', 'decrypt'];
                 demo.data = {name: 'Super Secret Text'};
+                function encryptGenKey() {
+                    document.getElementById('encryptGenKey').generateCryptoKey();
+                }
                 function encrypt() {
                     document.getElementById('encrypter').encrypt();
                 }
