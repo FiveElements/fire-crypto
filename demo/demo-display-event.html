@@ -1,0 +1,47 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<!--
+`demo-display-event`
+Polymer Element demo-display-event
+
+@demo demo/index.html 
+-->
+
+<dom-module id="demo-display-event">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+        <ul>
+        <template is="dom-repeat" items="[[events]]" as="event">
+            <li><span>{{event}}</span></li>
+        </template>
+        </ul>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'demo-display-event',
+
+            properties: {
+                events: {
+                    type: Array,
+                    notify: true,
+                    value: function () {
+                        return [];
+                    }
+                },
+            },
+
+            addEvent:function (evt) {
+                var detail = evt.detail;
+                var detailStr = JSON.stringify(detail);
+                this.unshift('events', detailStr);
+            },
+
+        });
+    </script>
+</dom-module>
