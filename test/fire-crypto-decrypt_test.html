@@ -14,7 +14,7 @@
 <body>
 <test-fixture id="basic">
     <template is="dom-template">
-        <fire-crypto-decrypt not-auto jwk="[[privateKey]]" ciphertext="[[ciphertext]]"
+        <fire-crypto-decrypt not-auto jwk="[[privateKey]]" cipher="[[ciphertext]]"
                              data="{{decryptedData}}"></fire-crypto-decrypt>
     </template>
 </test-fixture>
@@ -31,13 +31,19 @@
         test('_configureAlgoParam', function () {
             var element = fixture('basic');
             var algo = {name: "AES-CBC", length: 128};
-            var param = {tagLength: 128, counter: new Uint8Array(16)};
-            param.iv = element._getCrypto().getRandomValues(new Uint8Array(16));
+            var param = {tagLength: 128 };
+            // Counter
+            var counter = new Uint8Array(16);
+            param.counter =  element.cryptoBufferSerialize(counter, 'hex', true);
+            // iv
+            var iv = element._getCrypto().getRandomValues(new Uint8Array(16));
+            param.iv =   element.cryptoBufferSerialize(iv, 'hex', true);
             var cipherparam = element._configureAlgoParam(algo, param);
             assert.notEqual(algo, param);
             assert.equal(cipherparam.name, algo.name);
             assert.equal(cipherparam.length, algo.length);
-            assert.equal(cipherparam.iv, param.iv);
+            assert.deepEqual(cipherparam.iv,iv);
+            assert.deepEqual(cipherparam.counter,counter);
         });
     });
 

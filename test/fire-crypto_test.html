@@ -31,7 +31,7 @@
 <test-fixture id="encrypt">
     <template is="dom-template">
         <fire-crypto-generatekey id="encryptGenerator" not-auto algo="[[algo]]" usages="[[usages]]"
-                                 keys="{{jwks}}"></fire-crypto-generatekey>
+                                 jwk="{{jwks}}"></fire-crypto-generatekey>
         <fire-crypto-encrypt id="encryptor" not-auto jwk="[[jwks]]" data="[[data]]"
                              ciphertext="{{ciphertext}}"></fire-crypto-encrypt>
         <fire-crypto-decrypt id="decrypter" not-auto jwk="[[jwks]]" ciphertext="[[ciphertext]]"
@@ -53,12 +53,12 @@
             var generator = document.getElementById('encryptGenerator');
             var encryptor = document.getElementById('encryptor');
             var decrypter = document.getElementById('decrypter');
-            return generator.generateCryptoKey().then(function (keys) {
-                assert.isOk(keys);
-                assert.isOk(keys.privateKey);
-                assert.isOk(keys.publicKey);
-                assert.equal(generator.privateKey, keys.privateKey);
-                assert.equal(generator.publicKey, keys.publicKey);
+            return generator.generateCryptoKey().then(function (jwk) {
+                assert.isOk(jwk);
+                assert.isOk(jwk.privateKey);
+                assert.isOk(jwk.publicKey);
+                assert.equal(generator.privateKey, jwk.privateKey);
+                assert.equal(generator.publicKey, jwk.publicKey);
                 return encryptor.encrypt();
             }).then(function (opt) {
                 assert.isOk(opt.cipher);
@@ -77,11 +77,11 @@
             var data = {title: 'Hello Wolrd!'};
             return function (algo) {
 //                console.log('encrypt with algo ' + JSON.stringify(algo));
-                return generator._generateCryptoKeyPromise(algo, true, ['encrypt', 'decrypt']).then(function (keys) {
-                    assert.isOk(keys);
+                return generator._generateCryptoKeyPromise(algo, true, ['encrypt', 'decrypt']).then(function (jwk) {
+                    assert.isOk(jwk);
 
-                    return encryptor._encryptPromise(keys, data).then(function (cipher) {
-                        return {jwk: keys, ciphertext: cipher.text, cipherparam: cipher.param}
+                    return encryptor._encryptPromise(jwk, data).then(function (cipher) {
+                        return {jwk: jwk, ciphertext: cipher.text, cipherparam: cipher.param}
                     });
                 }).then(function (cipherkey) {
                     assert.isOk(cipherkey.ciphertext);
@@ -161,11 +161,11 @@
             var generator = document.getElementById('generator');
             var signor = document.getElementById('signor');
             var verifyor = document.getElementById('verifyor');
-            return generator.generateCryptoKey().then(function (keys) {
-                assert.isOk(keys);
-                assert.isOk(keys.privateKey);
-                assert.equal(generator.privateKey, keys.privateKey);
-                assert.equal(generator.publicKey, keys.publicKey);
+            return generator.generateCryptoKey().then(function (jwk) {
+                assert.isOk(jwk);
+                assert.isOk(jwk.privateKey);
+                assert.equal(generator.privateKey, jwk.privateKey);
+                assert.equal(generator.publicKey, jwk.publicKey);
                 return signor.sign();
             }).then(function (signature) {
                 assert.isOk(signature);
@@ -188,13 +188,13 @@
             // Test
             var signAlgo = generator.getAlgorithmsForSign();
             var promiseArray = signAlgo.map(function (algo) {
-                return generator._generateCryptoKeyPromise(algo, true, ['sign', 'verify']).then(function (keys) {
-                    assert.isOk(keys);
-                    return signor._signPromise(keys.privateKey, data).then(function (signature) {
+                return generator._generateCryptoKeyPromise(algo, true, ['sign', 'verify']).then(function (jwk) {
+                    assert.isOk(jwk);
+                    return signor._signPromise(jwk.privateKey, data).then(function (signature) {
                         return signature;
                     }).then(function (signature) {
                         assert.isOk(signature);
-                        var jwk = keys.publicKey || keys.privateKey;
+                        var jwk = jwk.publicKey || jwk.privateKey;
                         return verifyor._verifySignPromise(jwk, data, signature);
                     }).then(function (isVerify) {
                         assert.isTrue(isVerify);

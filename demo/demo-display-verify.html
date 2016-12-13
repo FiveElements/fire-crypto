@@ -1,0 +1,58 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<link rel="import" href="../fire-crypto-generatekey.html">
+<link rel="import" href="../fire-crypto-sign.html">
+<link rel="import" href="../fire-crypto-verify.html">
+
+
+<link rel="import" href="../../paper-input/paper-input.html">
+<link rel="import" href="demo-display-jwk.html">
+<link rel="import" href="demo-algo-listbox.html">
+
+
+<!--
+`demo-display-verify`
+Polymer Element demo-display-verify
+
+@demo demo/index.html 
+-->
+
+<dom-module id="demo-display-verify">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            .verified {
+                color: green;
+            }
+            .notVerified {
+                color: red;
+            }
+        </style>
+
+        <template is="dom-if" if="[[isVerify]]">
+            <div class="verified">VERIFIED</div>
+        </template>
+        <template is="dom-if" if="[[!isVerify]]">
+            <div class="notVerified"> NOT VERIFIED</div>
+        </template>
+
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'demo-display-verify',
+
+            properties: {
+                isVerify: {
+                    type: Boolean
+                }
+            },
+
+
+        });
+    </script>
+</dom-module>

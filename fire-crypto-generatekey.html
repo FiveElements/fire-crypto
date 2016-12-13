@@ -56,7 +56,7 @@ Polymer Element fire-crypto-generatekey
                 /**
                  * The generated Json Web Key.
                  */
-                keys: {
+                jwk: {
                     type: Object,
                     notify: true
                 },
@@ -138,12 +138,12 @@ Polymer Element fire-crypto-generatekey
             _generateCryptoKey: function (algo, extractable, usages) {
                 var self = this;
                 var keyPromise = this._generateCryptoKeyPromise(algo, extractable, usages)
-                        .then(function (keys) {
-                            self.keys = keys;
-                            self.privateKey = keys.privateKey;
-                            self.publicKey = keys.publicKey;
-                            self._fireCryptoKeyGen(keys);
-                            return keys;
+                        .then(function (jwk) {
+                            self.jwk = jwk;
+                            self.privateKey = jwk.privateKey;
+                            self.publicKey = jwk.publicKey;
+                            self._fireCryptoKeyGen(jwk);
+                            return jwk;
                         }).catch(function (err) {
                             self.key = undefined;
                             self._fireCryptoKeyGenError(err);
@@ -158,9 +158,9 @@ Polymer Element fire-crypto-generatekey
              *
              * @event jwk-generated
              */
-            _fireCryptoKeyGen: function (keys) {
-                console.log('fire jwk-generated', keys);
-                this.fire('jwk-generated', {jwk: keys});
+            _fireCryptoKeyGen: function (jwk) {
+                console.log('fire jwk-generated', jwk);
+                this.fire('jwk-generated', {jwk: jwk});
             },
             /**
              * Fired when an error occur in JWK generation .

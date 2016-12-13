@@ -1,0 +1,203 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../paper-tabs/paper-tabs.html">
+<link rel="import" href="../../iron-pages/iron-pages.html">
+
+<link rel="import" href="demo-display-verify.html">
+
+<!--
+`demo-display-encrypt`
+Polymer Element demo-display-encrypt
+
+@demo demo/index.html 
+-->
+
+<dom-module id="demo-display-encrypt">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+        <paper-tabs selected="{{selected}}">
+            <paper-tab>Encoded Data</paper-tab>
+            <paper-tab>Decoded Data</paper-tab>
+        </paper-tabs>
+        <iron-pages selected="{{selected}}">
+            <div>
+                <pre>[[ciphertext]]</pre>
+                <pre>[[_cipherparamStr]]</pre>
+            </div>
+            <pre>[[_dataStr]]</pre>
+        </iron-pages>
+        <demo-display-verify is-verify="{{isCipherVerify}}"></demo-display-verify>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'demo-display-encrypt',
+
+            properties: {
+                selected: {
+                    type: Number,
+                    value: 0
+                },
+                cipher: {
+                    type: Object,
+                    observer: '_cipherChanged'
+                },
+                ciphertext: {
+                    type: String,
+                },
+                cipherparam: {
+                    type: Object,
+                    observer: '_cipherparamChanged'
+                },
+                _cipherparamStr: {
+                    type: Object,
+                },
+                decryptData: {
+                    type: Object,
+                    observer: '_dataChanged'
+                },
+                originalData: {
+                    type: Object,
+                },
+                _dataStr: {
+                    type: String
+                },
+                isCipherVerify: {
+                    type: Boolean,
+                    notify: true
+                }
+
+            },
+            observers: [
+                '_isCipherVerifyChangeObserver(originalData,decryptData)'
+            ],
+
+            // --- Observer Operators
+            // --- ---------------------------
+
+            _isCipherVerifyChangeObserver: function (originalData, decryptData) {
+                this.isCipherVerify = this._deepEqual(originalData, decryptData);
+            },
+
+            _cipherChanged: function (newValue, oldValue) {
+                if (newValue.text) {
+                    this.ciphertext = newValue.text;
+                    this.cipherparam = newValue.param;
+                } else {
+                    this.ciphertext = newValue;
+                }
+            },
+            _dataChanged: function (newValue, oldValue) {
+                this._dataStr = JSON.stringify(newValue, null, '  ');
+            },
+            _cipherparamChanged: function (newValue, oldValue) {
+                this._cipherparamStr = JSON.stringify(newValue, null, '  ');
+            },
+
+
+            // --- Utility tools
+            // --- ---------------------------
+            _deepEqual: function (actual, expected) {
+                // 7.1. All identical values are equivalent, as determined by ===.
+                if (actual === expected) {
+                    return true;
+                    // 7.2. If the expected value is a Date object, the actual value is
+                    // equivalent if it is also a Date object that refers to the same time.
+                } else if (actual instanceof Date && expected instanceof Date) {
+                    return actual.getTime() === expected.getTime();
+
+                    // 7.2.1 If the expcted value is a RegExp object, the actual value is
+                    // equivalent if it is also a RegExp object that refers to the same source and options
+                } else if (actual instanceof RegExp && expected instanceof RegExp) {
+                    return actual.source === expected.source &&
+                        actual.global === expected.global &&
+                        actual.ignoreCase === expected.ignoreCase &&
+                        actual.multiline === expected.multiline;
+
+//                } else if (Buffer && actual instanceof Buffer && expected instanceof Buffer) {
+//                    return (function () {
+//                        var i, len;
+//
+//                        for (i = 0, len = expected.length; i < len; i++) {
+//                            if (actual[i] !== expected[i]) {
+//                                return false;
+//                            }
+//                        }
+//                        return actual.length === expected.length;
+//                    })();
+//                    // 7.3. Other pairs that do not both pass typeof value == "object",
+//                    // equivalence is determined by ==.
+                } else if (typeof actual != 'object' && typeof expected != 'object') {
+                    return actual == expected;
+
+                    // 7.4. For all other Object pairs, including Array objects, equivalence is
+                    // determined by having the same number of owned properties (as verified
+                    // with Object.prototype.hasOwnProperty.call), the same set of keys
+                    // (although not necessarily the same order), equivalent values for every
+                    // corresponding key, and an identical "prototype" property. Note: this
+                    // accounts for both named and indexed properties on Arrays.
+                } else {
+                    return this.objEquiv(actual, expected);
+                }
+            },
+
+
+            isUndefinedOrNull: function (value) {
+                return value === null || value === undefined;
+            },
+
+            isArguments: function (object) {
+                return Object.prototype.toString.call(object) == '[object Arguments]';
+            },
+
+            objEquiv: function (a, b) {
+                if (this.isUndefinedOrNull(a) || this.isUndefinedOrNull(b))
+                    return false;
+                // an identical "prototype" property.
+                if (a.prototype !== b.prototype) return false;
+                //~~~I've managed to break Object.keys through screwy arguments passing.
+                //   Converting to array solves the problem.
+                if (this.isArguments(a)) {
+                    if (!this.isArguments(b)) {
+                        return false;
+                    }
+                    a = pSlice.call(a);
+                    b = pSlice.call(b);
+                    return this._deepEqual(a, b);
+                }
+                try {
+                    var ka = _keys(a),
+                        kb = _keys(b),
+                        key, i;
+                } catch (e) {//happens when one is a string literal and the other isn't
+                    return false;
+                }
+                // having the same number of owned properties (keys incorporates hasOwnProperty)
+                if (ka.length != kb.length)
+                    return false;
+                //the same set of keys (although not necessarily the same order),
+                ka.sort();
+                kb.sort();
+                //~~~cheap key test
+                for (i = ka.length - 1; i >= 0; i--) {
+                    if (ka[i] != kb[i])
+                        return false;
+                }
+                //equivalent values for every corresponding key, and
+                //~~~possibly expensive deep test
+                for (i = ka.length - 1; i >= 0; i--) {
+                    key = ka[i];
+                    if (!this._deepEqual(a[key], b[key]))
+                        return false;
+                }
+                return true;
+            },
+
+
+        });
+    </script>
+</dom-module>

@@ -33,8 +33,8 @@
                  return  element._generateCryptoKeyPromise(algo, true, ['sign', 'verify']);
             });
             return Promise.all(promiseArray).then(function (all) {
-                all.forEach(function (keys) {
-                    assert.isOk(keys.privateKey);
+                all.forEach(function (jwk) {
+                    assert.isOk(jwk.privateKey);
                 });
                 return all;
             });
@@ -49,8 +49,8 @@
                 return  element._generateCryptoKeyPromise(algo, true, ['encrypt', 'decrypt']);
             });
             return Promise.all(promiseArray).then(function (all) {
-                all.forEach(function (keys) {
-                    assert.isOk(keys.privateKey);
+                all.forEach(function (jwk) {
+                    assert.isOk(jwk.privateKey);
                 });
                 return all;
             });
@@ -65,8 +65,8 @@
                 return  element._generateCryptoKeyPromise(algo, true, ['wrapKey', 'unwrapKey']);
             });
             return Promise.all(promiseArray).then(function (all) {
-                all.forEach(function (keys) {
-                    assert.isOk(keys.privateKey);
+                all.forEach(function (jwk) {
+                    assert.isOk(jwk.privateKey);
                 });
                 return all;
             });

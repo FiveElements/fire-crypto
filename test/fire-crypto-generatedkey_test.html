@@ -33,15 +33,15 @@
             });
             assert.isNotOk(element.privateKey);
             assert.isNotOk(element.publicKey);
-            assert.isNotOk(element.keys);
-            return element.generateCryptoKey().then(function (keys) {
-                assert.isOk(keys.privateKey);
-                assert.equal(keys.privateKey, element.privateKey);
-                assert.isNotOk(keys.publicKey);
+            assert.isNotOk(element.jwk);
+            return element.generateCryptoKey().then(function (jwk) {
+                assert.isOk(jwk.privateKey);
+                assert.equal(jwk.privateKey, element.privateKey);
+                assert.isNotOk(jwk.publicKey);
                 assert.isNotOk(element.publicKey);
-                assert.isOk(element.keys);
-                assert.equal(element.keys.privateKey, element.privateKey);
-                assert.equal(element.keys.publicKey, element.publicKey);
+                assert.isOk(element.jwk);
+                assert.equal(element.jwk.privateKey, element.privateKey);
+                assert.equal(element.jwk.publicKey, element.publicKey);
             });
 
         });
@@ -79,15 +79,15 @@
             });
             assert.isNotOk(element.privateKey);
             assert.isNotOk(element.publicKey);
-            assert.isNotOk(element.keys);
-            return element.generateCryptoKey().then(function (keys) {
-                assert.isOk(keys.privateKey);
-                assert.isOk(keys.publicKey);
-                assert.equal(keys.privateKey, element.privateKey);
-                assert.equal(keys.publicKey, element.publicKey);
-                assert.isOk(element.keys);
-                assert.equal(element.keys.privateKey, element.privateKey);
-                assert.equal(element.keys.publicKey, element.publicKey);
+            assert.isNotOk(element.jwk);
+            return element.generateCryptoKey().then(function (jwk) {
+                assert.isOk(jwk.privateKey);
+                assert.isOk(jwk.publicKey);
+                assert.equal(jwk.privateKey, element.privateKey);
+                assert.equal(jwk.publicKey, element.publicKey);
+                assert.isOk(element.jwk);
+                assert.equal(element.jwk.privateKey, element.privateKey);
+                assert.equal(element.jwk.publicKey, element.publicKey);
             });
 
         });
@@ -102,15 +102,15 @@
             });
             assert.isNotOk(element.privateKey);
             assert.isNotOk(element.publicKey);
-            assert.isNotOk(element.keys);
-            return element.generateCryptoKey().then(function (keys) {
-                assert.isOk(keys.privateKey);
-                assert.isOk(keys.publicKey);
-                assert.equal(keys.privateKey, element.privateKey);
-                assert.equal(keys.publicKey, element.publicKey);
-                assert.isOk(element.keys);
-                assert.equal(element.keys.privateKey, element.privateKey);
-                assert.equal(element.keys.publicKey, element.publicKey);
+            assert.isNotOk(element.jwk);
+            return element.generateCryptoKey().then(function (jwk) {
+                assert.isOk(jwk.privateKey);
+                assert.isOk(jwk.publicKey);
+                assert.equal(jwk.privateKey, element.privateKey);
+                assert.equal(jwk.publicKey, element.publicKey);
+                assert.isOk(element.jwk);
+                assert.equal(element.jwk.privateKey, element.privateKey);
+                assert.equal(element.jwk.publicKey, element.publicKey);
             });
 
         });
@@ -126,15 +126,15 @@
             });
             assert.isNotOk(element.privateKey);
             assert.isNotOk(element.publicKey);
-            assert.isNotOk(element.keys);
-            return element.generateCryptoKey().then(function (keys) {
-                assert.isOk(keys.privateKey);
-                assert.isOk(keys.publicKey);
-                assert.equal(keys.privateKey, element.privateKey);
-                assert.equal(keys.publicKey, element.publicKey);
-                assert.isOk(element.keys);
-                assert.equal(element.keys.privateKey, element.privateKey);
-                assert.equal(element.keys.publicKey, element.publicKey);
+            assert.isNotOk(element.jwk);
+            return element.generateCryptoKey().then(function (jwk) {
+                assert.isOk(jwk.privateKey);
+                assert.isOk(jwk.publicKey);
+                assert.equal(jwk.privateKey, element.privateKey);
+                assert.equal(jwk.publicKey, element.publicKey);
+                assert.isOk(element.jwk);
+                assert.equal(element.jwk.privateKey, element.privateKey);
+                assert.equal(element.jwk.publicKey, element.publicKey);
             });
         });
     });
@@ -152,8 +152,8 @@
             });
             console.log(JSON.stringify(promiseArray));
             return Promise.all(promiseArray).then(function (all) {
-                all.forEach(function (keys) {
-                    assert.isOk(keys.privateKey);
+                all.forEach(function (jwk) {
+                    assert.isOk(jwk.privateKey);
                 });
                 return all;
             });
@@ -175,8 +175,8 @@
             });
 //            'RSA-OAEP', 'AES-CBC'
             return Promise.all(promiseArray).then(function (all) {
-                all.forEach(function (keys) {
-                    assert.isOk(keys.privateKey);
+                all.forEach(function (jwk) {
+                    assert.isOk(jwk.privateKey);
                 });
                 return all;
             });
