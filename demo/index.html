@@ -37,9 +37,7 @@
         <template is="dom-bind" id="demo">
 
             <div>
-                <h3>Generate Key
-                    <button onclick="signGenKey()">GenerateKey</button>
-                </h3>
+                <h3>Generate Key <button onclick="signGenKey()">GenerateKey</button></h3>
                 <demo-algo-listbox usage="sign" algo="{{algo}}"></demo-algo-listbox>
                 <fire-crypto-generatekey id="signGenKey" algo="{{algo}}" usages="[[signUsages]]"
                                          private-key="{{privateKey}}" public-key="{{publicKey}}">
@@ -48,9 +46,7 @@
             </div>
 
             <div>
-                <h3>Sign Data
-                    <button onclick="sign()">Sign</button>
-                </h3>
+                <h3>Sign Data <button onclick="sign()">Sign</button></h3>
                 <paper-input value="{{data.name}}" label="Data to sign"></paper-input>
 
                 <fire-crypto-sign id="signor" signature="{{signature}}"
@@ -100,9 +96,7 @@
             <template is="dom-bind" id="demoEncrypt">
 
                 <div>
-                    <h3>Generate Key
-                        <button onclick="encryptGenKey()">GenerateKey</button>
-                    </h3>
+                    <h3>Generate Key <button onclick="encryptGenKey()">GenerateKey</button></h3>
                     <fire-crypto-generatekey id="encryptGenKey" algo="{{algo}}" usages="[[encryptUsages]]" jwk="{{encryptJWK}}">
                     </fire-crypto-generatekey>
                     <demo-algo-listbox usage="encrypt" algo="{{algo}}"></demo-algo-listbox>
@@ -111,9 +105,7 @@
                 </div>
 
                 <div>
-                    <h3>Encrypt Data
-                        <button onclick="encrypt()">Encrypt</button>
-                    </h3>
+                    <h3>Encrypt Data <button onclick="encrypt()">Encrypt</button></h3>
                     <fire-crypto-encrypt id="encrypter"
                                          jwk="[[encryptJWK]]" data="[[data]]"
                                          cipher="{{cipher}}">
