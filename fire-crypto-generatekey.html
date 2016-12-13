@@ -160,7 +160,7 @@ Polymer Element fire-crypto-generatekey
              */
             _fireCryptoKeyGen: function (jwk) {
                 console.log('fire jwk-generated', jwk);
-                this.fire('jwk-generated', {jwk: jwk});
+                this.fire('generate-key', {jwk: jwk});
             },
             /**
              * Fired when an error occur in JWK generation .
@@ -169,7 +169,7 @@ Polymer Element fire-crypto-generatekey
              */
             _fireCryptoKeyGenError: function (error) {
                 console.error('generated Key error', error.message);
-                this.fire('error-jwk-generated', {error: error});
+                this.fire('error-generate-key', {error: error});
             },
 
         });

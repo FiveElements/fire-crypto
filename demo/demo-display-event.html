@@ -26,6 +26,10 @@ Polymer Element demo-display-event
 
             is: 'demo-display-event',
 
+            listeners: {
+                'generate-key': 'addEvent'
+            },
+
             properties: {
                 events: {
                     type: Array,
