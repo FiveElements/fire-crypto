@@ -109,6 +109,49 @@ Polymer Element fire-crypto-derivekey
 
             // --- Key generation
             // --- ---------------------------
+
+            retrievePWKey: function () {
+                var cryptoSubtle = this._getCryptoSubtle();
+                return cryptoSubtle.generateKey('PBKDF2', false, ['deriveKey']);
+            },
+
+            generateSalt: function () {
+                var crypto = this._getCrypto();
+                var salt = crypto.getRandomValues(new Uint8Array(8));
+                return salt;
+            },
+
+            deriveKey: function (pwKey, salt) {
+                var params =  {
+                    name: 'PBKDF2',
+                    hash: 'SHA-256',
+                    salt: salt
+                    iterations: 5000
+                };
+                // The derived key will be used to compute HMACS
+                var alg= { name: 'PBKDF2', hash: 'SHA-256'};
+                var keyUsages = ['sign', 'verify'];
+                var cryptoSubtle = this._getCryptoSubtle();
+                return cryptoSubtle.deriveKey(params, pwKey, alg, false, keyUsages);
+            },
+
+            doDeriveKey: function () {
+                var self = this;
+                var params = Promise.all([
+                    self.retrievePWKey(),
+                    self.generateSalt()
+                ]);
+                var derivekey = params.then(function ([pwKey, salt]) {
+                    // DO the PBKDF2 Danse
+                    return self.deriveKey(pwKey, salt);
+                })
+            },
+
+
+            // --- Key generation
+            // --- ---------------------------
+
+
             _configureDeriveKeyAlgo: function (algoToConfigure) {
                 var algo = JSON.parse(JSON.stringify(algoToConfigure));
                 if ((algo.name === 'ECDH') || (algo.name ===  'RSA-OAEP')) {
