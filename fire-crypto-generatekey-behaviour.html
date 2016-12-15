@@ -1,0 +1,48 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`fire-crypto-generatekey-behaviour`
+Polymer Element fire-crypto-generatekey-behaviour
+
+-->
+
+
+<script>
+    /**
+     * FiveElements Namespace definition
+     */
+    var FiveElements = FiveElements || {};
+
+    /**
+     * @polymerBehavior
+     */
+    FiveElements.FireCryptoGenerateKeyBehavior = {
+
+
+
+        // --- Export Key in JWK fire-format
+        // --- ---------------------------
+
+        _exportKeyAsJwkPromise: function (key) {
+            var cryptoSubtle = this._getCryptoSubtle();
+            var promiseKeys = [];
+            if (key.privateKey || key.publicKey) {
+                promiseKeys[0] = cryptoSubtle.exportKey('jwk', key.privateKey);
+                promiseKeys[1] = cryptoSubtle.exportKey('jwk', key.publicKey);
+            } else {
+                promiseKeys[0] = cryptoSubtle.exportKey('jwk', key);
+            }
+            return Promise.all(promiseKeys).then(function (keys) {
+                return {privateKey: keys[0], publicKey: keys[1]};
+            });
+        },
+
+        // --- Algorithms Identifier
+        // --- ---------------------------
+
+
+        // --- End
+        // --- ---------------------------
+    };
+
+</script>

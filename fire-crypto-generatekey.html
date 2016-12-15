@@ -1,6 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 
 <link rel="import" href="fire-crypto-base-behaviour.html">
+<link rel="import" href="fire-crypto-generatekey-behaviour.html">
 
 <!--
 `fire-crypto-generatekey`
@@ -16,7 +17,8 @@ Polymer Element fire-crypto-generatekey
             is: 'fire-crypto-generatekey',
 
             behaviors: [
-                FiveElements.FireCryptoBaseBehavior
+                FiveElements.FireCryptoBaseBehavior,
+                FiveElements.FireCryptoGenerateKeyBehavior
             ],
 
 
@@ -119,20 +121,11 @@ Polymer Element fire-crypto-generatekey
              * @private
              */
             _generateCryptoKeyPromise: function (algorithm, extractable, usages) {
+                var self= this;
                 var cryptoSubtle = this._getCryptoSubtle();
                 var algo = this._configureGenerateCryptoKeyAlgo(algorithm);
-                return cryptoSubtle.generateKey(algo, extractable, usages).then(function (key) {
-                    var promiseKeys = [];
-                    if (key.privateKey || key.publicKey) {
-                        promiseKeys[0] = cryptoSubtle.exportKey('jwk', key.privateKey);
-                        promiseKeys[1] = cryptoSubtle.exportKey('jwk', key.publicKey);
-                    } else {
-                        promiseKeys[0] = cryptoSubtle.exportKey('jwk', key);
-                    }
-                    return Promise.all(promiseKeys);
-                }).then(function (keys) {
-                    return {privateKey: keys[0], publicKey: keys[1]};
-                });
+                return cryptoSubtle.generateKey(algo, extractable, usages)
+                        .then(self._exportKeyAsJwkPromise.bind(self));
             },
 
             _generateCryptoKey: function (algo, extractable, usages) {

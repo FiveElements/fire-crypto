@@ -1,6 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 
 <link rel="import" href="fire-crypto-base-behaviour.html">
+<link rel="import" href="fire-crypto-generatekey-behaviour.html">
 
 <!--
 `fire-crypto-derivekey`
@@ -16,7 +17,8 @@ Polymer Element fire-crypto-derivekey
             is: 'fire-crypto-derivekey',
 
             behaviors: [
-                FiveElements.FireCryptoBaseBehavior
+                FiveElements.FireCryptoBaseBehavior,
+                FiveElements.FireCryptoGenerateKeyBehavior
             ],
 
 
@@ -42,7 +44,7 @@ Polymer Element fire-crypto-derivekey
                 masterKey: {
                     type: Object,
                     value: function () {
-                        return  { "name": 'AES-CBC', "length": 256 };
+                        return {"name": 'AES-CBC', "length": 256};
                     }
                 },
                 /**
@@ -60,7 +62,7 @@ Polymer Element fire-crypto-derivekey
                 keyUsages: {
                     type: Array,
                     value: function () {
-                        return ['encrypt', 'decrypt' ];
+                        return ['encrypt', 'decrypt'];
                     }
                 },
                 /**
@@ -95,7 +97,7 @@ Polymer Element fire-crypto-derivekey
             // --- ---------------------------
             _deriveCryptoKeyObserver: function (notAuto, algo, masterKey, derivedKeyAlgo, extractable, keyUsages) {
                 if (!notAuto) {
-                    this._deriveKey(this.algo,  this.masterKey, this.derivedKeyAlgo, this.extractable, this.keyUsages);
+                    this._deriveKey(this.algo, this.masterKey, this.derivedKeyAlgo, this.extractable, this.keyUsages);
                 }
             },
 
@@ -103,7 +105,7 @@ Polymer Element fire-crypto-derivekey
             // --- ---------------------------
 
             deriveKey: function () {
-                return this._deriveKey(this.algo,  this.masterKey, this.derivedKeyAlgo, this.extractable, this.keyUsages);
+                return this._deriveKey(this.algo, this.masterKey, this.derivedKeyAlgo, this.extractable, this.keyUsages);
             },
 
 
@@ -115,6 +117,56 @@ Polymer Element fire-crypto-derivekey
                 return cryptoSubtle.generateKey('PBKDF2', false, ['deriveKey']);
             },
 
+
+            _configureDeriveKeyAlgo: function (algoToConfigure, opt) {
+                var algo = JSON.parse(JSON.stringify(algoToConfigure));
+                if ((algo.name === 'ECDH') || (algo.name === 'RSA-OAEP')) {
+                    algo.public = this.masterKey;
+                } else if (algo.name === 'PBKDF2') {
+//                    algo.salt = algo.salt ||  Unibabel.hexToBuffer('e85c53e7f119d41fd7895cdc9d7bb9dd');
+                    algo.salt = opt.salt || alogo.salt || this._getCrypto().getRandomValues(new Uint8Array(1024));
+                    algo.iterations = opt.iterations || algo.iterations || 1024;
+                    algo.hash = opt.hash || algo.hash || 'SHA-256'; //can be "SHA-1", "SHA-256", "SHA-384", or "SHA-512"
+                } else if (algo.name === 'HKDF-CTR') {
+//                    algo.hash =  algo.hash || 'SHA-256';
+//                    algo.label =
+//                    algo.context =
+                }
+                return algo;
+            },
+
+
+
+            importPWKey: function (password, salt) {
+                var self = this;
+                var salt = "Pick anything you want. This isn't secret.";
+                var algo = {'name': 'PBKDF2', hash: 'SHA-256'};
+                var password = "the password";
+
+                var cryptoSubtle = this._getCryptoSubtle();
+                var pwdKey = self.cryptoBufferDeserialize(password, 'utf8', true);
+                return cryptoSubtle.importKey('raw', pwdKey,
+                        {name: 'PBKDF2'}, false, ['deriveKey']).then(function (baseKey) {
+                    // Configure Algo
+                    var algoOpt = {
+                        iterations: 1000,
+                        salt: self.cryptoBufferDeserialize(salt, 'utf8', true)
+                    };
+                    var alg = self._configureDeriveKeyAlgo(algo, algoOpt);
+                    // Derive the password Key
+                    return cryptoSubtle.deriveKey(alg, baseKey,
+                            {"name": "AES-CBC", "length": 128}, // Key we want
+                            true,                               // Extrable
+                            ["encrypt", "decrypt"]              // For new key
+                    );
+                }).then(self._exportKeyAsJwkPromise.bind(self)).then(function (jwk) {
+                    console.log('derive key', jwk);
+                    return jwk;
+                });
+            },
+
+
+
             generateSalt: function () {
                 var crypto = this._getCrypto();
                 var salt = crypto.getRandomValues(new Uint8Array(8));
@@ -122,14 +174,14 @@ Polymer Element fire-crypto-derivekey
             },
 
             deriveKey: function (pwKey, salt) {
-                var params =  {
+                var params = {
                     name: 'PBKDF2',
                     hash: 'SHA-256',
-                    salt: salt
+                    salt: salt,
                     iterations: 5000
                 };
                 // The derived key will be used to compute HMACS
-                var alg= { name: 'PBKDF2', hash: 'SHA-256'};
+                var alg = {name: 'PBKDF2', hash: 'SHA-256'};
                 var keyUsages = ['sign', 'verify'];
                 var cryptoSubtle = this._getCryptoSubtle();
                 return cryptoSubtle.deriveKey(params, pwKey, alg, false, keyUsages);
@@ -152,27 +204,11 @@ Polymer Element fire-crypto-derivekey
             // --- ---------------------------
 
 
-            _configureDeriveKeyAlgo: function (algoToConfigure) {
-                var algo = JSON.parse(JSON.stringify(algoToConfigure));
-                if ((algo.name === 'ECDH') || (algo.name ===  'RSA-OAEP')) {
-                    algo.public = this.masterKey;
-                } else if (algo.name === 'PBKDF2')  {
-//                    algo.salt = algo.salt ||  Unibabel.hexToBuffer('e85c53e7f119d41fd7895cdc9d7bb9dd');
-                    algo.salt = algo.salt ||  this._getCrypto().getRandomValues(new Uint8Array(16));
-                    algo.iterations = algo.iterations || 100;
-                    algo.hash =  algo.hash || 'SHA-256'; //can be "SHA-1", "SHA-256", "SHA-384", or "SHA-512"
-                } else if (algo.name === 'HKDF-CTR')  {
-//                    algo.hash =  algo.hash || 'SHA-256';
-//                    algo.label =
-//                    algo.context =
-                }
-                return algo;
-            },
             _importPasswordAsCryptoKeyPromise: function (passphrase, algo, usages) {
                 var cryptoSubtle = self._getCryptoSubtle();
                 var passphraseKey = Unibabel.utf8ToBuffer(passphrase);
-                var passAlgo = algo ||  {name: 'PBKDF2'};
-                var passUsages = usages ||  ['deriveBits', 'deriveKey'];
+                var passAlgo = algo || {name: 'PBKDF2'};
+                var passUsages = usages || ['deriveBits', 'deriveKey'];
                 return cryptoSubtle.importKey('raw', passphraseKey, passAlgo, false, passUsages);
             },
 
@@ -190,7 +226,7 @@ Polymer Element fire-crypto-derivekey
              * @private
              */
             _deriveKeyPromise: function (algorithm, jwkeys, derivedKeyAlgo, extractable, keyUsages) {
-               var self = this;
+                var self = this;
                 var jwk = jwkeys.privateKey || jwkeys;
                 return this.importKeyJwkPromise(jwk, false, ['deriveBits', 'deriveKey']).then(function (algoKey) {
                     var cryptoSubtle = self._getCryptoSubtle();

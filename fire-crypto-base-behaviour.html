@@ -3,12 +3,10 @@
 <link rel="import" href="fire-unibabel.html">
 
 <!--
-`fire-hmac-sign-behaviour`
-Polymer Element fire-hmac-sign-behaviour
+`fire-crypto-base-behaviour`
+Polymer Element fire-crypto-base-behaviour
 
-@demo demo/index.html 
 -->
-
 
 <script>
     /**
@@ -298,6 +296,9 @@ Polymer Element fire-hmac-sign-behaviour
         },
         getAlgorithmNamesForEncrypt: function () {
             return this.getAlgorithmNames(this._filterFunctionForEncrypt());
+        },
+        getAlgorithmNamesForDeriveKey: function () {
+            return this.getAlgorithmNames(this._filterFunctionForDeriveKey());
         },
         getAlgorithmNamesForWrapKey: function () {
             return this.getAlgorithmNames(this._filterFunctionForWrapKey());

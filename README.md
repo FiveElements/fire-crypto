@@ -12,6 +12,7 @@ Chrome : https://sites.google.com/a/chromium.org/dev/blink/webcrypto
 MDN: https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/sign
 Sample: https://github.com/diafygi/webcrypto-examples
 
+TODO deriveKey https://blog.engelke.com/2015/02/14/deriving-keys-from-passwords-with-webcrypto/
 TODO encrypt https://blog.engelke.com/2014/08/23/public-key-cryptography-in-the-browser/
 
 Encoding: https://coolaj86.github.io/web-crypto-utahjs-preso/

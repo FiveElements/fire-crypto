@@ -19,6 +19,8 @@
     <link rel="import" href="../fire-crypto-encrypt.html">
     <link rel="import" href="../fire-crypto-decrypt.html">
 
+    <link rel="import" href="../fire-crypto-derivekey.html">
+
     <link rel="import" href="demo-display-verify.html">
     <link rel="import" href="demo-algo-listbox.html">
     <link rel="import" href="demo-display-encrypt.html">
@@ -143,18 +145,18 @@
         <demo-snippet>
             <template is="dom-bind" id="demoDeriveKey">
 
-                <div>
-                    <h3>Generate Key</h3>
-                    <fire-crypto-generatekey algo="{{algo}}" usages="[[derivekeyUsages]]" jwk="{{jwk}}">
-                    </fire-crypto-generatekey>
-                    <demo-algo-listbox usage="encrypt" algo="{{algo}}"></demo-algo-listbox>
-                    <demo-display-jwk private-key="{{jwk.privateKey}}"
-                                      public-key="{{jwk.publicKey}}"></demo-display-jwk>
-                </div>
+                <!--<div>-->
+                    <!--<h3>Generate Key</h3>-->
+                    <!--<fire-crypto-generatekey algo="{{algo}}" usages="[[derivekeyUsages]]" jwk="{{jwk}}">-->
+                    <!--</fire-crypto-generatekey>-->
+                    <!--<demo-algo-listbox usage="deriveKey" algo="{{algo}}"></demo-algo-listbox>-->
+                    <!--<demo-display-jwk private-key="{{jwk.privateKey}}"-->
+                                      <!--public-key="{{jwk.publicKey}}"></demo-display-jwk>-->
+                <!--</div>-->
 
                 <div>
-                    <h3>Derive Key</h3>
-                    <fire-crypto-derivekey id="deriver" algo="[[deriveKeyAlgo]]"
+                    <h3>Derive Key <button onclick="deriveKey()">DeriveKey</button></h3>
+                    <fire-crypto-derivekey id="keyDerivor" algo="[[deriveKeyAlgo]]"
                                            master-key="[[jwk]]" derived-key-algo="[[derivedKeyAlgo]]"
                                            key-usages="{{keyUsages}}">
                     </fire-crypto-derivekey>
@@ -171,8 +173,8 @@
                 demo.derivedKeyAlgo = {'name': 'AES-CTR', length: 256};
                 demo.keyUsages = ['encrypt', 'decrypt'];
 
-                function derivekey() {
-                    document.getElementById('encrypter').sign();
+                function deriveKey() {
+                    document.getElementById('keyDerivor').importPWKey();
                 }
             </script>
         </demo-snippet>
