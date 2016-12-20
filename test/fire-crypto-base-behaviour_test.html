@@ -120,14 +120,14 @@
         test('getAlgorithmsForEncrypt', function () {
             var element = fixture('basic');
             var algoNames = element.getAlgorithmsForEncrypt();
-            assert.equal(algoNames.length, 16 - 4);
-            assert.equal(algoNames.length, 3 + 3 + 6 + 4 - 4);
+            assert.equal(algoNames.length, 16 - 4 -1);
+            assert.equal(algoNames.length, 3 + 3 + 6 + 4 - 4 - 1);
         });
         test('getAlgorithmsForWrapKey', function () {
             var element = fixture('basic');
             var algoNames = element.getAlgorithmsForWrapKey();
-            assert.equal(algoNames.length, 19 - 5);
-            assert.equal(algoNames.length, 3 + 3 + 6 + 4 + 3 - 5);
+            assert.equal(algoNames.length, 19 - 5 -1);
+            assert.equal(algoNames.length, 3 + 3 + 6 + 4 + 3 - 5 -1);
         });
     });
 

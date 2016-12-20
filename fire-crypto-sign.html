@@ -64,6 +64,15 @@ Polymer Element fire-crypto-sign
 
             // --- Verify Observer
             // --- ---------------------------
+            _jwkChanged: function (newValue, oldValue) {
+                var self = this;
+                return this._importJwkForSign(newValue).then(function (algoKey) {
+                    self._cryptoKey = algoKey.key;
+                    self._cryptoAlgo = algoKey.algo;
+                    return algoKey;
+                });
+            },
+
             _signObserver: function (notAuto, jwk, dataChanged) {
                 if (!notAuto) {
                     this.signature = undefined;
@@ -80,10 +89,14 @@ Polymer Element fire-crypto-sign
 
             // --- Sign
             // --- ---------------------------
+            _importJwkForSign: function (jwkeys) {
+                var jwk = jwkeys.privateKey || jwkeys;
+                return this.importKeyJwkPromise(jwk, false, ['sign']);
+            },
+
             _signPromise: function (jwkeys, data) {
                 var self = this;
-                var jwk = jwkeys.privateKey || jwkeys;
-                return this.importKeyJwkPromise(jwk, false, ['sign']).then(function (algoKey) {
+                return this._importJwkForSign(jwkeys).then(function (algoKey) {
                     var cryptoSubtle = self._getCryptoSubtle();
                     var dataBuffer = self.cryptoBufferDeserialize(data, 'utf8', self.isDataString);
                     return cryptoSubtle.sign(algoKey.algo, algoKey.key, dataBuffer);

@@ -45,8 +45,15 @@ Polymer Element fire-crypto-encrypt
                  * The Json Web Key used for Sign the data.
                  */
                 jwk: {
-                    type: Object
+                    type: Object,
+//                  observer: '_jwkChanged'
                 },
+//                _cryptoKey: {
+//                  type: Object,
+//                },
+//                _cryptoAlgo: {
+//                  type: Object
+//                },
                 /**
                  * The cypher object with {text: 'base64, param: {} } to decrypt
                  */
@@ -81,12 +88,23 @@ Polymer Element fire-crypto-encrypt
 
             // --- decrypt Observer
             // --- ---------------------------
-            _cipherChangeObserver: function (notAuto, cipher) {
-                if (!notAuto) {
-                    this.ciphertext = cipher.text;
-                    this.cipherparam = cipher.param;
-                }
+
+            _jwkChanged: function (jwkeys, oldValue) {
+                var self = this;
+                return this._importJwkForDecrypt(jwkeys).then(function (algoKey) {
+                    self._cryptoKey = algoKey.key;
+                    self._cryptoAlgo = algoKey.algo;
+                    return algoKey;
+                });
             },
+
+//            _cipherChangeObserver: function (notAuto, cipher) {
+//                if (!notAuto) {
+//                    this.ciphertext = cipher.text;
+//                    this.cipherparam = cipher.param;
+//                }
+//            },
+
             _decryptObserver: function (notAuto, jwk, cipher) {
                 if (!notAuto) {
                     this.data = undefined;
@@ -124,10 +142,14 @@ Polymer Element fire-crypto-encrypt
                 return param;
             },
 
+            _importJwkForDecrypt: function (jwkeys) {
+                var jwk =  jwkeys.privateKey || jwkeys;
+                return this.importKeyJwkPromise(jwk, false, ['decrypt']);
+            },
+
             _decryptPromise: function (jwkeys, cipher) {
                 var self = this;
-                var jwk = jwkeys.privateKey || jwkeys;
-                return this.importKeyJwkPromise(jwk, false, ['decrypt']).then(function (algoKey) {
+                return this._importJwkForDecrypt(jwkeys).then(function (algoKey) {
                     var cryptoSubtle = self._getCryptoSubtle();
                     var ciphertext= cipher.text || cipher;
                     var cipherparam = cipher.param; // TODO

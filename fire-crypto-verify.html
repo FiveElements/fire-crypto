@@ -71,6 +71,15 @@ Polymer Element fire-crypto-verify
 
             // --- Verify Observer
             // --- ---------------------------
+            _jwkChanged: function (newValue, oldValue) {
+                var self = this;
+                return this._importJwkForVerify(newValue).then(function (algoKey) {
+                    self._cryptoKey = algoKey.key;
+                    self._cryptoAlgo = algoKey.algo;
+                    return algoKey;
+                });
+            },
+
             _verifySignObserver: function (notAuto, jwk, dataChanged, signature) {
                  if (!notAuto) {
                      this.isVerify = undefined;
@@ -88,6 +97,10 @@ Polymer Element fire-crypto-verify
 
             // --- Verify
             // --- ---------------------------
+            _importJwkForVerify: function (jwkeys) {
+                var jwk = jwkeys.publicKey || jwkeys;
+                return this.importKeyJwkPromise(jwk, false, ['verify']);
+            },
             /**
              * returns a Promise of a Boolean value indicating if the signature given as parameter matches the text, algorithm and key also given as parameters.
              * @param jwk The JSON Web Key
@@ -98,8 +111,7 @@ Polymer Element fire-crypto-verify
              */
             _verifySignPromise: function (jwkeys, data, signature) {
                 var self = this;
-                var jwk = jwkeys.publicKey || jwkeys;
-                return this.importKeyJwkPromise(jwk, false, ['verify']).then(function (algoKey) {
+                return this._importJwkForVerify(jwkeys).then(function (algoKey) {
                     var cryptoSubtle = self._getCryptoSubtle();
                     var dataBuffer = self.cryptoBufferDeserialize(data, 'utf8', self.isDataString);
                     var signatureBuffer = self.cryptoBufferDeserialize(signature, 'hex', true);
