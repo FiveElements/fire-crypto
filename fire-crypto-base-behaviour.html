@@ -219,7 +219,10 @@ Polymer Element fire-crypto-base-behaviour
         // --- ---------------------------
         __filterWithBrowserSupport: function (algoId) {
             // 192 bit AES keys are not supported in  https://www.chromium.org/blink/webcrypto
-            return !((algoId.algo.length === 192) && (algoId.algo.name.slice(0, 4) === 'AES-'));
+            return !(
+                    ( (algoId.algo.length === 192) && (algoId.algo.name.slice(0, 4) === 'AES-'))
+                    || ( (algoId.algo.length === 256) && (algoId.algo.name  === 'AES-CTR'))
+            );
         },
 
         __filterFunctionForUsage: function (arrayOfsupportedAlgoNames) {

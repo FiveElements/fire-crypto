@@ -108,6 +108,7 @@
             var encryptAlgo = generator.getAlgorithmsForEncrypt().filter(function (algo) {
                return algo.name.slice(0,3) === 'RSA';
             });
+            assert.isAtLeast(encryptAlgo.length, 1);
             return Promise.all(encryptAlgo.map(encryptDecryptPromiseTest(generator, encryptor, decrypter)) );
         });
 
@@ -118,8 +119,10 @@
             var decrypter = document.getElementById('decrypter');
             // Test
             var encryptAlgo = generator.getAlgorithmsForEncrypt().filter(function (algo) {
-                return ((algo.name === 'AES-CTR') && (algo.length===128) );
+                return ((algo.name === 'AES-CTR')  );
             });
+            assert.isAtLeast(encryptAlgo.length, 1);
+
             return Promise.all(encryptAlgo.map(encryptDecryptPromiseTest(generator, encryptor, decrypter)) );
         });
 
@@ -132,8 +135,37 @@
             var encryptAlgo = generator.getAlgorithmsForEncrypt().filter(function (algo) {
                 return ((algo.name === 'AES-CBC') );
             });
+            assert.isAtLeast(encryptAlgo.length, 1);
             return Promise.all(encryptAlgo.map(encryptDecryptPromiseTest(generator, encryptor, decrypter)) );
         });
+
+        test('RSA-OAEP Algo Promise Encrypt & Decrypt', function () {
+            var element = fixture('encrypt');
+            var generator = document.getElementById('encryptGenerator');
+            var encryptor = document.getElementById('encryptor');
+            var decrypter = document.getElementById('decrypter');
+            // Test
+            var encryptAlgo = generator.getAlgorithmsForEncrypt().filter(function (algo) {
+                return ((algo.name === 'RSA-OAEP') );
+            });
+            assert.isAtLeast(encryptAlgo.length, 1);
+            return Promise.all(encryptAlgo.map(encryptDecryptPromiseTest(generator, encryptor, decrypter)) );
+        });
+
+        test('Other than AES-CBC, AES-CTR, RSA, RSA-OAEP  Algo Promise Encrypt & Decrypt', function () {
+            var element = fixture('encrypt');
+            var generator = document.getElementById('encryptGenerator');
+            var encryptor = document.getElementById('encryptor');
+            var decrypter = document.getElementById('decrypter');
+            // Test
+            var encryptAlgo = generator.getAlgorithmsForEncrypt().filter(function (algo) {
+                console.log(algo.name+' == ' + (algo.name === 'AES-CBC')+' - ' + (algo.name === 'AES-CRT')+' - ' +  (algo.name === 'RSA'));
+                return (!((algo.name === 'AES-CBC') || (algo.name === 'AES-CTR') || (algo.name === 'RSA') || (algo.name === 'RSA-OAEP')));
+            });
+            assert.isAtLeast(encryptAlgo.length, 1);
+            return Promise.all(encryptAlgo.map(encryptDecryptPromiseTest(generator, encryptor, decrypter)) );
+        });
+
 
     });
 
@@ -178,16 +210,9 @@
             });
         });
 
-
-        test('All Promise Sign Algo', function () {
-            var element = fixture('sign');
+        var signVerifyPromiseTest = function(generator, signor, verifyor) {
             var data = {title: 'Hello Wolrd!'};
-            var generator = document.getElementById('generator');
-            var signor = document.getElementById('signor');
-            var verifyor = document.getElementById('verifyor');
-            // Test
-            var signAlgo = generator.getAlgorithmsForSign();
-            var promiseArray = signAlgo.map(function (algo) {
+            return function (algo) {
                 return generator._generateCryptoKeyPromise(algo, true, ['sign', 'verify']).then(function (jwk) {
                     assert.isOk(jwk);
                     return signor._signPromise(jwk.privateKey, data).then(function (signature) {
@@ -201,8 +226,58 @@
                         return isVerify;
                     });
                 });
+            };
+        };
+
+        test('HMAC Algo Promise Sign & Verify', function () {
+            var element = fixture('sign');
+            var generator = document.getElementById('generator');
+            var signor = document.getElementById('signor');
+            var verifyor = document.getElementById('verifyor');
+            // Test
+            var signAlgo = generator.getAlgorithmsForSign().filter(function (algo) {
+                return (algo.name === 'HMAC');
             });
-            return Promise.all(promiseArray);
+            assert.isAtLeast(signAlgo.length, 1);
+            return Promise.all(signAlgo.map(signVerifyPromiseTest(generator, signor, verifyor)) );
+        });
+
+        test('RSASSA-PKCS1-v1_5 Algo Promise Sign & Verify', function () {
+            var element = fixture('sign');
+            var generator = document.getElementById('generator');
+            var signor = document.getElementById('signor');
+            var verifyor = document.getElementById('verifyor');
+            // Test
+            var signAlgo = generator.getAlgorithmsForSign().filter(function (algo) {
+                return (algo.name === 'RSASSA-PKCS1-v1_5');
+            });
+            assert.isAtLeast(signAlgo.length, 1);
+            return Promise.all(signAlgo.map(signVerifyPromiseTest(generator, signor, verifyor)) );
+        });
+        test('ECDSA Algo Promise Sign & Verify', function () {
+            var element = fixture('sign');
+            var generator = document.getElementById('generator');
+            var signor = document.getElementById('signor');
+            var verifyor = document.getElementById('verifyor');
+            // Test
+            var signAlgo = generator.getAlgorithmsForSign().filter(function (algo) {
+                return (algo.name === 'ECDSA');
+            });
+            assert.isAtLeast(signAlgo.length, 1);
+            return Promise.all(signAlgo.map(signVerifyPromiseTest(generator, signor, verifyor)) );
+        });
+
+        test('Other than RSASSA-PKCS1-v1_5 , ECDSA Algo Promise Sign & Verify', function () {
+            var element = fixture('sign');
+            var generator = document.getElementById('generator');
+            var signor = document.getElementById('signor');
+            var verifyor = document.getElementById('verifyor');
+            // Test
+            var signAlgo = generator.getAlgorithmsForSign().filter(function (algo) {
+                return (!( (algo.name === 'RSASSA-PKCS1-v1_5') || (algo.name === 'ECDSA')  ));
+            });
+            assert.isAtLeast(signAlgo.length, 1);
+            return Promise.all(signAlgo.map(signVerifyPromiseTest(generator, signor, verifyor)) );
         });
     });
 

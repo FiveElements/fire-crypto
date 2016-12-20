@@ -195,7 +195,7 @@ Polymer Element fire-crypto-encrypt
                 });
             },
 
-            // --- Event Sign
+            // --- Event Encrypt
             // --- ---------------------------
             /**
              * Fired when a Data is encrypted.
@@ -213,8 +213,8 @@ Polymer Element fire-crypto-encrypt
              * @event fire-error-encrypt
              */
             _fireCryptoKeyEncryptError: function (error) {
-                console.error('fire-error-encrypt', error);
-                this.fire('fire-error-encrypt', {error: error});
+                console.error('fire-encrypt-error', error);
+                this.fire('fire-encrypt-error', {error: error});
             },
 
         });
