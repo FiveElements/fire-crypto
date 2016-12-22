@@ -156,6 +156,7 @@
 
                 <div>
                     <h3>Derive Key <button onclick="deriveKey()">DeriveKey</button></h3>
+                    <paper-input value="{{password}}" label="Password" type="password"></paper-input>
                     <fire-crypto-derivekey id="keyDerivor" algo="[[deriveKeyAlgo]]"
                                            master-key="[[jwk]]" derived-key-algo="[[derivedKeyAlgo]]"
                                            key-usages="{{keyUsages}}">
