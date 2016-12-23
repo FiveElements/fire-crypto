@@ -41,20 +41,20 @@ Polymer Element fire-crypto-verify
                  */
                 jwk: {
                     type: Object,
-                    observer: '_jwkChanged'
+//                    observer: '_jwkChanged'
                 },
-                /**
-                 * CryptoKey Imported from JWK
-                 */
-                _cryptoKey: {
-                    type: Object,
-                },
-                /**
-                 * Algo Imported from JWK
-                 */
-                _cryptoAlgo: {
-                    type: Object
-                },
+//                /**
+//                 * CryptoKey Imported from JWK
+//                 */
+//                cryptoKey: {
+//                    type: Object,
+//                },
+//                /**
+//                 * Algo Imported from JWK
+//                 */
+//                cryptoAlgo: {
+//                    type: Object
+//                },
                 /**
                  * The signature
                  */
@@ -84,14 +84,16 @@ Polymer Element fire-crypto-verify
 
             // --- Verify Observer
             // --- ---------------------------
-            _jwkChanged: function (newValue, oldValue) {
-                var self = this;
-                return this._importJwkForVerify(newValue).then(function (algoKey) {
-                    self._cryptoKey = algoKey.key;
-                    self._cryptoAlgo = algoKey.algo;
-                    return algoKey;
-                });
-            },
+//            _jwkChanged: function (newValue, oldValue) {
+//                var self = this;
+//                self.cryptoAlgo = undefined;
+//                self.cryptoKey = undefined;
+//                return this._importJwkForVerify(newValue).then(function (algoKey) {
+//                    self.cryptoAlgo = algoKey.algo;
+//                    self.cryptoKey = algoKey.key;
+//                    return algoKey;
+//                });
+//            },
 
             _verifySignObserver: function (notAuto, jwk, signature, dataChanged) {
                 if (!notAuto) {

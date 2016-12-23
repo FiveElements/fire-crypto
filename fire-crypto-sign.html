@@ -64,16 +64,16 @@ Polymer Element fire-crypto-sign
 
             // --- Verify Observer
             // --- ---------------------------
-            _jwkChanged: function (newValue, oldValue) {
-                var self = this;
-                self._cryptoKey = undefined;
-                self._cryptoAlgo = undefined;
-                return this._importJwkForSign(newValue).then(function (algoKey) {
-                    self._cryptoKey = algoKey.key;
-                    self._cryptoAlgo = algoKey.algo;
-                    return algoKey;
-                });
-            },
+//            _jwkChanged: function (newValue, oldValue) {
+//                var self = this;
+//                self.cryptoKey = undefined;
+//                self.cryptoAlgo = undefined;
+//                return this._importJwkForSign(newValue).then(function (algoKey) {
+//                    self.cryptoKey = algoKey.key;
+//                    self.cryptoAlgo = algoKey.algo;
+//                    return algoKey;
+//                });
+//            },
 
             _signObserver: function (notAuto, jwk, dataChanged) {
                 if (!notAuto) {

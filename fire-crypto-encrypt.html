@@ -46,14 +46,7 @@ Polymer Element fire-crypto-encrypt
                  */
                 jwk: {
                     type: Object,
-//                  observer: '_jwkChanged'
                 },
-//                _cryptoKey: {
-//                  type: Object,
-//                },
-//                _cryptoAlgo: {
-//                  type: Object
-//                },
                 /**
                  * The data to sign
                  */
@@ -90,14 +83,16 @@ Polymer Element fire-crypto-encrypt
             // --- Encrypt Observer
             // --- ---------------------------
 
-            _jwkChanged: function (newValue, oldValue) {
-                var self = this;
-                return this._importJwkForEncrypt(newValue).then(function (algoKey) {
-                    self._cryptoKey = algoKey.key;
-                    self._cryptoAlgo = algoKey.algo;
-                    return algoKey;
-                });
-            },
+//            _jwkChanged: function (newValue, oldValue) {
+//                var self = this;
+//                self.cryptoAlgo = undefined;
+//                self.cryptoKey = undefined;
+//                return this._importJwkForEncrypt(newValue).then(function (algoKey) {
+//                    self.cryptoAlgo = algoKey.algo;
+//                    self.cryptoKey = algoKey.key;
+//                    return algoKey;
+//                });
+//            },
 
             _encryptObserver: function (notAuto, jwk, dataChanged) {
                 if (!notAuto) {
