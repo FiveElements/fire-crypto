@@ -92,7 +92,7 @@ Polymer Element fire-crypto-generatekey
             },
 
 
-            // --- Key generation
+            // --- GenerateKey Config
             // --- ---------------------------
             _configureGenerateCryptoKeyAlgo: function (algoToConfigure) {
                 var algo = algoToConfigure;
@@ -108,6 +108,10 @@ Polymer Element fire-crypto-generatekey
                 }
                 return algo;
             },
+
+            // --- GenerateKey
+            // --- ---------------------------
+
             /**
              *  method returns a Promise of a newly generated CryptoKey, containing two newly generated keys,
              *  for asymmetrical algorithm, that matches the algorithm,
@@ -127,6 +131,9 @@ Polymer Element fire-crypto-generatekey
                 return cryptoSubtle.generateKey(algo, extractable, usages)
                         .then(self._exportKeyAsJwkPromise.bind(self));
             },
+
+            // --- GenerateKey Binding
+            // --- ---------------------------
 
             _generateCryptoKey: function (algo, extractable, usages) {
                 var self = this;

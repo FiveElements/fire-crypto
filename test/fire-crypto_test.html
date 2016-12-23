@@ -220,7 +220,7 @@
                     }).then(function (signature) {
                         assert.isOk(signature);
                         var verifyKey = jwk.publicKey || jwk.privateKey;
-                        return verifyor._verifySignPromise(verifyKey, data, signature);
+                        return verifyor._verifySignPromise(verifyKey, signature, data);
                     }).then(function (isVerify) {
                         assert.isTrue(isVerify);
                         return isVerify;

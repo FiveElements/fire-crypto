@@ -173,22 +173,31 @@ Polymer Element fire-crypto-encrypt
                 return param;
             },
 
-            // --- Encrypt
+            // --- Encrypt Config
             // --- ---------------------------
             _importJwkForEncrypt: function (jwkeys) {
                 var jwk = jwkeys.publicKey || jwkeys.privateKey || jwkeys;
                 return this.importKeyJwkPromise(jwk, false, ['encrypt']);
             },
 
+            // --- Encrypt
+            // --- ---------------------------
+
             _encryptPromise: function (jwkeys, data) {
                 var self = this;
                 return this._importJwkForEncrypt(jwkeys).then(function (algoKey) {
-                    var cryptoSubtle = self._getCryptoSubtle();
-                    var dataBuffer = self.cryptoBufferDeserialize(data, 'utf8', self.isDataString);
-                    var algo = self._configureEncryptCryptoKeyAlgo(algoKey.algo);
-                    return cryptoSubtle.encrypt(algo, algoKey.key, dataBuffer).then(function (cipherbuffer) {
-                        return {cipherbuffer: cipherbuffer, algo: algo};
-                    });
+                    return self._encryptCryptoKeyPromise(algoKey.algo, algoKey.key, data);
+                });
+            },
+
+
+            _encryptCryptoKeyPromise: function (algoKey, cryptoKey, data) {
+                var self = this;
+                var cryptoSubtle = self._getCryptoSubtle();
+                var dataBuffer = self.cryptoBufferDeserialize(data, 'utf8', self.isDataString);
+                var algo = self._configureEncryptCryptoKeyAlgo(algoKey);
+                return cryptoSubtle.encrypt(algo, cryptoKey, dataBuffer).then(function (cipherbuffer) {
+                    return {cipherbuffer: cipherbuffer, algo: algo};
                 }).then(function (opt) {
                     var ciphertext = self.cryptoBufferSerialize(opt.cipherbuffer, self.cryptoFormat, true);
                     var cipherparam = self._extractEncryptCipherParam(opt.algo);
@@ -200,6 +209,8 @@ Polymer Element fire-crypto-encrypt
                 });
             },
 
+            // --- Encrypt Binding
+            // --- ---------------------------
 
             _encrypt: function (jwk, data) {
                 var self = this;

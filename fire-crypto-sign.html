@@ -66,6 +66,8 @@ Polymer Element fire-crypto-sign
             // --- ---------------------------
             _jwkChanged: function (newValue, oldValue) {
                 var self = this;
+                self._cryptoKey = undefined;
+                self._cryptoAlgo = undefined;
                 return this._importJwkForSign(newValue).then(function (algoKey) {
                     self._cryptoKey = algoKey.key;
                     self._cryptoAlgo = algoKey.algo;
@@ -87,25 +89,34 @@ Polymer Element fire-crypto-sign
                 return this._sign(this.jwk, this.data);
             },
 
-            // --- Sign
+            // --- Sign Config
             // --- ---------------------------
             _importJwkForSign: function (jwkeys) {
                 var jwk = jwkeys.privateKey || jwkeys;
                 return this.importKeyJwkPromise(jwk, false, ['sign']);
             },
 
+            // --- Sign
+            // --- ---------------------------
+
             _signPromise: function (jwkeys, data) {
                 var self = this;
                 return this._importJwkForSign(jwkeys).then(function (algoKey) {
-                    var cryptoSubtle = self._getCryptoSubtle();
-                    var dataBuffer = self.cryptoBufferDeserialize(data, 'utf8', self.isDataString);
-                    return cryptoSubtle.sign(algoKey.algo, algoKey.key, dataBuffer);
-                }).then(function (macBuffer) {
+                    return self._signCryptoKeyPromise(algoKey.algo, algoKey.key, data);
+                });
+            },
+
+            _signCryptoKeyPromise: function (algo, cryptoKey, data) {
+                var self = this;
+                var cryptoSubtle = self._getCryptoSubtle();
+                var dataBuffer = self.cryptoBufferDeserialize(data, 'utf8', self.isDataString);
+                return cryptoSubtle.sign(algo, cryptoKey, dataBuffer).then(function (macBuffer) {
                     var macHex = self.cryptoBufferSerialize(macBuffer, 'hex', true);
                     return macHex;
                 });
             },
-
+            // --- Sign Binding
+            // --- ---------------------------
 
             _sign: function (jwk, data) {
                 var self = this;
@@ -135,7 +146,7 @@ Polymer Element fire-crypto-sign
              * @event fire-error-sign
              */
             _fireCryptoKeySignError: function (error) {
-                console.error('fire-error-sign : '+ error);
+                console.error('fire-error-sign : ' + error);
                 this.fire('fire-error-sign', {error: error});
             },
         });

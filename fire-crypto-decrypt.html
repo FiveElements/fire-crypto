@@ -119,10 +119,9 @@ Polymer Element fire-crypto-encrypt
             },
 
 
-
-            // --- Decrypt
+            // --- Decrypt Config
             // --- ---------------------------
-            _configureAlgoParam: function(algo, cipherparam){
+            _configureAlgoParam: function (algo, cipherparam) {
                 var param = algo;
                 var self = this;
                 if (cipherparam) {
@@ -131,9 +130,9 @@ Polymer Element fire-crypto-encrypt
                     // copy properties
                     var keys = Object.keys(cipherparam);
                     keys.forEach(function (key) {
-                        if ((key === 'iv')|| (key === 'counter') || (key === 'additionalData')){
+                        if ((key === 'iv') || (key === 'counter') || (key === 'additionalData')) {
                             var buffer = self.cryptoBufferDeserialize(cipherparam[key], 'hex', true);
-                            param[key] = new Uint8Array( buffer);
+                            param[key] = new Uint8Array(buffer);
                         } else {
                             param[key] = cipherparam[key];
                         }
@@ -143,25 +142,34 @@ Polymer Element fire-crypto-encrypt
             },
 
             _importJwkForDecrypt: function (jwkeys) {
-                var jwk =  jwkeys.privateKey || jwkeys;
+                var jwk = jwkeys.privateKey || jwkeys;
                 return this.importKeyJwkPromise(jwk, false, ['decrypt']);
             },
+
+            // --- Decrypt
+            // --- ---------------------------
 
             _decryptPromise: function (jwkeys, cipher) {
                 var self = this;
                 return this._importJwkForDecrypt(jwkeys).then(function (algoKey) {
-                    var cryptoSubtle = self._getCryptoSubtle();
-                    var ciphertext= cipher.text || cipher;
-                    var cipherparam = cipher.param; // TODO
-                    var cipherBuffer = self.cryptoBufferDeserialize(ciphertext, self.cryptoFormat, true);
-                    var algo =  self._configureAlgoParam(algoKey.algo, cipherparam);
-                    return cryptoSubtle.decrypt(algo, algoKey.key, cipherBuffer);
-                }).then(function (clearbuffer) {
+                    return self._decryptCryptoKeyPromise(algoKey.algo, algoKey.key, cipher);
+                });
+            },
+
+            _decryptCryptoKeyPromise: function (algoKey, cryptoKey, cipher) {
+                var self = this;
+                var cryptoSubtle = self._getCryptoSubtle();
+                var ciphertext = cipher.text || cipher;
+                var cipherparam = cipher.param; // TODO
+                var cipherBuffer = self.cryptoBufferDeserialize(ciphertext, self.cryptoFormat, true);
+                var algo = self._configureAlgoParam(algoKey, cipherparam);
+                return cryptoSubtle.decrypt(algo, cryptoKey, cipherBuffer).then(function (clearbuffer) {
                     var decodedData = self.cryptoBufferSerialize(clearbuffer, 'utf8', self.isDataString);
                     return decodedData;
                 });
             },
-
+            // --- Decrypt Binding
+            // --- ---------------------------
 
             _decrypt: function (jwk, ciphertext) {
                 var self = this;
@@ -184,7 +192,7 @@ Polymer Element fire-crypto-encrypt
              * @event fire-decrypt
              */
             _fireCryptoKeyDecrypt: function (decodedData) {
-                console.log('fire-decrypt: ' ,decodedData);
+                console.log('fire-decrypt: ', decodedData);
                 this.fire('fire-decrypt', {decrypt: decodedData});
             },
             /**
@@ -193,7 +201,7 @@ Polymer Element fire-crypto-encrypt
              * @event fire-error-decrypt
              */
             _fireCryptoKeyDecryptError: function (error) {
-                console.error('fire-error-decrypt : '+ error);
+                console.error('fire-error-decrypt : ' + error);
                 this.fire('fire-error-decrypt', {error: error});
             },
 
