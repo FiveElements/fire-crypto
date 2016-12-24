@@ -1,7 +1,21 @@
 {
   "name": "fire-crypto",
   "description": "Polymer crypto",
+  "version": "1.0.0",
+  "authors": "The Five Elements Authors",
+  "keywords": [
+    "web-components",
+    "polymer",
+    "fire",
+    "crypto"
+  ],
   "main": "fire-crypto.html",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FiveElements/fire-crypto.git"
+  },
+  "homepage": "https://github.com/FiveElements/fire-crypto",
+  "ignore": ["demo", "test", ".gitignore", ".travis.yml", "package.json", "README.md", "wct.conf.js"],
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0",
     "unibabel": "^2.1.3"
