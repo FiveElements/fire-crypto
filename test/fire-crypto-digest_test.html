@@ -14,7 +14,7 @@
 <body>
 <test-fixture id="basic">
     <template is="dom-template">
-        <fire-crypto-digest not-auto algo="[[algo]]" data="[[data]]"  signature="{{signature}}"></fire-crypto-digest>
+        <fire-crypto-digest not-auto algo="[[algo]]" data="[[data]]" hash-encoding="[[hashEncoding]]" hash="{{signature}}"></fire-crypto-digest>
     </template>
 </test-fixture>
 
@@ -27,17 +27,36 @@
     });
 
     suite('Digest CryptoKey', function () {
-        test('SHA-256', function () {
+        test('SHA-256 - Hex encoding', function () {
             var element = fixture('basic', {
                 data: {name: 'Hello World'},
-                algo: "SHA-256"
+                algo: "SHA-256",
+                hashEncoding: 'hex'
             });
             assert.isNotOk(element.signature);
             return element.digest().then(function (signature) {
 
                 assert.isOk(signature);
-                assert.equal(signature, '25a8ca2a4b0d16f25e4c83a3ff775adf25686c719f4462f645643ec0085973fe');
-                assert.equal(element.signature, '25a8ca2a4b0d16f25e4c83a3ff775adf25686c719f4462f645643ec0085973fe');
+                var expectedHash = 'sha256-' +  '25a8ca2a4b0d16f25e4c83a3ff775adf25686c719f4462f645643ec0085973fe';
+                assert.equal(signature, expectedHash);
+                assert.equal(element.hash, expectedHash);
+                return signature;
+            });
+
+        });
+        test('SHA-384 - Base64 encoding', function () {
+            var element = fixture('basic', {
+                data: {name: 'Hello World'},
+                algo: "SHA-384",
+                hashEncoding: 'base64'
+            });
+            assert.isNotOk(element.signature);
+            return element.digest().then(function (signature) {
+
+                assert.isOk(signature);
+                var expectedHash = 'sha384-' +  'mP8N3kh+3wMgZPS9C66KLGFxPCOdv0wNqouTuybjvjSHSJzk5lysnRSXIVB45mfn';
+                assert.equal(signature, expectedHash);
+                assert.equal(element.hash, expectedHash);
                 return signature;
             });
 

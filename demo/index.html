@@ -48,7 +48,7 @@
                 <paper-input value="{{data.name}}" label="Data to digest"></paper-input>
                 <fire-crypto-digest id="digestor"
                                     data="{{data}}" algo="{{algoDigest}}"
-                                    signature="{{signature}}" >
+                                    hash="{{signature}}" hash-encoding="base64" >
                 </fire-crypto-digest>
                 <paper-input value="{{signature}}" label="signature"></paper-input>
             </div>
@@ -56,17 +56,12 @@
 
         <script>
             var demo = document.querySelector('#demoDigest');
-            demo.algoDigest = 'SHA-256';
+            demo.algoDigest = 'SHA-384';
             demo.data = {name: "Hello World"};
-            function signGenKey() {
-                document.getElementById('signGenKey').generateCryptoKey();
+            function digestData() {
+                document.getElementById('digestor').digest();
             }
-            function sign() {
-                document.getElementById('signor').sign();
-            }
-            function verifySign() {
-                document.getElementById('verifyor').verifySign();
-            }
+
 
         </script>
     </demo-snippet>

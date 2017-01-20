@@ -52,24 +52,33 @@ Polymer Element fire-crypto-digest
                     value: false,
                 },
                 /**
-                 * The generated Signature.
+                 * The cryptographic digest.
                  */
-                signature: {
+                hash: {
                     type: Object,
                     notify: true
+                },
+                /**
+                 * The cryptographic digest encoding.
+                 *
+                 * Supported values are: base64, hex,
+                 */
+                hashEncoding: {
+                    type: String,
+                    value: 'base64'
                 }
             },
 
             observers: [
-                '_digestObserver(notAuto,algo,data.*)'
+                '_digestObserver(notAuto,algo,data.*,hashEncoding)'
             ],
 
             // --- Encrypt Observer
             // --- ---------------------------
 
-            _digestObserver: function (notAuto, algo, dataChanged) {
+            _digestObserver: function (notAuto, algo, dataChanged, hashEncoding) {
                 if (!notAuto) {
-                    this._digest(algo, this.data);
+                    this._digest(algo, this.data, hashEncoding);
                 }
             },
 
@@ -77,33 +86,36 @@ Polymer Element fire-crypto-digest
             // --- ---------------------------
 
             digest: function () {
-                return this._digest(this.algo, this.data);
+
+                return this._digest(this.algo, this.data, this.hashEncoding);
             },
 
             // ---Digest
             // --- ---------------------------
-            _digestPromise: function (algo, data) {
+            _digestPromise: function (algo, data, hashEncoding) {
                 var self = this;
                 var cryptoSubtle = self._getCryptoSubtle();
                 var dataBuffer = self.cryptoBufferDeserialize(data, 'utf8', self.isDataString);
                 return cryptoSubtle.digest(algo, dataBuffer).then(function (hashBuffer) {
-                    var macHex = self.cryptoBufferSerialize(hashBuffer, 'hex', true);
-                    console.log('SHA-256 signature :' + macHex);
+                    var macHex = self.cryptoBufferSerialize(hashBuffer, hashEncoding, true);
                     return macHex;
+                }).then(function (maxHex) {
+                    var prefix = algo.toLowerCase().replace('-', '');
+                    return prefix +'-'+maxHex;
                 });
             },
 
             // --- Sign Binding
             // --- ---------------------------
 
-            _digest: function (algo, data) {
+            _digest: function (algo, data, hashEncoding) {
                 var self = this;
-                return this._digestPromise(algo, data).then(function (macHex) {
-                    self.signature = macHex;
+                return this._digestPromise(algo, data, hashEncoding).then(function (macHex) {
+                    self.hash = macHex;
                     self._fireCryptoKeyDigest(macHex);
                     return macHex;
                 }).catch(function (err) {
-                    self.signature = undefined;
+                    self.hash = undefined;
                     self._fireCryptoKeyDigestError(err);
                 });
             },
