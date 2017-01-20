@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>fire-crypto test</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../fire-crypto-digest.html">
+</head>
+<body>
+<test-fixture id="basic">
+    <template is="dom-template">
+        <fire-crypto-digest not-auto algo="[[algo]]" data="[[data]]"  signature="{{signature}}"></fire-crypto-digest>
+    </template>
+</test-fixture>
+
+<script>
+    suite('fire-crypto-digest', function () {
+        test('instantiating the element works', function () {
+            var element = fixture('basic');
+            assert.equal(element.is, 'fire-crypto-digest');
+        });
+    });
+
+    suite('Digest CryptoKey', function () {
+        test('SHA-256', function () {
+            var element = fixture('basic', {
+                data: {name: 'Hello World'},
+                algo: "SHA-256"
+            });
+            assert.isNotOk(element.signature);
+            return element.digest().then(function (signature) {
+
+                assert.isOk(signature);
+                assert.equal(signature, '25a8ca2a4b0d16f25e4c83a3ff775adf25686c719f4462f645643ec0085973fe');
+                assert.equal(element.signature, '25a8ca2a4b0d16f25e4c83a3ff775adf25686c719f4462f645643ec0085973fe');
+                return signature;
+            });
+
+        });
+    });
+
+
+
+</script>
+</body>
+</html>
