@@ -93,34 +93,45 @@ Polymer Element fire-crypto-digest
             // ---Digest
             // --- ---------------------------
             _digestPromise: function (algo, data, hashEncoding) {
-                var self = this;
-                var cryptoSubtle = self._getCryptoSubtle();
-                var dataBuffer = self.cryptoBufferDeserialize(data, 'utf8', self.isDataString);
-                return cryptoSubtle.digest(algo, dataBuffer).then(function (hashBuffer) {
-                    var macHex = self.cryptoBufferSerialize(hashBuffer, hashEncoding, true);
-                    return macHex;
-                }).then(function (maxHex) {
-                    var prefix = algo.toLowerCase().replace('-', '');
-                    return prefix +'-'+maxHex;
-                });
+                var cryptoSubtle = this._getCryptoSubtle();
+                var dataBuffer = this.cryptoBufferDeserialize(data, 'utf8', this.isDataString);
+                return cryptoSubtle.digest(algo, dataBuffer)
+                        .then(this._digestPromiseStringlify(hashEncoding).bind(this))
+                        .then(this._digestPromiseIntegrity(algo).bind(this));
             },
 
+            _digestPromiseStringlify: function (hashEncoding) {
+                return function (hashBuffer) {
+                    var macHex = this.cryptoBufferSerialize(hashBuffer, hashEncoding, true);
+                    return macHex;
+                }
+            },
+            _digestPromiseIntegrity: function (algo) {
+              return function (digestHashString) {
+                  var prefix = algo.toLowerCase().replace('-', '');
+                  return prefix +'-'+digestHashString;
+              }
+            },
             // --- Sign Binding
             // --- ---------------------------
 
             _digest: function (algo, data, hashEncoding) {
                 var self = this;
-                return this._digestPromise(algo, data, hashEncoding).then(function (macHex) {
-                    self.hash = macHex;
-                    self._fireCryptoKeyDigest(macHex);
-                    return macHex;
-                }).catch(function (err) {
-                    self.hash = undefined;
-                    self._fireCryptoKeyDigestError(err);
-                });
+                return this._digestPromise(algo, data, hashEncoding)
+                        .then(this._handleDigest.bind(this))
+                        .catch(this._handleDigestError.bind(this)) ;
             },
 
-
+            _handleDigest: function (digestHash) {
+                this.hash = digestHash;
+                this._fireCryptoKeyDigest(digestHash);
+                return digestHash;
+            },
+            _handleDigestError: function (err) {
+                this.hash = undefined;
+                this._fireCryptoKeyDigestError(err);
+                return err;
+            },
             // --- Event Sign
             // --- ---------------------------
             /**
