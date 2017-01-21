@@ -1,0 +1,118 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="fire-unibabel.html">
+
+<!--
+`fire-crypto-base-behaviour`
+Polymer Element fire-crypto-base-behaviour
+
+-->
+
+<script>
+    /**
+     * FiveElements Namespace definition
+     */
+    var FiveElements = FiveElements || {};
+
+    /**
+     * @polymerBehavior
+     */
+    FiveElements.FireCryptoBaseMinBehavior = {
+
+
+        // --- Get crypto.subtle
+        // --- ---------------------------
+        /**
+         * Get the crypto Object from the browser.
+         */
+        _getCrypto: function () {
+            var crypto = window.crypto || window.msCrypto; //for IE11
+            return crypto;
+        },
+
+        /**
+         * Get the crypto.subtle Object from the browser.
+         */
+        _getCryptoSubtle: function () {
+            var crypto = this._getCrypto();
+            if (crypto.webkitSubtle) {
+                return window.crypto.webkitSubtle; //for Safari
+            }
+            return crypto.subtle;
+        },
+
+
+
+        // --- Crypto Serializer
+        // --- ---------------------------
+        cryptoBufferDeserialize: function (data, format, isString) {
+            var datastr = isString ? data : JSON.stringify(data);
+            var buffer;
+            if (format === 'hex') {
+                buffer = Unibabel.hexToBuffer(datastr);
+            } else if (format === 'base32') {
+                buffer = Unibabel.base32ToBuffer(datastr);
+            } else if (format === 'base64') {
+                buffer = Unibabel.base64ToBuffer(datastr);
+            } else if (format === 'utf16') {
+//                buffer = this._convertStr2ab(datastr);
+                buffer = new TextEncoder('utf-16').encode(datastr);
+            } else if (format === 'utf8') {
+//                buffer = Unibabel.utf8ToBuffer(datastr);
+                buffer = new TextEncoder('utf-8').encode(datastr);
+            } else if (format === 'binaryString') {
+                buffer = Unibabel.binaryStringToBuffer(datastr);
+            } else {
+                buffer = new TextEncoder(format).encode(datastr);
+            }
+            return buffer;
+        },
+        cryptoBufferSerialize: function (buffer, format, isString) {
+            var str;
+            if (format === 'hex') {
+                str = Unibabel.bufferToHex(new Uint8Array(buffer));
+            } else if (format === 'base32') {
+                str = Unibabel.bufferToBase32(new Uint8Array(buffer));
+            } else if (format === 'base64') {
+                str = Unibabel.bufferToBase64(new Uint8Array(buffer));
+            } else if (format === 'utf16') {
+//                str = this._convertAb2str(buffer);
+                str = new TextDecoder('utf-16').decode(new Uint16Array(buffer));
+            } else if (format === 'utf8') {
+//                str = Unibabel.bufferToUtf8(new Uint8Array(buffer));
+                str = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+            } else if (format === 'binaryString') {
+                str = Unibabel.bufferToBinaryString(new Uint8Array(buffer));
+            } else {
+                str = new TextDecoder(format).decode(new Uint8Array(buffer));
+            }
+            var result = str;
+            if (!isString) {
+                result = JSON.parse(str);
+            }
+            return result;
+        },
+
+
+        // --- Utilities
+        // --- ---------------------------
+        /**
+         * https://developers.google.com/web/updates/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
+         */
+        _convertAb2str: function (buffer) {
+            return String.fromCharCode.apply(null, new Uint16Array(buffer));
+        },
+        _convertStr2ab: function (str) {
+            var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
+            var bufView = new Uint16Array(buf);
+            for (var i = 0, strLen = str.length; i < strLen; i++) {
+                bufView[i] = str.charCodeAt(i);
+            }
+            return buf;
+        },
+
+        // --- End
+        // --- ---------------------------
+    };
+
+</script>

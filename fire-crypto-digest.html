@@ -1,6 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 
-<link rel="import" href="fire-crypto-base-behaviour.html">
+<link rel="import" href="fire-crypto-base-min-behaviour.html">
+<link rel="import" href="fire-crypto-digest-behaviour.html">
 
 <!--
 `fire-crypto-digest`
@@ -17,7 +18,7 @@ Polymer Element fire-crypto-digest
             is: 'fire-crypto-digest',
 
             behaviors: [
-                FiveElements.FireCryptoBaseBehavior
+                FiveElements.FireCryptoDigestBehavior
             ],
 
             properties: {
@@ -86,32 +87,10 @@ Polymer Element fire-crypto-digest
             // --- ---------------------------
 
             digest: function () {
-
                 return this._digest(this.algo, this.data, this.hashEncoding);
             },
 
-            // ---Digest
-            // --- ---------------------------
-            _digestPromise: function (algo, data, hashEncoding) {
-                var cryptoSubtle = this._getCryptoSubtle();
-                var dataBuffer = this.cryptoBufferDeserialize(data, 'utf8', this.isDataString);
-                return cryptoSubtle.digest(algo, dataBuffer)
-                        .then(this._digestPromiseStringlify(hashEncoding).bind(this))
-                        .then(this._digestPromiseIntegrity(algo).bind(this));
-            },
 
-            _digestPromiseStringlify: function (hashEncoding) {
-                return function (hashBuffer) {
-                    var macHex = this.cryptoBufferSerialize(hashBuffer, hashEncoding, true);
-                    return macHex;
-                }
-            },
-            _digestPromiseIntegrity: function (algo) {
-              return function (digestHashString) {
-                  var prefix = algo.toLowerCase().replace('-', '');
-                  return prefix +'-'+digestHashString;
-              }
-            },
             // --- Sign Binding
             // --- ---------------------------
 

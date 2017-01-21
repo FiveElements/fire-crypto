@@ -1,0 +1,54 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="fire-unibabel.html">
+
+<!--
+`fire-crypto-base-behaviour`
+Polymer Element fire-crypto-base-behaviour
+
+-->
+
+<script>
+    /**
+     * FiveElements Namespace definition
+     */
+    var FiveElements = FiveElements || {};
+
+    /**
+     * @polymerBehavior
+     */
+    FiveElements.FireCryptoDigestBehaviorImpl = {
+
+        // --- Digest Logic
+        // --- ---------------------------
+        _digestPromise: function (algo, data, hashEncoding) {
+            var cryptoSubtle = this._getCryptoSubtle();
+            var dataBuffer = this.cryptoBufferDeserialize(data, 'utf8', this.isDataString);
+            return cryptoSubtle.digest(algo, dataBuffer)
+                    .then(this._digestPromiseStringlify(hashEncoding).bind(this))
+                    .then(this._digestPromiseIntegrity(algo).bind(this));
+        },
+
+        _digestPromiseStringlify: function (hashEncoding) {
+            return function (hashBuffer) {
+                var macHex = this.cryptoBufferSerialize(hashBuffer, hashEncoding, true);
+                return macHex;
+            }
+        },
+        _digestPromiseIntegrity: function (algo) {
+            return function (digestHashString) {
+                var prefix = algo.toLowerCase().replace('-', '');
+                return prefix +'-'+digestHashString;
+            }
+        },
+
+        // --- End
+        // --- ---------------------------
+    };
+
+
+    FiveElements.FireCryptoDigestBehavior = [
+        FiveElements.FireCryptoBaseMinBehavior, FiveElements.FireCryptoDigestBehaviorImpl
+    ];
+
+</script>
