@@ -15,10 +15,19 @@
     "url": "https://github.com/FiveElements/fire-crypto.git"
   },
   "homepage": "https://github.com/FiveElements/fire-crypto",
-  "ignore": ["demo", "test", ".gitignore", ".travis.yml",  "index.html", "package.json", "README.md", "wct.conf.js"],
+  "ignore": [
+    "demo",
+    "test",
+    ".gitignore",
+    ".travis.yml",
+    "index.html",
+    "package.json",
+    "README.md",
+    "wct.conf.js"
+  ],
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0",
-    "unibabel": "^2.1.3"
+    "ether-unibabel": "FiveElements/ether-unibabel"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
